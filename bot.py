@@ -1,6 +1,5 @@
 # bot.py
 import os
-import random
 
 import discord
 from discord.ext import commands
@@ -8,6 +7,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+
+# this specifies what extensions to load when the bot starts up
+startup_extensions = ["theme"]
 
 bot = commands.Bot(command_prefix="m;")
 
@@ -28,55 +30,29 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-@bot.command(name="theme", help="Generates a random board game theme")
-async def theme(ctx):
-    style = [
-        "Eurogame",
-        "Card game",
-        "Roll & Write",
-        "Strategy game",
-        "Worker placement",
-        "Engine builder",
-        "4X",
-        "Deck builder",
-        "Abstract game",
-        "Dexterity game",
-        "Drafting game",
-        "Roll & move",
-        "Push-your-luck",
-        "Social deduction"]
-    component = [
-        "meeples",
-        "legacy mechanics",
-        "tableau",
-        "area control",
-        "hidden roles",
-        "deck building",
-        "rondels",
-        "storytelling",
-        "trick-taking",
-        "hand management",
-        "victory points",
-        "tile placement",
-        "drafting",
-        "custom dice"]
-    setting = [
-        "Istanbul",
-        "Carcassonne",
-        "London",
-        "America",
-        "a sushi restaurant",
-        "Tokyo",
-        "Warsaw",
-        "a space ship",
-        "the bottom of the ocean",
-        "Birmingham",
-        "a factory",
-        "the world of Warhammer Fantasy Battles",
-        "Waterdeep"]
+@bot.command()
+async def load(extension_name: str):
+    """Loads an extension."""
+    try:
+        bot.load_extension(extension_name)
+    except (AttributeError, ImportError) as e:
+        await bot.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        return
+    await bot.say("{} loaded.".format(extension_name))
 
-    response = random.choice(
-        style) + " using " + random.choice(component) + " set in " + random.choice(setting)
-    await ctx.send(response)
 
-bot.run(TOKEN)
+@bot.command()
+async def unload(extension_name: str):
+    """Unloads an extension."""
+    bot.unload_extension(extension_name)
+    await bot.say("{} unloaded.".format(extension_name))
+
+if __name__ == "__main__":
+    for extension in startup_extensions:
+        try:
+            bot.load_extension(extension)
+        except Exception as e:
+            exc = '{}: {}'.format(type(e).__name__, e)
+            print('Failed to load extension {}\n{}'.format(extension, exc))
+
+    bot.run(TOKEN)
