@@ -2,8 +2,14 @@
 
 . project.cfg
 
-docker run --rm -d \
+if [ -f python/.env ]; then
+  set -o allexport; source python/.env; set +o allexport
+fi
+  
+
+docker run --rm -it \
   --name="$name" \
+  --env DISCORD_TOKEN \
   "$repo":latest \
   $@
 

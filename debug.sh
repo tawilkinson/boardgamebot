@@ -2,6 +2,10 @@
 
 . project.cfg
 
+if [ -f python/.env ]; then
+  set -o allexport; source python/.env; set +o allexport
+fi
+
 debug_name="debug-$name"
 docker stop "$debug_name" > /dev/null 2>&1
 docker rm -f "$debug_name" > /dev/null 2>&1
@@ -9,8 +13,9 @@ docker rm -f "$debug_name" > /dev/null 2>&1
 docker run -it \
   --name="$debug_name" \
   --entrypoint='' \
+  --env DISCORD_TOKEN \
   "$repo":latest \
-  sh
+  bash
 
 # Some "docker run" options for quick reference:
 #  --env VARIABLE=value
