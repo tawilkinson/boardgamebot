@@ -57,7 +57,7 @@ class Games(commands.Cog):
 
     def get_game(self, game):
         for item in self.db['games']:
-            if game in item['name']:
+            if game.lower() in item['name'].lower():
                 return item
 
     @commands.command(name='game',
