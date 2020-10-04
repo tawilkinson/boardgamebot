@@ -9,6 +9,7 @@ class Agenda(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.calendar = 'https://calendar.google.com/calendar/u/0/htmlembed?src=c5ilkhfkd424ddm47unrfuvd9c@group.calendar.google.com&amp;ctz=Europe/London&amp;mode=AGENDA&mode=AGENDA'
+        self.sharable_calander = 'https://calendar.google.com/calendar/embed?src=c5ilkhfkd424ddm47unrfuvd9c%40group.calendar.google.com'
 
     def scrape_events_from_calender(self):
         adgenda_html = requests.get(self.calendar)
@@ -23,6 +24,10 @@ class Agenda(commands.Cog):
 
     def format_full_schedule(self, schedule):
         return ',\n'.join(schedule)
+
+    @commands.command(name="cal", help="Opens a webpage to show the boardgame weekend calander of events!")
+    async def cal(self, ctx):
+        await ctx.send(f'Board game festival schedule of events available online here: {self.sharable_calander}')
 
     @commands.command(name="agenda", help="Prints the upcoming schedule for the weekend")
     async def agenda(self, ctx):
