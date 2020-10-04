@@ -6,11 +6,11 @@
             "bgg": "https://boardgamegeek.com/boardgame/822/carcassonne",
             "image": "https://cf.geekdo-images.com/itemrep/img/sT0kjr-Klona2rygvD8kURJgqdU=/fit-in/246x300/filters:strip_icc()/pic2337577.jpg",
             "tabletopia": false,
-            "tts": false,
-            "bga": true,
-            "yucata": false,
+            "tts": "[Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=263788054)",
+            "bga": "[Carcassone on BGA](https://boardgamearena.com/gamepanel?game=carcassonne)",
+            "yucata": "[Carcassonne Hunters and Gatherers](https://www.yucata.de/en/GameInfo/CarcHaG)\n[Carcassonne South Seas](https://www.yucata.de/en/GameInfo/CarcSouthSeas)",
             "boite": false,
-            "app": true
+            "app": "[Asmodee Digital Multiplatform](https://www.asmodee-digital.com/en/carcassonne/)"
         }
     ]
 }

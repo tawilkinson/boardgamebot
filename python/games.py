@@ -12,9 +12,41 @@ class Games(commands.Cog):
             self.db = json.load(json_file)
 
     def format_embed(self, game):
-        embed = discord.Embed(title=game['name'])
-        embed.add_field(name=game['bgg'],
-                        value=game['description'][:1023], inline=True)
+        embed = discord.Embed(
+            title=game['name'], description=game['description'])
+        embed.set_image(url=game['image'])
+        bgg_text = '[' + game['name'] + '](' + game['bgg'] + ')'
+        embed.add_field(name='Read more at BGG', value=bgg_text, inline=False)
+        if not game['app']:
+            embed.add_field(name='App:', value='❌')
+        else:
+            link = game['app']
+            embed.add_field(name='App:', value=link)
+        if not game['bga']:
+            embed.add_field(name='Board Game Arena:', value='❌')
+        else:
+            link = game['bga']
+            embed.add_field(name='Board Game Arena:', value=link)
+        if not game['boite']:
+            embed.add_field(name='Boîte à Jeux :', value='❌')
+        else:
+            link = game['boite']
+            embed.add_field(name='Boîte à Jeux :', value=link)
+        if not game['tabletopia']:
+            embed.add_field(name='Tabletopia:', value='❌')
+        else:
+            link = game['tabletopia']
+            embed.add_field(name='Tabletopia:', value=link)
+        if not game['tts']:
+            embed.add_field(name='Tabletop Simulator:', value='❌')
+        else:
+            link = game['tts']
+            embed.add_field(name='Tabletop Simulator:', value=link)
+        if not game['yucata']:
+            embed.add_field(name='Yucata:', value='❌')
+        else:
+            link = game['yucata']
+            embed.add_field(name='Yucata:', value=link)
         return embed
 
     def have_game(self, game):
