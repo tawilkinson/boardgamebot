@@ -9,7 +9,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # this specifies what extensions to load when the bot starts up
-startup_extensions = ['theme', 'agenda']
+startup_extensions = ['theme', 'agenda', 'games']
 
 bot = commands.Bot(command_prefix='m;')
 

@@ -1,0 +1,16 @@
+{
+    "games": [
+        {
+            "name": "Carcassonne",
+            "description": "_Carcassonne_ is a tile-placement game in which the players draw and place a tile with a piece of southern French landscape on it. The tile might feature a city, a road, a cloister, grassland or some combination thereof, and it must be placed adjacent to tiles that have already been played, in such a way that cities are connected to cities, roads to roads, etcetera. Having placed a tile, the player can then decide to place one of their meeples on one of the areas on it: on the city as a knight, on the road as a robber, on a cloister as a monk, or on the grass as a farmer. When that area is complete, that meeple scores points for its owner.",
+            "bgg": "https://boardgamegeek.com/boardgame/822/carcassonne",
+            "image": "https://cf.geekdo-images.com/itemrep/img/sT0kjr-Klona2rygvD8kURJgqdU=/fit-in/246x300/filters:strip_icc()/pic2337577.jpg",
+            "tabletopia": false,
+            "tts": false,
+            "bga": true,
+            "yucata": false,
+            "boite": false,
+            "app": true
+        }
+    ]
+}
