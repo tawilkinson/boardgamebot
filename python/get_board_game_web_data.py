@@ -2,6 +2,7 @@
 This script will iterate over a list of board games (human name) and secrach for
 information on these games on BGG and other board game websites.
 """
+import lxml
 import requests
 from bs4 import BeautifulSoup
 
@@ -11,7 +12,7 @@ LIST_OF_GAMES_INFO=dict(games=[])
 class Webpage(BeautifulSoup):
     def __init__(self, url):
         self.response=requests.get(url)
-        self.page_html=BeautifulSoup(self.response.text)
+        self.page_html=BeautifulSoup(self.response.text, 'lxml')
 
 class Game:
     def __init__(self, name):
@@ -22,8 +23,8 @@ class Game:
         self.bgg=''
         self.image=''
         self.tabletopia=''
-        self.tts=''
-        self.tts_search_url=f'https://www.google.com/search?q=tts+{self.name}'
+        self.tts='false'
+        self.tts_search_url=f'https://www.google.com/search?q=tabletop+simulator+{self.name}&num=1'
         self.bga=''
         self.yucata=''
         self.boite=''
@@ -31,6 +32,9 @@ class Game:
 
     def set_description(self, description):
         self.description=description
+
+    def set_tts_details(self, tts):
+        self.tts=tts
 
     def get_set_bgg_url(self):
         self.bgg=f'https://boardgamegeek.com/boardgame/{self.bgg_id}/'
@@ -74,8 +78,22 @@ def get_bgg_data(game, debug=False):
             print(bgg_page.page_html.items.description.text)
 
 
+def get_tts_data(game, debug=False):
+    if debug:
+        print(game.tts_search_url)
+    tts_search = Webpage(game.tts_search_url).page_html
+    search_results = tts_search.body.select('body a')
+    for result in search_results:
+        url = result['href']
+        if 'https://steamcommunity.com' in url:
+            url = url.replace('/url?q=','').replace('%3F','?').replace('%3D','=').split('&')[0]
+            if debug:
+                print('https://steamcommunity.com/sharedfiles/filedetails/?id=263788054')
+            game.set_tts_details(f"[Steam Workshop]({url})")
+            break
+
 def main():
-    game_names = ["Carcassonnee","Carcassonne"]
+    game_names = ["Carcassonne"]
     for game_name in game_names:
         game = Game(game_name)
 
@@ -84,6 +102,9 @@ def main():
 
         # BOARD GAME GEEK SEARCH
         get_bgg_data(game)
+
+        # TABLETOP SIMULATOR SEARCH
+        get_tts_data(game, debug=True)
 
         # PRINT OUT GAME DATA
         game_data_output = game.return_game_data()
