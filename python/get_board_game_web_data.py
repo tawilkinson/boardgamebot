@@ -104,7 +104,7 @@ def main():
         get_bgg_data(game)
 
         # TABLETOP SIMULATOR SEARCH
-        get_tts_data(game, debug=True)
+        get_tts_data(game)
 
         # PRINT OUT GAME DATA
         game_data_output = game.return_game_data()
