@@ -23,6 +23,7 @@ class Game:
         self.image=''
         self.tabletopia=''
         self.tts=''
+        self.tts_search_url=f'https://www.google.com/search?q=tts+{self.name}'
         self.bga=''
         self.yucata=''
         self.boite=''
@@ -49,6 +50,30 @@ class Game:
                     app=self.app,
                 )
 
+
+def get_bgg_data(game, debug=False):
+    bgg_search = Webpage(game.bgg_search_url)
+    games_found = bgg_search.page_html.items['total']
+
+    if games_found == '0':
+        game.set_description('Game not found')
+        if DEBUG:
+            print(f'No games with that name found on BBG.\n > query:{game.bgg_search_url}')
+
+    else:
+        game.bgg_id = bgg_search.page_html.items.item['id']
+        bbg_url = game.get_set_bgg_url()
+        if DEBUG:
+            print(f'BGG game id found={game.bgg_id}')
+
+        bgg_page = Webpage(bbg_url)
+        game_description = bgg_page.page_html.items.description.text
+        game.set_description(game_description)
+        if DEBUG:
+            print(f'> query:{bbg_url}')
+            print(bgg_page.page_html.items.description.text)
+
+
 def main():
     game_names = ["Carcassonnee","Carcassonne"]
     for game_name in game_names:
@@ -57,27 +82,10 @@ def main():
         if DEBUG:
             print(f'Searching for {game.name}')
 
-        bgg_db = requests.get(game.bgg_search_url)
-        bgg_search = Webpage(game.bgg_search_url)
-        games_found = bgg_search.page_html.items['total']
+        # BOARD GAME GEEK SEARCH
+        get_bgg_data(game)
 
-        if games_found == '0':
-            if DEBUG:
-                print(f'No games with that name found on BBG.\n > query:{game.bgg_search_url}')
-
-        else:
-            game.bgg_id = bgg_search.page_html.items.item['id']
-            bbg_url = game.get_set_bgg_url()
-            if DEBUG:
-                print(f'Game id found={game.bgg_id}')
-
-            bgg_page = Webpage(bbg_url)
-            game_description = bgg_page.page_html.items.description.text
-            game.set_description(game_description)
-            if DEBUG:
-                print(f'> query:{bbg_url}')
-                print(bgg_page.page_html.items.description.text)
-
+        # PRINT OUT GAME DATA
         game_data_output = game.return_game_data()
         if DEBUG:
             print(game_data_output)
