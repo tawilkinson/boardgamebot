@@ -16,8 +16,8 @@ class Webpage(BeautifulSoup):
 class Game:
     def __init__(self, name):
         self.name = name.title()
-        self.search_name = self.name.lower().replace(' ','%20')
-        self.search_name_one_word=self.name.lower().replace(' ','')
+        self.search_name = self.name.lower().replace(' ', '%20')
+        self.search_name_one_word = self.name.lower().replace(' ', '')
         self.app = ''
         self.bga = False
         self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_one_word}'
@@ -38,7 +38,7 @@ class Game:
         self.description = description
 
     def set_image(self, description):
-        self.image=description
+        self.image = description
 
     def set_bga_url(self, url):
         self.bga = url
@@ -47,7 +47,7 @@ class Game:
         self.boite = url
 
     def set_tabletopia_url(self, url):
-        self.tabletopia=url
+        self.tabletopia = url
 
     def set_tts_url(self, tts):
         self.tts = tts
@@ -56,7 +56,7 @@ class Game:
         self.yucata = url
 
     def get_set_bgg_url(self, id):
-        self.bgg=f'https://boardgamegeek.com/boardgame/{id}/'
+        self.bgg = f'https://boardgamegeek.com/boardgame/{id}/'
         return f'http://www.boardgamegeek.com/xmlapi2/thing?id={id}'
 
     def return_game_data(self):
@@ -83,7 +83,7 @@ def get_boite_a_jeux_data(game, debug=False):
         if game.name.lower() in res.text.lower():
             rules_elem = res.select_one('a', text='Rules')
             rules_href = rules_elem.get('href')
-            game_boite_url=f'http://www.boiteajeux.net/{rules_href}'
+            game_boite_url = f'http://www.boiteajeux.net/{rules_href}'
             game.set_boite_url(f'[{game.name} on BGA]({game_boite_url}')
 
 
@@ -119,7 +119,8 @@ def get_tabletopia_data(game, debug=False):
         print(f'> Tabletopia: {game.tabletopia_search_url}')
     tabletopia_games = []
     tabletopia_directory_page = Webpage(game.tabletopia_search_url).page_html
-    search_results = tabletopia_directory_page.find_all('a', class_='dropdown-menu__item dropdown-item-thumb')
+    search_results = tabletopia_directory_page.find_all(
+        'a', class_='dropdown-menu__item dropdown-item-thumb')
     for result in search_results:
         game_name = result.text.strip()
         game_tabletopia_url = result['href']
