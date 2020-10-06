@@ -1,7 +1,3 @@
-"""
-This script will iterate over a list of board games (human name) and search for
-information on these games on BGG and other board game websites.
-"""
 import lxml
 import json
 import html
