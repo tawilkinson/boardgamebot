@@ -30,7 +30,7 @@ class Game:
         self.tabletopia = ''
         self.tabletopia_search_url = f'https://tabletopia.com/playground/playgroundsearch/search?timestamp={int(time.time() * 1000)}&query={self.search_name}'
         self.tts = False
-        self.tts_search_url = f'https://www.google.com/search?q=tabletop+simulator+{self.search_name}&num=1'
+        self.tts_search_url = f'https://www.google.com/search?q="Tabletop Simulator"&q="{self.name}"&as_sitesearch=steamcommunity.com&adtest=off&num=1'
         self.yucata = False
         self.yucata_search_url = 'https://www.yucata.de/en/'
 
@@ -148,9 +148,9 @@ def get_tts_data(game, debug=False):
                 '?').replace(
                 '%3D',
                 '=').split('&')[0]
-            game.set_tts_url(f"[Steam Workshop]({url})")
+            game.set_tts_url(f"[ {game.name} on Tabletop Simulator]({url})")
             if debug:
-                print(f'--> retrieved {game.name} Table Top Simulator data')
+                print(f'--> retrieved {game.name} Tabletop Simulator data')
             break
 
 
