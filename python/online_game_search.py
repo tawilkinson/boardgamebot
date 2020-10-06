@@ -17,10 +17,10 @@ class Game:
     def __init__(self, name):
         self.name = name.title()
         self.search_name = self.name.lower().replace(' ', '%20')
-        self.search_name_one_word = self.name.lower().replace(' ', '')
+        self.search_name_alpha_num = ''.join([x for x in self.name.lower() if x.isalpha()])
         self.app = ''
         self.bga = False
-        self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_one_word}'
+        self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_alpha_num}'
         self.bgg = ''
         self.bgg_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
         self.boite = False
@@ -159,7 +159,7 @@ def get_bga_data(game, debug=False):
         print(f'> Board Game Arena: {game.bga_search_url}')
     bga_page = Webpage(game.bga_search_url).page_html.body
     bga_page_text = bga_page.text
-    if 'Game not found' not in bga_page_text:
+    if 'Sorry, an unexpected error has occurred...' not in bga_page_text:
         game.set_bga_url(f'[{game.name} on BGA]({game.bga_search_url})')
         if debug:
             print(f'--> retrieved {game.name} Board Game Arena data')
@@ -184,7 +184,7 @@ def get_yucata_data(game, debug=False):
             print(f'--> retrieved {game.name} Yucata data')
 
 
-def search_web_board_game_data(game_name, debug=False):
+def search_web_board_game_data(game_name, debug=True):
     game = Game(game_name)
     if debug:
         print(f'SEARCHING WEB FOR GAME DATA: {game.name}')
