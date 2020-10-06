@@ -4,6 +4,7 @@ import os
 from discord.ext import commands
 from online_game_search import search_web_board_game_data
 
+
 class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
