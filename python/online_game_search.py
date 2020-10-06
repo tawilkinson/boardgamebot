@@ -2,6 +2,7 @@ import lxml
 import json
 import html
 import requests
+import time
 from bs4 import BeautifulSoup
 
 class Webpage(BeautifulSoup):
@@ -23,6 +24,7 @@ class Game:
         self.description=False
         self.image=''
         self.tabletopia=''
+        self.tabletopia_search_url=f'https://tabletopia.com/playground/playgroundsearch/search?timestamp={int(time.time() * 1000)}&query={self.name}' #.replace(' ','%20')
         self.tts=False
         self.tts_search_url=f'https://www.google.com/search?q=tabletop+simulator+{self.name}&num=1'
         self.yucata=False
@@ -38,6 +40,9 @@ class Game:
 
     def set_boite_url(self, url):
         self.boite=url
+
+    def set_tabletopia_url(self, url):
+        self.tabletopia=url
 
     def set_tts_url(self, tts):
         self.tts=tts
@@ -105,6 +110,24 @@ def get_bgg_data(game, debug=False):
         return True
 
 
+def get_tabletopia_data(game, debug=False):
+    tabletopia_games = []
+    if debug:
+        print(game.tabletopia_search_url)
+    tabletopia_directory_page = Webpage(game.tabletopia_search_url).page_html
+    search_results = tabletopia_directory_page.find_all('a', class_='dropdown-menu__item dropdown-item-thumb')
+    for result in search_results:
+        if debug:
+            print(result)
+        game_name = result.text.strip()
+        game_tabletopia_url = result['href']
+        game_tabletopia_url = f'https://tabletopia.com{game_tabletopia_url}'
+        formatted_link = f'[{game_name} on Tabletopia]({game_tabletopia_url})'
+        tabletopia_games.append(formatted_link)
+    if tabletopia_games:
+        game.set_tabletopia_url('\n'.join(tabletopia_games))
+
+
 def get_tts_data(game, debug=False):
     if debug:
         print(game.tts_search_url)
@@ -154,6 +177,7 @@ def search_web_board_game_data(game_name, debug=False):
     if game_on_bgg:
         get_bga_data(game)
         get_boite_a_jeux_data(game)
+        get_tabletopia_data(game)
         get_tts_data(game)
         get_yucata_data(game)
     game_data = game.return_game_data()
