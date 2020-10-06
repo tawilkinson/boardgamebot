@@ -17,7 +17,8 @@ class Game:
     def __init__(self, name):
         self.name = name.title()
         self.search_name = self.name.lower().replace(' ', '%20')
-        self.search_name_alpha_num = ''.join([x for x in self.name.lower() if x.isalpha()])
+        self.search_name_alpha_num = ''.join(
+            [x for x in self.name.lower() if x.isalpha()])
         self.app = ''
         self.bga = False
         self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_alpha_num}'
