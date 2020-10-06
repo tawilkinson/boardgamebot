@@ -98,7 +98,8 @@ def get_bgg_data(game, debug=False):
 
         bgg_page = Webpage(bbg_url)
         game_description = bgg_page.page_html.items.description.text
-        game.set_description(game_description)
+        formatted_game_description_no_summary = game_description.split('Game Summary')[0]
+        game.set_description(formatted_game_description_no_summary)
         if debug:
             print(f'> query:{bbg_url}')
             print(bgg_page.page_html.items.description.text)
