@@ -12,28 +12,33 @@ LIST_OF_GAMES_INFO=dict(games=[])
 class Webpage(BeautifulSoup):
     def __init__(self, url):
         self.response=requests.get(url)
+        self.page_response=self.response
         self.page_html=BeautifulSoup(self.response.text, 'lxml')
 
 class Game:
     def __init__(self, name):
         self.name=name
+        self.app=''
+        self.bga='false'
+        self.bga_search_url=f'https://boardgamearena.com/gamepanel?game={self.name}'
         self.bgg_id=''
-        self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.name}&exact=1&type=boardgame'
-        self.description=''
         self.bgg=''
+        self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.name}&exact=1&type=boardgame'
+        self.boite=''
+        self.description=''
         self.image=''
         self.tabletopia=''
         self.tts='false'
         self.tts_search_url=f'https://www.google.com/search?q=tabletop+simulator+{self.name}&num=1'
-        self.bga=''
         self.yucata=''
-        self.boite=''
-        self.app=''
 
     def set_description(self, description):
         self.description=description
 
-    def set_tts_details(self, tts):
+    def set_bga_url(self, url):
+        self.bga=url
+
+    def set_tts_url(self, tts):
         self.tts=tts
 
     def get_set_bgg_url(self):
@@ -89,8 +94,18 @@ def get_tts_data(game, debug=False):
             url = url.replace('/url?q=','').replace('%3F','?').replace('%3D','=').split('&')[0]
             if debug:
                 print('https://steamcommunity.com/sharedfiles/filedetails/?id=263788054')
-            game.set_tts_details(f"[Steam Workshop]({url})")
+            game.set_tts_url(f"[Steam Workshop]({url})")
             break
+
+
+def get_bga_data(game, debug=False):
+    if debug:
+        print(game.bga_search_url)
+    bga_page = Webpage(game.bga_search_url).page_html.body
+    bga_page_text = bga_page.text
+    if 'Game not found' not in bga_page_text:
+        game.set_bga_url(f'[Carcassone on BGA]({game.bga_search_url})')
+
 
 def main():
     game_names = ["Carcassonne"]
@@ -102,6 +117,9 @@ def main():
 
         # BOARD GAME GEEK SEARCH
         get_bgg_data(game)
+
+        # BOARD GAME ARENA SEARCH
+        get_bga_data(game)
 
         # TABLETOP SIMULATOR SEARCH
         get_tts_data(game)
