@@ -30,7 +30,7 @@ class Game:
         self.tabletopia=''
         self.tts='false'
         self.tts_search_url=f'https://www.google.com/search?q=tabletop+simulator+{self.name}&num=1'
-        self.yucata=''
+        self.yucata='false'
 
     def set_description(self, description):
         self.description=description
@@ -43,6 +43,9 @@ class Game:
 
     def set_tts_url(self, tts):
         self.tts=tts
+
+    def set_yucata_url(self, url):
+        self.yucata=url
 
     def get_set_bgg_url(self):
         self.bgg=f'https://boardgamegeek.com/boardgame/{self.bgg_id}/'
@@ -75,7 +78,7 @@ def get_boite_a_jeux_data(game, debug=False):
             game_boite_url=f'http://www.boiteajeux.net/{rules_href}'
             if debug:
                 print(game_boite_url)
-            game.set_boite_url(f'[Carcassone on BGA]({game_boite_url}')
+            game.set_boite_url(f'[{game.name} on BGA]({game_boite_url}')
 
 
 def get_bgg_data(game, debug=False):
@@ -122,7 +125,24 @@ def get_bga_data(game, debug=False):
     bga_page = Webpage(game.bga_search_url).page_html.body
     bga_page_text = bga_page.text
     if 'Game not found' not in bga_page_text:
-        game.set_bga_url(f'[Carcassone on BGA]({game.bga_search_url})')
+        game.set_bga_url(f'[{game.name} on BGA]({game.bga_search_url})')
+
+
+def get_yucata_data(game, debug=False):
+    yucata_games = []
+    if debug:
+        print('https://www.yucata.de/en/')
+    boite_directory_page = Webpage('https://www.yucata.de/en/').page_html
+    search_results = boite_directory_page.find_all('a', class_='jGameInfo')
+    for res in search_results:
+        if game.name.lower() in res.text.lower():
+            game_href = res['href']
+            game_name = res.text
+            game_yucata_url = f'https://www.yucata.de/en/{game_href}'
+            formatted_link = f'[{game_name} on Yucata]({game_yucata_url}'
+            yucata_games.append(formatted_link)
+    if yucata_games:
+        game.set_yucata_url('\n'.join(yucata_games))
 
 
 def main():
@@ -144,6 +164,9 @@ def main():
 
         # TABLETOP SIMULATOR SEARCH
         get_tts_data(game)
+
+        # TABLETOP SIMULATOR SEARCH
+        get_yucata_data(game)
 
         # PRINT OUT GAME DATA
         game_data_output = game.return_game_data()
