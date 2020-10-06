@@ -4,6 +4,7 @@ information on these games on BGG and other board game websites.
 """
 import lxml
 import json
+import html
 import requests
 from bs4 import BeautifulSoup
 
@@ -97,12 +98,12 @@ def get_bgg_data(game, debug=False):
             print(f'BGG game id found={game.bgg_id}')
 
         bgg_page = Webpage(bbg_url)
-        game_description = bgg_page.page_html.items.description.text
-        formatted_game_description_no_summary = game_description.split('Game Summary')[0]
-        game.set_description(formatted_game_description_no_summary)
+        game_description = html.unescape(bgg_page.page_html.items.description.text)
+        abridged_game_description = f'{game_description[0:300]} ...'
+        game.set_description(abridged_game_description)
         if debug:
             print(f'> query:{bbg_url}')
-            print(bgg_page.page_html.items.description.text)
+            print(abridged_game_description)
         return True
 
 
@@ -164,7 +165,7 @@ def search_web_board_game_data(game_name, debug=False):
     game = Game(game_name)
     if debug:
         print(f'Searching for {game.name}')
-    game_on_bgg = get_bgg_data(game)
+    game_on_bgg = get_bgg_data(game, debug)
     if game_on_bgg:
         get_bga_data(game)
         get_boite_a_jeux_data(game)
