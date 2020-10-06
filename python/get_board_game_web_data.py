@@ -24,7 +24,7 @@ class Game:
         self.bgg_id=''
         self.bgg=''
         self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.name}&exact=1&type=boardgame'
-        self.boite=''
+        self.boite='false'
         self.description=''
         self.image=''
         self.tabletopia=''
@@ -37,6 +37,9 @@ class Game:
 
     def set_bga_url(self, url):
         self.bga=url
+
+    def set_boite_url(self, url):
+        self.boite=url
 
     def set_tts_url(self, tts):
         self.tts=tts
@@ -58,6 +61,21 @@ class Game:
                     boite=self.boite,
                     app=self.app,
                 )
+
+
+def get_boite_a_jeux_data(game, debug=False):
+    if debug:
+        print('http://www.boiteajeux.net/index.php?p=regles')
+    boite_directory_page = Webpage('http://www.boiteajeux.net/index.php?p=regles').page_html
+    search_results = boite_directory_page.find_all('div', class_='jeuxRegles')
+    for res in search_results:
+        if game.name.lower() in res.text.lower():
+            rules_elem = res.select_one('a', text='Rules')
+            rules_href = rules_elem.get('href')
+            game_boite_url=f'http://www.boiteajeux.net/{rules_href}'
+            if debug:
+                print(game_boite_url)
+            game.set_boite_url(f'[Carcassone on BGA]({game_boite_url}')
 
 
 def get_bgg_data(game, debug=False):
@@ -120,6 +138,9 @@ def main():
 
         # BOARD GAME ARENA SEARCH
         get_bga_data(game)
+
+        # BOITE A JEUX SEARCH
+        get_boite_a_jeux_data(game)
 
         # TABLETOP SIMULATOR SEARCH
         get_tts_data(game)
