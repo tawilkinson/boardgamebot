@@ -17,7 +17,6 @@ class Game:
         self.app=''
         self.bga=False
         self.bga_search_url=f'https://boardgamearena.com/gamepanel?game={self.search_name}'
-        self.bgg_id=''
         self.bgg=''
         self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
         self.boite=False
@@ -31,6 +30,9 @@ class Game:
     def set_description(self, description):
         self.description=description
 
+    def set_image(self, description):
+        self.image=description
+
     def set_bga_url(self, url):
         self.bga=url
 
@@ -43,9 +45,9 @@ class Game:
     def set_yucata_url(self, url):
         self.yucata=url
 
-    def get_set_bgg_url(self):
-        self.bgg=f'https://boardgamegeek.com/boardgame/{self.bgg_id}/'
-        return f'http://www.boardgamegeek.com/xmlapi2/thing?id={self.bgg_id}'
+    def get_set_bgg_url(self, id):
+        self.bgg=f'https://boardgamegeek.com/boardgame/{id}/'
+        return f'http://www.boardgamegeek.com/xmlapi2/thing?id={id}'
 
     def return_game_data(self):
         return dict(
@@ -88,15 +90,15 @@ def get_bgg_data(game, debug=False):
         return False
 
     else:
-        game.bgg_id = bgg_search.page_html.items.item['id']
-        bbg_url = game.get_set_bgg_url()
-        if debug:
-            print(f'BGG game id found={game.bgg_id}')
-
+        id = bgg_search.page_html.items.item['id']
+        bbg_url = game.get_set_bgg_url(id)
         bgg_page = Webpage(bbg_url)
         game_description = html.unescape(bgg_page.page_html.items.description.text)
         abridged_game_description = f'{game_description[0:300]} ...'
         game.set_description(abridged_game_description)
+        game_image = bgg_page.page_html.items.image.text
+        game.set_image(game_image)
+
         if debug:
             print(f'> query:{bbg_url}')
             print(abridged_game_description)
