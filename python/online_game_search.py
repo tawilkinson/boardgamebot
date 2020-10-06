@@ -148,19 +148,6 @@ def get_yucata_data(game, debug=False):
         game.set_yucata_url('\n'.join(yucata_games))
 
 
-def get_all_board_games_in_list():
-    with open('./bot/data/game_list.txt') as input:
-        game_names=[line.strip() for line in input]
-
-    LIST_OF_GAMES_INFO=dict(games=[])
-    for game_name in game_names:
-        game_data = search_web_board_game_data(game_name)
-
-        LIST_OF_GAMES_INFO['games'].append(game_data)
-
-    with open('./bot/data/games_test.json','w+') as output:
-        output.write(json.dumps(LIST_OF_GAMES_INFO))
-
 def search_web_board_game_data(game_name, debug=False):
     game = Game(game_name)
     if debug:
