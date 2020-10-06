@@ -5,53 +5,55 @@ import requests
 import time
 from bs4 import BeautifulSoup
 
+
 class Webpage(BeautifulSoup):
     def __init__(self, url):
-        self.response=requests.get(url)
-        self.page_response=self.response
-        self.page_html=BeautifulSoup(self.response.text, 'lxml')
+        self.response = requests.get(url)
+        self.page_response = self.response
+        self.page_html = BeautifulSoup(self.response.text, 'lxml')
+
 
 class Game:
     def __init__(self, name):
-        self.name=name.title()
-        self.search_name=self.name.lower().replace(' ','%20')
+        self.name = name.title()
+        self.search_name = self.name.lower().replace(' ','%20')
         self.search_name_one_word=self.name.lower().replace(' ','')
-        self.app=''
-        self.bga=False
-        self.bga_search_url=f'https://boardgamearena.com/gamepanel?game={self.search_name_one_word}'
-        self.bgg=''
-        self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
-        self.boite=False
-        self.boite_search_url='http://www.boiteajeux.net/index.php?p=regles'
-        self.description=False
-        self.image=''
-        self.tabletopia=''
-        self.tabletopia_search_url=f'https://tabletopia.com/playground/playgroundsearch/search?timestamp={int(time.time() * 1000)}&query={self.search_name}'
-        self.tts=False
-        self.tts_search_url=f'https://www.google.com/search?q=tabletop+simulator+{self.search_name}&num=1'
-        self.yucata=False
-        self.yucata_search_url='https://www.yucata.de/en/'
+        self.app = ''
+        self.bga = False
+        self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_one_word}'
+        self.bgg = ''
+        self.bgg_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
+        self.boite = False
+        self.boite_search_url = 'http://www.boiteajeux.net/index.php?p=regles'
+        self.description = False
+        self.image = ''
+        self.tabletopia = ''
+        self.tabletopia_search_url = f'https://tabletopia.com/playground/playgroundsearch/search?timestamp={int(time.time() * 1000)}&query={self.search_name}'
+        self.tts = False
+        self.tts_search_url = f'https://www.google.com/search?q=tabletop+simulator+{self.search_name}&num=1'
+        self.yucata = False
+        self.yucata_search_url = 'https://www.yucata.de/en/'
 
     def set_description(self, description):
-        self.description=description
+        self.description = description
 
     def set_image(self, description):
         self.image=description
 
     def set_bga_url(self, url):
-        self.bga=url
+        self.bga = url
 
     def set_boite_url(self, url):
-        self.boite=url
+        self.boite = url
 
     def set_tabletopia_url(self, url):
         self.tabletopia=url
 
     def set_tts_url(self, tts):
-        self.tts=tts
+        self.tts = tts
 
     def set_yucata_url(self, url):
-        self.yucata=url
+        self.yucata = url
 
     def get_set_bgg_url(self, id):
         self.bgg=f'https://boardgamegeek.com/boardgame/{id}/'
@@ -59,17 +61,17 @@ class Game:
 
     def return_game_data(self):
         return dict(
-                    name=self.name,
-                    description=self.description,
-                    bgg=self.bgg,
-                    image=self.image,
-                    tabletopia=self.tabletopia,
-                    tts=self.tts,
-                    bga=self.bga,
-                    yucata=self.yucata,
-                    boite=self.boite,
-                    app=self.app,
-                )
+            name=self.name,
+            description=self.description,
+            bgg=self.bgg,
+            image=self.image,
+            tabletopia=self.tabletopia,
+            tts=self.tts,
+            bga=self.bga,
+            yucata=self.yucata,
+            boite=self.boite,
+            app=self.app,
+        )
 
 
 def get_boite_a_jeux_data(game, debug=False):
@@ -92,7 +94,8 @@ def get_bgg_data(game, debug=False):
     games_found = bgg_search.page_html.items['total']
 
     if games_found == '0':
-        game.set_description('Game not found on Board Game Geek! Is it even a board game?')
+        game.set_description(
+            'Game not found on Board Game Geek! Is it even a board game?')
         if debug:
             print(f'> !!! {game.name} not found on Board Game Geek !!!')
         return False
@@ -100,7 +103,8 @@ def get_bgg_data(game, debug=False):
         id = bgg_search.page_html.items.item['id']
         bbg_url = game.get_set_bgg_url(id)
         bgg_page = Webpage(bbg_url)
-        game_description = html.unescape(bgg_page.page_html.items.description.text)
+        game_description = html.unescape(
+            bgg_page.page_html.items.description.text)
         abridged_game_description = f'{game_description[0:300]} ...'
         game.set_description(abridged_game_description)
         game_image = bgg_page.page_html.items.image.text
@@ -136,7 +140,13 @@ def get_tts_data(game, debug=False):
     for result in search_results:
         url = result['href']
         if 'https://steamcommunity.com' in url:
-            url = url.replace('/url?q=','').replace('%3F','?').replace('%3D','=').split('&')[0]
+            url = url.replace(
+                '/url?q=',
+                '').replace(
+                '%3F',
+                '?').replace(
+                '%3D',
+                '=').split('&')[0]
             game.set_tts_url(f"[Steam Workshop]({url})")
             if debug:
                 print(f'--> retrieved {game.name} Table Top Simulator data')
