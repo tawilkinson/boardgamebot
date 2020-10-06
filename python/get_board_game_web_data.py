@@ -1,8 +1,9 @@
 """
-This script will iterate over a list of board games (human name) and secrach for
+This script will iterate over a list of board games (human name) and search for
 information on these games on BGG and other board game websites.
 """
 import lxml
+import json
 import requests
 from bs4 import BeautifulSoup
 
@@ -146,7 +147,10 @@ def get_yucata_data(game, debug=False):
 
 
 def main():
-    game_names = ["Carcassonne"]
+
+    with open('./bot/data/game_list.txt') as input:
+        game_names=[line.strip() for line in input]
+
     for game_name in game_names:
         game = Game(game_name)
 
@@ -165,16 +169,17 @@ def main():
         # TABLETOP SIMULATOR SEARCH
         get_tts_data(game)
 
-        # TABLETOP SIMULATOR SEARCH
+        # YUCATA SEARCH
         get_yucata_data(game)
 
         # PRINT OUT GAME DATA
         game_data_output = game.return_game_data()
-        if DEBUG:
-            print(game_data_output)
 
-    LIST_OF_GAMES_INFO['games'].append(game_data_output)
-    print(LIST_OF_GAMES_INFO)
+        LIST_OF_GAMES_INFO['games'].append(game_data_output)
+
+    with open('./bot/data/games_test.json','w+') as output:
+        output.write(json.dumps(LIST_OF_GAMES_INFO))
+
 
 if __name__ == '__main__':
     main()

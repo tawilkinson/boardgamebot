@@ -1,0 +1,40 @@
+{
+  "games": [
+    {
+      "name": "Carcassonne",
+      "description": "Carcassonne is a tile-placement game in which the players draw and place a tile with a piece of southern French landscape on it. The tile might feature a city, a road, a cloister, grassland or some combination thereof, and it must be placed adjacent to tiles that have already been played, in such a way that cities are connected to cities, roads to roads, etcetera. Having placed a tile, the player can then decide to place one of their meeples on one of the areas on it: on the city as a knight, on the road as a robber, on a cloister as a monk, or on the grass as a farmer. When that area is complete, that meeple scores points for its owner.&#10;&#10;During a game of Carcassonne, players are faced with decisions like: &quot;Is it really worth putting my last meeple there?&quot; or &quot;Should I use this tile to expand my city, or should I place it near my opponent instead, giving him a hard time to complete their project and score points?&quot; Since players place only one tile and have the option to place one meeple on it, turns proceed quickly even if it is a game full of options and possibilities.&#10;&#10;First game in the Carcassonne series.&#10;&#10;&#9;&#9;&#9;&#9;&#10;&#9;&#9;&#9;&#9;&#10;&#9;&#9;&#9;&#9;&#9;Beschreibung&#10;&#10;Eine mittelalterliche Landschaft mit St&auml;dten und Kl&ouml;stern, Stra&szlig;en und Wiesen. Mit Taktik und ihren Gefolgsleuten (Meeple) dehnen die Spieler in diesem raffinierten Legespiel ihren Einfluss auf die einzelnen Bereiche st&auml;ndig aus. Und das mit wachsender Begeisterung!&#10;Carcassonne ist ein Legespiel, bei dem die Spieler verdeckt Landschaftspl&auml;ttchen ziehen und an die bestehende Landschaft passend anlegen m&uuml;ssen. Auf den Pl&auml;ttchen sind St&auml;dte, Stra&szlig;en, Kl&ouml;ster und Grasland in verschiedenen Kombinationen dargestellt. Wenn dann das Pl&auml;ttchen passend angelegt wurde, darf der Spieler entscheiden, ob auf das gerade angelegte Pl&auml;ttchen ein Meeple als Ritter (in Stadt), Wegelagerer (auf Stra&szlig;e), M&ouml;nch (in Kloster) oder Bauer (auf Wiese) eingesetzt werden soll, vor allem wenn es vielleicht gerade der letzte ist...&#10;&#10;",
+      "bgg": "https://boardgamegeek.com/boardgame/822/",
+      "image": "",
+      "tabletopia": "",
+      "tts": "[Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=263788054)",
+      "bga": "[Carcassonne on BGA](https://boardgamearena.com/gamepanel?game=Carcassonne)",
+      "yucata": "[Carcassonne H&G on Yucata](https://www.yucata.de/en//en/GameInfo/CarcHaG\n[Carcassonne South Seas on Yucata](https://www.yucata.de/en//en/GameInfo/CarcSouthSeas",
+      "boite": "false",
+      "app": ""
+    },
+    {
+      "name": "Russian Railroads",
+      "description": "In Russian Railroads, players compete in an exciting race to build the largest and most advanced railway network. In order to do so, the players appoint their workers to various important tasks.&#10;&#10;The development of simple tracks will quickly bring the players to important places, while the modernization of their railway network will improve the efficiency of their machinery. Newer locomotives cover greater distances and factories churn out improved technology. Engineers, when used effectively, can be the extra boost that an empire needs to race past the competition.&#10;&#10;There are many paths to victory: Who will ride into the future full steam ahead and who will be run off the rails? Whose empire will overcome the challenges ahead and emerge victorious?&#10;&#10;&#10;Game Summary&#10;Each player has their own board, with space for factories, and 3 rail tracks (to 3 different cities). On each track, use a track token to mark the progression of your rails (different colored marker for each type or rail). Some interesting twists:&#10;- The different track types must be built in a specific order (black, gray, brown, natural, white). Later tracks may never be advanced further on the track than the earlier tracks.&#10;- On each track, as the track head advances, you cross several thresholds that provide awards: the ability to start a new color of track, victory points, bonus tiles, etc.&#10;- Each track line can have one (two for the first rail) engine(s) associated with it; the size of the loco(s) determines how far down the track you actually score VP.&#10;&#10;The central board has (almost) all the locations for placing workers. Each location requires 1-3 workers (of one player; played all together). Players, who start the game with 5 workers (or 6 workers, in 2-3 player games), will take turns using a location. These provide a variety of abilities, for example:&#10;- advance 1 or more track heads by 1-3 spaces&#10;- acquire an engine or factory; engines are allocated to rail lines, while factories (the reverse side of the tile) are placed on your factory line.&#10;- earn 2 coins&#10;- take 2 temporary workers&#10;- jump ahead in turn order&#10;- acquire an engineer, which has a unique power and becomes a worker-placement location only for you&#10;&#10;Each round ends when all players have passed on placing/using workers. Then, score VP for each track and factory line. On each track line, only spaces as far down the track as the loco level will score. Each track type scores VP for every space from its track head back to where the next color of track starts. Track types built earlier (e.g. black) score less/space than later tracks (e.g., white). On each factory line the position of the purple industry marker(s) show how many VP are scored.&#10;&#10;After 7 rounds (or 6 rounds, in 2-3 player games), the game ends; most VP wins!&#10;&#10;",
+      "bgg": "https://boardgamegeek.com/boardgame/144733/",
+      "image": "",
+      "tabletopia": "",
+      "tts": "[Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=751093122)",
+      "bga": "false",
+      "yucata": "[Russian Railroads on Yucata](https://www.yucata.de/en//en/GameInfo/RRR2",
+      "boite": "false",
+      "app": ""
+    },
+    {
+      "name": "King of Tokyo",
+      "description": "In King of Tokyo, you play mutant monsters, gigantic robots, and strange aliens&mdash;all of whom are destroying Tokyo and whacking each other in order to become the one and only King of Tokyo.&#10;&#10;At the start of each turn, you roll six dice, which show the following six symbols: 1, 2, or 3 Victory Points, Energy, Heal, and Attack. Over three successive throws, choose whether to keep or discard each die in order to win victory points, gain energy, restore health, or attack other players into understanding that Tokyo is YOUR territory.&#10;&#10;The fiercest player will occupy Tokyo, and earn extra victory points, but that player can't heal and must face all the other monsters alone!&#10;&#10;Top this off with special cards purchased with energy that have a permanent or temporary effect, such as the growing of a second head which grants you an additional die, body armor, nova death ray, and more.... and it's one of the most explosive games of the year!&#10;&#10;In order to win the game, one must either destroy Tokyo by accumulating 20 victory points, or be the only surviving monster once the fighting has ended.&#10;&#10;First Game in the King of Tokyo series&#10;&#10;",
+      "bgg": "https://boardgamegeek.com/boardgame/70323/",
+      "image": "",
+      "tabletopia": "",
+      "tts": "false",
+      "bga": "false",
+      "yucata": "false",
+      "boite": "false",
+      "app": ""
+    }
+  ]
+}
