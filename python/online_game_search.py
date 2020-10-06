@@ -16,8 +16,8 @@ class Webpage(BeautifulSoup):
 
 class Game:
     def __init__(self, name):
-        self.name=name
-        self.search_name=self.name.strip()
+        self.name=name.title()
+        self.search_name=self.name.lower().strip()
         self.app=''
         self.bga=False
         self.bga_search_url=f'https://boardgamearena.com/gamepanel?game={self.search_name}'
@@ -25,7 +25,7 @@ class Game:
         self.bgg=''
         self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
         self.boite=False
-        self.description=''
+        self.description=False
         self.image=''
         self.tabletopia=''
         self.tts=False
@@ -86,7 +86,7 @@ def get_bgg_data(game, debug=False):
     games_found = bgg_search.page_html.items['total']
 
     if games_found == '0':
-        game.set_description('Game not found')
+        game.set_description('Game not found on Board Game Geek! Is it even a board game?')
         if debug:
             print(f'No games with that name found on BBG.\n > query:{game.bgg_search_url}')
         return False
