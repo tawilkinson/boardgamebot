@@ -21,7 +21,7 @@ class Game:
         self.name=name
         self.app=''
         self.bga='false'
-        self.bga_search_url=f'https://boardgamearena.com/gamepanel?game={self.name}'
+        self.bga_search_url=f'https://boardgamearena.com/gamepanel?game={self.name.strip()}'
         self.bgg_id=''
         self.bgg=''
         self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.name}&exact=1&type=boardgame'
@@ -139,7 +139,7 @@ def get_yucata_data(game, debug=False):
         if game.name.lower() in res.text.lower():
             game_href = res['href']
             game_name = res.text
-            game_yucata_url = f'https://www.yucata.de/en/{game_href}'
+            game_yucata_url = f'https://www.yucata.de{game_href}'
             formatted_link = f'[{game_name} on Yucata]({game_yucata_url}'
             yucata_games.append(formatted_link)
     if yucata_games:
