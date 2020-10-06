@@ -16,19 +16,20 @@ class Webpage(BeautifulSoup):
 class Game:
     def __init__(self, name):
         self.name=name
+        self.search_name=self.name.strip()
         self.app=''
-        self.bga='false'
-        self.bga_search_url=f'https://boardgamearena.com/gamepanel?game={self.name.strip()}'
+        self.bga=False
+        self.bga_search_url=f'https://boardgamearena.com/gamepanel?game={self.search_name}'
         self.bgg_id=''
         self.bgg=''
-        self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.name}&exact=1&type=boardgame'
-        self.boite='false'
+        self.bgg_search_url=f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
+        self.boite=False
         self.description=''
         self.image=''
         self.tabletopia=''
-        self.tts='false'
+        self.tts=False
         self.tts_search_url=f'https://www.google.com/search?q=tabletop+simulator+{self.name}&num=1'
-        self.yucata='false'
+        self.yucata=False
 
     def set_description(self, description):
         self.description=description
@@ -87,6 +88,7 @@ def get_bgg_data(game, debug=False):
         game.set_description('Game not found')
         if debug:
             print(f'No games with that name found on BBG.\n > query:{game.bgg_search_url}')
+        return False
 
     else:
         game.bgg_id = bgg_search.page_html.items.item['id']
@@ -100,6 +102,7 @@ def get_bgg_data(game, debug=False):
         if debug:
             print(f'> query:{bbg_url}')
             print(bgg_page.page_html.items.description.text)
+        return True
 
 
 def get_tts_data(game, debug=False):
@@ -137,7 +140,7 @@ def get_yucata_data(game, debug=False):
             game_href = res['href']
             game_name = res.text
             game_yucata_url = f'https://www.yucata.de{game_href}'
-            formatted_link = f'[{game_name} on Yucata]({game_yucata_url}'
+            formatted_link = f'[{game_name} on Yucata]({game_yucata_url})'
             yucata_games.append(formatted_link)
     if yucata_games:
         game.set_yucata_url('\n'.join(yucata_games))
@@ -160,9 +163,13 @@ def search_web_board_game_data(game_name, debug=False):
     game = Game(game_name)
     if debug:
         print(f'Searching for {game.name}')
-    get_bgg_data(game)
-    get_bga_data(game)
-    get_boite_a_jeux_data(game)
-    get_tts_data(game)
-    get_yucata_data(game)
-    return game.return_game_data()
+    game_on_bgg = get_bgg_data(game)
+    if game_on_bgg:
+        get_bga_data(game)
+        get_boite_a_jeux_data(game)
+        get_tts_data(game)
+        get_yucata_data(game)
+    game_data = game.return_game_data()
+    if debug:
+        print(game_data)
+    return game_data
