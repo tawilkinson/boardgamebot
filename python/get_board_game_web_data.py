@@ -7,9 +7,6 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-DEBUG=False
-LIST_OF_GAMES_INFO=dict(games=[])
-
 class Webpage(BeautifulSoup):
     def __init__(self, url):
         self.response=requests.get(url)
@@ -88,19 +85,19 @@ def get_bgg_data(game, debug=False):
 
     if games_found == '0':
         game.set_description('Game not found')
-        if DEBUG:
+        if debug:
             print(f'No games with that name found on BBG.\n > query:{game.bgg_search_url}')
 
     else:
         game.bgg_id = bgg_search.page_html.items.item['id']
         bbg_url = game.get_set_bgg_url()
-        if DEBUG:
+        if debug:
             print(f'BGG game id found={game.bgg_id}')
 
         bgg_page = Webpage(bbg_url)
         game_description = bgg_page.page_html.items.description.text
         game.set_description(game_description)
-        if DEBUG:
+        if debug:
             print(f'> query:{bbg_url}')
             print(bgg_page.page_html.items.description.text)
 
@@ -146,40 +143,26 @@ def get_yucata_data(game, debug=False):
         game.set_yucata_url('\n'.join(yucata_games))
 
 
-def main():
-
+def get_all_board_games_in_list():
     with open('./bot/data/game_list.txt') as input:
         game_names=[line.strip() for line in input]
 
+    LIST_OF_GAMES_INFO=dict(games=[])
     for game_name in game_names:
-        game = Game(game_name)
+        game_data = search_web_board_game_data(game_name)
 
-        if DEBUG:
-            print(f'Searching for {game.name}')
-
-        # BOARD GAME GEEK SEARCH
-        get_bgg_data(game)
-
-        # BOARD GAME ARENA SEARCH
-        get_bga_data(game)
-
-        # BOITE A JEUX SEARCH
-        get_boite_a_jeux_data(game)
-
-        # TABLETOP SIMULATOR SEARCH
-        get_tts_data(game)
-
-        # YUCATA SEARCH
-        get_yucata_data(game)
-
-        # PRINT OUT GAME DATA
-        game_data_output = game.return_game_data()
-
-        LIST_OF_GAMES_INFO['games'].append(game_data_output)
+        LIST_OF_GAMES_INFO['games'].append(game_data)
 
     with open('./bot/data/games_test.json','w+') as output:
         output.write(json.dumps(LIST_OF_GAMES_INFO))
 
-
-if __name__ == '__main__':
-    main()
+def search_web_board_game_data(game_name, debug=False):
+    game = Game(game_name)
+    if debug:
+        print(f'Searching for {game.name}')
+    get_bgg_data(game)
+    get_bga_data(game)
+    get_boite_a_jeux_data(game)
+    get_tts_data(game)
+    get_yucata_data(game)
+    return game.return_game_data()
