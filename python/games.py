@@ -18,36 +18,70 @@ class Games(commands.Cog):
         embed.set_image(url=game['image'])
         bgg_text = '[' + game['name'] + '](' + game['bgg'] + ')'
         embed.add_field(name='Read more at BGG', value=bgg_text, inline=False)
+
+        # App field
         if not game['app']:
             embed.add_field(name='App:', value='❌')
         else:
             link = game['app']
             embed.add_field(name='App:', value=link)
+
+        # Board Game Arena field
         if not game['bga']:
             embed.add_field(name='Board Game Arena:', value='❌')
         else:
             link = game['bga']
             embed.add_field(name='Board Game Arena:', value=link)
+
+        # Boîte à Jeux field
         if not game['boite']:
             embed.add_field(name='Boîte à Jeux :', value='❌')
         else:
             link = game['boite']
             embed.add_field(name='Boîte à Jeux :', value=link)
+
+        # Tabletopia field
         if not game['tabletopia']:
             embed.add_field(name='Tabletopia:', value='❌')
         else:
             link = game['tabletopia']
-            embed.add_field(name='Tabletopia:', value=link)
+            if len(link) > 1023:
+                all_links = link.split('\n')
+                value = ''
+                for text in all_links:
+                    if (len(value) + len(text)) > 1023:
+                        embed.add_field(name='Tabletopia:', value=value)
+                        value = ''
+                    else:
+                        value += text
+            else:
+                embed.add_field(name='Tabletopia:', value=link)
+
+        # Tabletop Simulator field
         if not game['tts']:
             embed.add_field(name='Tabletop Simulator:', value='❌')
         else:
             link = game['tts']
-            embed.add_field(name='Tabletop Simulator:', value=link)
+            if len(link) > 1023:
+                all_links = link.split('\n')
+                value = ''
+                for text in all_links:
+                    if (len(value) + len(text)) > 1023:
+                        embed.add_field(
+                            name='Tabletop Simulator:', value=value)
+                        value = ''
+                    else:
+                        value += text
+            else:
+                embed.add_field(name='Tabletop Simulator:', value=link)
+
+        # Yucata field
         if not game['yucata']:
             embed.add_field(name='Yucata:', value='❌')
         else:
             link = game['yucata']
             embed.add_field(name='Yucata:', value=link)
+
         return embed
 
     def have_game(self, game):
