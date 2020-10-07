@@ -70,8 +70,13 @@ class Games(commands.Cog):
         else:
             response = game + " not found in my database, standby whilst I search online..."
             await ctx.send(response)
-            response = self.format_embed(search_web_board_game_data(game))
-            await ctx.send(embed=response)
+            search_game = search_web_board_game_data(game)
+            if search_game:
+                response = self.format_embed(search_game)
+                await ctx.send(embed=response)
+            else:
+                response = game + " not found online."
+                await ctx.send(response)
 
 
 def setup(bot):

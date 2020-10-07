@@ -196,7 +196,8 @@ def search_web_board_game_data(game_name, debug=True):
         get_tabletopia_data(game, debug)
         get_tts_data(game, debug)
         get_yucata_data(game, debug)
-    game_data = game.return_game_data()
-    if debug:
-        print(f'GAME DATA FOUND:\n{game_data}')
-    return game_data
+        game_data = game.return_game_data()
+        if debug:
+            print(f'GAME DATA FOUND:\n{game_data}')
+        return game_data
+    return False
