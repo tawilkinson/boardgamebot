@@ -9,8 +9,13 @@ class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(dir_path, '../data/games.json')) as json_file:
-            self.db = json.load(json_file)
+        try:
+            with open(os.path.join(dir_path, '../data/games.json')) as json_file:
+                self.db = json.load(json_file)
+        except FileNotFoundError:
+            self.db = {}
+            print(
+                'games.json is empty, all results will need to use search functionality')
 
     def format_embed(self, game):
         embed = discord.Embed(
@@ -47,12 +52,16 @@ class Games(commands.Cog):
             link = game['tabletopia']
             if len(link) > 1023:
                 all_links = link.split('\n')
+                count = 1
                 value = ''
                 for text in all_links:
                     if (len(value) + len(text)) > 1023:
-                        embed.add_field(name='Tabletopia:', value=value)
+                        name = 'Tabletopia ' + count + ':'
+                        embed.add_field(name=name, value=value)
+                        count += 1
                         value = ''
                     else:
+                        value += '\n'
                         value += text
             else:
                 embed.add_field(name='Tabletopia:', value=link)
@@ -64,11 +73,13 @@ class Games(commands.Cog):
             link = game['tts']
             if len(link) > 1023:
                 all_links = link.split('\n')
+                count = 1
                 value = ''
                 for text in all_links:
                     if (len(value) + len(text)) > 1023:
-                        embed.add_field(
-                            name='Tabletop Simulator:', value=value)
+                        name = 'Tabletop Simulator ' + count + ':'
+                        embed.add_field(name=name, value=value)
+                        count += 1
                         value = ''
                     else:
                         value += text
