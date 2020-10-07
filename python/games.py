@@ -83,16 +83,18 @@ class Games(commands.Cog):
                 value = ''
                 for text in all_links:
                     name = 'Tabletopia ' + str(count) + ':'
-                    if (len(value) + len(text)) > 1023 or (len(value) + len(embed) > 5999):
+                    if (len(value) +
+                        len(text)) > 1023 or (len(value) +
+                                              len(embed) > 5999):
                         count += 1
                         if (len(value) + len(embed) > 5999):
-                            embed, embeds = self.embed_constrain(name, value,
-                                                                 embed, embeds, game)
+                            embed, embeds = self.embed_constrain(
+                                name, value, embed, embeds, game)
                         value = ''
                     else:
                         value += text
-                        embed, embeds = self.embed_constrain(name, value,
-                                                             embed, embeds, game)
+                        embed, embeds = self.embed_constrain(
+                            name, value, embed, embeds, game)
                         value += '\n'
             else:
                 embed.add_field(name='Tabletopia:', value=link)
@@ -108,9 +110,11 @@ class Games(commands.Cog):
                 value = ''
                 for text in all_links:
                     name = 'Tabletop Simulator ' + str(count) + ':'
-                    if (len(value) + len(text)) > 1023 or (len(value) + len(embed) > 5999):
-                        embed, embeds = self.embed_constrain(name, value,
-                                                             embed, embeds, game)
+                    if (len(value) +
+                        len(text)) > 1023 or (len(value) +
+                                              len(embed) > 5999):
+                        embed, embeds = self.embed_constrain(
+                            name, value, embed, embeds, game)
                         count += 1
                         value = ''
                     else:
