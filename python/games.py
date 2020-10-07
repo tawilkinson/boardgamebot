@@ -17,12 +17,32 @@ class Games(commands.Cog):
             print(
                 'games.json is empty, all results will need to use search functionality')
 
-    def format_embed(self, game):
+    def base_embed(self, game, cont=False):
+        if cont:
+            title = game['name'] + ' (continued)'
+            description = 'More game links below'
+        else:
+            title = game['name']
+            description = game['description']
+
         embed = discord.Embed(
-            title=game['name'], description=game['description'])
-        embed.set_image(url=game['image'])
-        bgg_text = '[' + game['name'] + '](' + game['bgg'] + ')'
-        embed.add_field(name='Read more at BGG', value=bgg_text, inline=False)
+            title=title, description=description)
+        embed.set_thumbnail(url=game['image'])
+        if not cont:
+            bgg_text = '[' + game['name'] + '](' + game['bgg'] + ')'
+            embed.add_field(name='Read more at BGG',
+                            value=bgg_text, inline=False)
+        return embed
+
+    def embed_constrain(self, name, value, embed, embeds, game):
+        embeds.append(embed)
+        embed = self.base_embed(game, True)
+        embed.add_field(name=name, value=value)
+        return embed, embeds
+
+    def format_embed(self, game):
+        embeds = []
+        embed = self.base_embed(game)
 
         # App field
         if not game['app']:
@@ -45,6 +65,13 @@ class Games(commands.Cog):
             link = game['boite']
             embed.add_field(name='Boîte à Jeux :', value=link)
 
+        # Yucata field
+        if not game['yucata']:
+            embed.add_field(name='Yucata:', value='❌')
+        else:
+            link = game['yucata']
+            embed.add_field(name='Yucata:', value=link)
+
         # Tabletopia field
         if not game['tabletopia']:
             embed.add_field(name='Tabletopia:', value='❌')
@@ -55,14 +82,18 @@ class Games(commands.Cog):
                 count = 1
                 value = ''
                 for text in all_links:
-                    if (len(value) + len(text)) > 1023:
-                        name = 'Tabletopia ' + count + ':'
-                        embed.add_field(name=name, value=value)
+                    name = 'Tabletopia ' + str(count) + ':'
+                    if (len(value) + len(text)) > 1023 or (len(value) + len(embed) > 5999):
                         count += 1
+                        if (len(value) + len(embed) > 5999):
+                            embed, embeds = self.embed_constrain(name, value,
+                                                                 embed, embeds, game)
                         value = ''
                     else:
-                        value += '\n'
                         value += text
+                        embed, embeds = self.embed_constrain(name, value,
+                                                             embed, embeds, game)
+                        value += '\n'
             else:
                 embed.add_field(name='Tabletopia:', value=link)
 
@@ -76,24 +107,23 @@ class Games(commands.Cog):
                 count = 1
                 value = ''
                 for text in all_links:
-                    if (len(value) + len(text)) > 1023:
-                        name = 'Tabletop Simulator ' + count + ':'
-                        embed.add_field(name=name, value=value)
+                    name = 'Tabletop Simulator ' + str(count) + ':'
+                    if (len(value) + len(text)) > 1023 or (len(value) + len(embed) > 5999):
+                        embed, embeds = self.embed_constrain(name, value,
+                                                             embed, embeds, game)
                         count += 1
                         value = ''
                     else:
                         value += text
+                        value += '\n'
+                embed, embeds = self.embed_constrain(name, value,
+                                                     embed, embeds, game)
             else:
                 embed.add_field(name='Tabletop Simulator:', value=link)
 
-        # Yucata field
-        if not game['yucata']:
-            embed.add_field(name='Yucata:', value='❌')
-        else:
-            link = game['yucata']
-            embed.add_field(name='Yucata:', value=link)
+        embeds.append(embed)
 
-        return embed
+        return embeds
 
     def have_game(self, game):
         for item in self.db['games']:
@@ -110,15 +140,17 @@ class Games(commands.Cog):
                       help='Print detailed info about a board game')
     async def game(self, ctx, game):
         if self.have_game(game):
-            response = self.format_embed(self.get_game(game))
-            await ctx.send(embed=response)
+            responses = self.format_embed(self.get_game(game))
+            for response in responses:
+                await ctx.send(embed=response)
         else:
             response = game + " not found in my database, standby whilst I search online..."
             await ctx.send(response)
             search_game = search_web_board_game_data(game)
             if search_game:
-                response = self.format_embed(search_game)
-                await ctx.send(embed=response)
+                responses = self.format_embed(search_game)
+                for response in responses:
+                    await ctx.send(embed=response)
             else:
                 response = game + " not found online."
                 await ctx.send(response)
