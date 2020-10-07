@@ -2,6 +2,7 @@ import discord
 import json
 import os
 from discord.ext import commands
+from online_game_search import search_web_board_game_data
 
 
 class Games(commands.Cog):
@@ -67,8 +68,15 @@ class Games(commands.Cog):
             response = self.format_embed(self.get_game(game))
             await ctx.send(embed=response)
         else:
-            response = game + " not in database"
+            response = game + " not found in my database, standby whilst I search online..."
             await ctx.send(response)
+            search_game = search_web_board_game_data(game)
+            if search_game:
+                response = self.format_embed(search_game)
+                await ctx.send(embed=response)
+            else:
+                response = game + " not found online."
+                await ctx.send(response)
 
 
 def setup(bot):
