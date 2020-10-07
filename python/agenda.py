@@ -18,6 +18,8 @@ class Agenda(commands.Cog):
             'body > div.view-container-border > div > div')
         events = []
         for event in agenda_events:
+            if 'Nothing currently scheduled' in event:
+                return False
             date = event.select_one('div.date').text
             event_classes = event.select('tr.event')
             event_data = {}
@@ -38,13 +40,18 @@ class Agenda(commands.Cog):
 
     def format_full_schedule(self, schedule):
         embed = discord.Embed(title='Board Game Festival Agenda')
-        for date in schedule:
-            name = date['date']
-            value = ''
+        if schedule:
+            for date in schedule:
+                name = date['date']
+                value = ''
 
-            for event in date['events']:
-                value += event['time'] + ' - ' + event['description'] + '\n'
-            embed.add_field(name=name, value=value, inline=True)
+                for event in date['events']:
+                    value += event['time'] + ' - ' + \
+                        event['description'] + '\n'
+                embed.add_field(name=name, value=value, inline=True)
+        else:
+            embed.add_field(name='Empty Schedule',
+                            value='_Nothing currently scheduled_')
         return embed
 
     @commands.command(
