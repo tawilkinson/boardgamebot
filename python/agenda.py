@@ -1,6 +1,8 @@
 import requests
 import discord
 import random
+import datetime
+from gcsa.google_calendar import GoogleCalendar
 from bs4 import BeautifulSoup
 from discord.ext import commands
 
@@ -8,46 +10,52 @@ from discord.ext import commands
 class Agenda(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.calendar = 'https://calendar.google.com/calendar/u/0/htmlembed?src=c5ilkhfkd424ddm47unrfuvd9c@group.calendar.google.com&amp;ctz=Europe/London&amp;mode=AGENDA&mode=AGENDA'
+        self.calendar = 'c5ilkhfkd424ddm47unrfuvd9c@group.calendar.google.com'
         self.sharable_calender = 'https://calendar.google.com/calendar/embed?src=c5ilkhfkd424ddm47unrfuvd9c%40group.calendar.google.com'
 
     def scrape_events_from_calender(self):
-        agenda_html = requests.get(self.calendar)
-        soup = BeautifulSoup(agenda_html.text, 'html.parser')
-        agenda_events = soup.select(
-            'body > div.view-container-border > div > div')
-        events = []
-        for event in agenda_events:
-            if 'Nothing currently scheduled' in event:
-                return False
-            date = event.select_one('div.date').text
-            event_classes = event.select('tr.event')
+        calendar = GoogleCalendar(self.calendar)
+
+        events = {}
+        for event in calendar:
+            date = event.start.date()
             event_data = {}
-            event_data['date'] = date
-            event_data['events'] = []
+            event_data['start'] = event.start.time()
+            event_data['start_str'] = datetime.date.strftime(
+                event.start, "%H:%M")
+            event_data['end'] = event.end.time()
+            event_data['end_str'] = datetime.date.strftime(
+                event.end, "%H:%M")
+            event_data['summary'] = event.summary
 
-            for event_class in event_classes:
-                time = event_class.select_one('td.event-time').text
-                description = event_class.select_one(
-                    'span.event-summary').text
-                data = {}
-                data['time'] = time
-                data['description'] = description
-                event_data['events'].append(data)
+            if date in events:
+                events[date].append(event_data)
+            else:
+                events[date] = [event_data]
 
-            events.append(event_data)
-        return events
+        if events:
+            return events
+        else:
+            return False
 
     def format_full_schedule(self, schedule):
         embed = discord.Embed(title='Board Game Festival Agenda')
         if schedule:
             for date in schedule:
-                name = date['date']
-                value = ''
+                name = datetime.date.strftime(date, "%A %d %B")
+                value = '```\n'
 
-                for event in date['events']:
-                    value += event['time'] + ' - ' + \
-                        event['description'] + '\n'
+                for event in schedule[date]:
+                    event_str = event['start_str'] + ' - ' + \
+                        event['end_str'] + ' || ' + \
+                        event['summary'] + '\n'
+                    if (len(value) + len(event_str)) > 1020:
+                        value += '```'
+                        embed.add_field(
+                            name=f'{name} (continued)', value=value, inline=True)
+                        value = '```\n'
+                    value += event_str
+                value += '```'
                 embed.add_field(name=name, value=value, inline=True)
         else:
             embed.add_field(name='Empty Schedule',
