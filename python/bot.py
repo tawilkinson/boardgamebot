@@ -31,21 +31,28 @@ async def on_message(message):
 
 
 @bot.command()
-async def load(extension_name: str):
-    '''Loads an extension.'''
+async def load(ctx, cog_name: str):
+    '''Loads a cog.'''
     try:
-        bot.load_extension(extension_name)
+        bot.load_extension(cog_name)
     except (AttributeError, ImportError) as e:
-        print('```py\n{}: {}\n```'.format(type(e).__name__, str(e)))
+        await ctx.send('```py\n{}: {}\n```'.format(type(e).__name__, str(e)))
         return
-    print('{} loaded.'.format(extension_name))
+    await ctx.send('{} loaded.'.format(cog_name))
 
 
 @bot.command()
-async def unload(extension_name: str):
-    '''Unloads an extension.'''
-    bot.unload_extension(extension_name)
-    await print('{} unloaded.'.format(extension_name))
+async def unload(ctx, cog_name: str):
+    '''Unloads a cog.'''
+    bot.unload_extension(cog_name)
+    await ctx.send('{} unloaded.'.format(cog_name))
+
+
+@bot.command()
+async def reload(ctx, cog_name: str):
+    '''Reloads a cog.'''
+    await unload(ctx, cog_name)
+    await load(ctx, cog_name)
 
 if __name__ == '__main__':
     for extension in startup_extensions:
