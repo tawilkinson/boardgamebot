@@ -30,6 +30,14 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send("No such command. Try using `m;help` to see valid commands.")
+    else:
+        await ctx.send(f"An error was raised, ask the bot devs:\n```{error}```")
+
+
 @bot.command()
 async def load(ctx, cog_name: str):
     '''Loads a cog.'''
