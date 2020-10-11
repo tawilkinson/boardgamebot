@@ -7,55 +7,55 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="theme", help="Generates a random board game theme")
+    @commands.command(name='theme', help='Generates a random board game theme')
     async def theme(self, ctx):
         style = [
-            "Eurogame",
-            "Card game",
-            "Roll & Write",
-            "Strategy game",
-            "Worker placement",
-            "Engine builder",
-            "4X",
-            "Deck builder",
-            "Abstract game",
-            "Dexterity game",
-            "Drafting game",
-            "Roll & move",
-            "Push-your-luck",
-            "Social deduction"]
+            'Eurogame',
+            'Card game',
+            'Roll & Write',
+            'Strategy game',
+            'Worker placement',
+            'Engine builder',
+            '4X',
+            'Deck builder',
+            'Abstract game',
+            'Dexterity game',
+            'Drafting game',
+            'Roll & move',
+            'Push-your-luck',
+            'Social deduction']
         component = [
-            "meeples",
-            "legacy mechanics",
-            "tableau",
-            "area control",
-            "hidden roles",
-            "deck building",
-            "rondels",
-            "storytelling",
-            "trick-taking",
-            "hand management",
-            "victory points",
-            "tile placement",
-            "drafting",
-            "custom dice"]
+            'meeples',
+            'legacy mechanics',
+            'tableau',
+            'area control',
+            'hidden roles',
+            'deck building',
+            'rondels',
+            'storytelling',
+            'trick-taking',
+            'hand management',
+            'victory points',
+            'tile placement',
+            'drafting',
+            'custom dice']
         setting = [
-            "Istanbul",
-            "Carcassonne",
-            "London",
-            "America",
-            "a sushi restaurant",
-            "Tokyo",
-            "Warsaw",
-            "a space ship",
-            "the bottom of the ocean",
-            "Birmingham",
-            "a factory",
-            "the world of Warhammer Fantasy Battles",
-            "Waterdeep"]
+            'Istanbul',
+            'Carcassonne',
+            'London',
+            'America',
+            'a sushi restaurant',
+            'Tokyo',
+            'Warsaw',
+            'a space ship',
+            'the bottom of the ocean',
+            'Birmingham',
+            'a factory',
+            'the world of Warhammer Fantasy Battles',
+            'Waterdeep']
 
         response = random.choice(
-            style) + " using " + random.choice(component) + " set in " + random.choice(setting)
+            style) + ' using ' + random.choice(component) + ' set in ' + random.choice(setting)
         await ctx.send(response)
 
 
