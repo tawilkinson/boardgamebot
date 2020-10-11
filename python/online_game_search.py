@@ -31,7 +31,8 @@ class Game:
         self.tabletopia = ''
         self.tabletopia_search_url = f'https://tabletopia.com/playground/playgroundsearch/search?timestamp={int(time.time() * 1000)}&query={self.search_name}'
         self.tts = False
-        self.tts_search_url = f'https://www.google.com/search?q="Tabletop Simulator"&q="{self.name}"&as_sitesearch=steamcommunity.com&adtest=off&num=1'
+        self.tts_dlc_url = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
+        self.tts_search_url = f'https://steamcommunity.com/workshop/browse/?appid=286160&searchtext={self.name}&browsesort=textsearch&section=readytouseitems&requiredtags%5B0%5D=Game&actualsort=textsearch&p=1'
         self.yucata = False
         self.yucata_search_url = 'https://www.yucata.de/en/'
 
@@ -137,6 +138,20 @@ def get_tabletopia_data(game, debug=False):
 def get_tts_data(game, debug=False):
     if debug:
         print(f'> Tabletop Simulator: {game.tts_search_url}')
+    tts_dlc_search = Webpage(game.tts_dlc_url).page_html
+    dlc_results = tts_dlc_search.find_all(
+        'div', {'class': 'search_name'})
+    dlc = ''
+    for result in dlc_results:
+        this_name = result.text.lstrip('\n').rstrip('\n ')
+        if game.name.lower() in this_name.lower():
+            url = result.parent.parent['href']
+            url = url.split('?snr=')[0]
+            dlc = f'[{this_name}]({url})'
+            dlc = (f"[ {game.name} on Tabletop Simulator]({url})\n")
+            if debug:
+                print(f'--> retrieved {game.name} Tabletop Simulator DLC data')
+            break
     tts_search = Webpage(game.tts_search_url).page_html
     search_results = tts_search.body.select('body a')
     for result in search_results:
@@ -149,9 +164,10 @@ def get_tts_data(game, debug=False):
                 '?').replace(
                 '%3D',
                 '=').split('&')[0]
-            game.set_tts_url(f"[ {game.name} on Tabletop Simulator]({url})")
+            game.set_tts_url(f"{dlc}[ {game.name} on Steam Workshop]({url})")
             if debug:
-                print(f'--> retrieved {game.name} Tabletop Simulator data')
+                print(
+                    f'--> retrieved {game.name} Tabletop Simulator Steam Workshop data')
             break
 
 

@@ -130,12 +130,21 @@ class Games(commands.Cog):
         return embeds
 
     def have_game(self, game):
-        for item in self.db['games']:
-            if game.lower() in item['name'].lower():
-                return True
+        try:
+            for item in self.db['games']:
+                if game.lower() in item['name'].lower():
+                    return True
+        except KeyError:
+            # Don't crash on an empty db
+            return False
         return False
 
     def get_game(self, game):
+        # Get an exact match
+        for item in self.db['games']:
+            if game.lower() == item['name'].lower():
+                return item
+        # Failing that, return an approximate match
         for item in self.db['games']:
             if game.lower() in item['name'].lower():
                 return item
