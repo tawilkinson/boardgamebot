@@ -3,7 +3,7 @@ import random
 from discord.ext import commands
 
 
-class Theme(commands.Cog):
+class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -60,4 +60,4 @@ class Theme(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Theme(bot))
+    bot.add_cog(Fun(bot))
