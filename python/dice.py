@@ -11,45 +11,51 @@ class Die():
         self.dice_regex += r'(?P<minus>-)?(?P<mod>\d{1,2})|$)'
         self.parser = re.compile(self.dice_regex)
         self.match = self.parser.search(die_text)
-        try:
-            self.count = int(self.match.group('count'))
-        except TypeError:
-            self.count = False
-        try:
-            self.sides = int(self.match.group('sides'))
-        except TypeError:
-            self.sides = False
-        if self.match.group('explode') == '!':
-            self.explode = True
-        else:
-            self.explode = False
-        self.keep = self.match.group('keep')
-        try:
-            self.keep_count = int(self.match.group('keepCount'))
-        except TypeError:
-            self.keep_count = False
-        if self.match.group('plus') == '+':
-            self.plus = True
-        else:
-            self.plus = False
-        if self.match.group('minus') == '-':
-            self.minus = True
-        else:
-            self.minus = False
-        try:
-            self.mod = int(self.match.group('mod'))
-        except TypeError:
-            self.mod = False
         self.rolls = []
         self.die_str = ''
         self.short_str = ''
+        self.exploded = False
         self.total = 0
-        self.roll()
+        try:
+            try:
+                self.count = int(self.match.group('count'))
+            except TypeError:
+                self.count = False
+            try:
+                self.sides = int(self.match.group('sides'))
+            except TypeError:
+                self.sides = False
+            if self.match.group('explode') == '!':
+                self.explode = True
+            else:
+                self.explode = False
+            self.keep = self.match.group('keep')
+            try:
+                self.keep_count = int(self.match.group('keepCount'))
+            except TypeError:
+                self.keep_count = False
+            if self.match.group('plus') == '+':
+                self.plus = True
+            else:
+                self.plus = False
+            if self.match.group('minus') == '-':
+                self.minus = True
+            else:
+                self.minus = False
+            try:
+                self.mod = int(self.match.group('mod'))
+            except TypeError:
+                self.mod = False
+            self.roll()
+        except AttributeError:
+            self.die_str = '**! Incorrect syntax !**\n'
+            self.short_str = self.die_str
 
     def roll_core(self):
         if self.sides > 0:
             result = random.randint(1, self.sides)
             if self.explode and result == self.sides:
+                self.exploded = True
                 self.rolls.append(result)
                 self.roll_core()
             else:
@@ -59,15 +65,16 @@ class Die():
 
     def discard(self):
         counter = 0
-        if self.keep == 'k':
-            self.rolls = sorted(self.rolls, reverse=True)
-        elif self.keep == 'kl':
+        print(self.keep)
+        if 'kl' in self.keep:
             self.rolls = sorted(self.rolls)
+        elif 'k' in self.keep:
+            self.rolls = sorted(self.rolls, reverse=True)
         if self.keep:
-            for value in self.rolls:
+            for idx, value in enumerate(self.rolls):
                 counter += 1
-                if counter >= self.keep_count:
-                    value = '~~' + value + '~~'
+                if counter > self.keep_count:
+                    self.rolls[idx] = '~~' + str(value) + '~~'
                 else:
                     self.total += value
         else:
@@ -83,8 +90,6 @@ class Die():
             self.roll_core()
         self.discard()
 
-        print(self.rolls)
-
         if len(self.rolls) > 1:
             self.die_str = '_'
             self.die_str += ' + '.join(str(roll) for roll in self.rolls) + '_'
@@ -99,12 +104,27 @@ class Die():
                 self.total -= self.mod
                 self.die_str += f' _- {self.mod}_'
 
-        self.die_str += f'**{self.total}**\n'
-        self.short_str += f'**{self.total}**\n'
+        self.die_str += f'**{self.total}**'
+        self.short_str += f'**{self.total}**'
+
+        if 'kl' in self.keep:
+            self.die_str = '👎 ' + self.die_str + ' 👎'
+            self.short_str = '👎 ' + self.short_str + ' 👎'
+        elif 'k' in self.keep:
+            self.die_str = '👍 ' + self.die_str + ' 👍'
+            self.short_str = '👍 ' + self.short_str + ' 👍'
+
+        if self.exploded:
+            self.die_str = '💥 ' + self.die_str + ' 💥'
+            self.short_str = '💥 ' + self.short_str + ' 💥'
+
+        self.die_str += '\n'
+        self.short_str += '\n'
 
     def reroll(self):
         self.die_str = ''
         self.total = 0
+        self.exploded = False
         self.roll()
 
     def get_str(self):
@@ -127,6 +147,7 @@ class Roller():
         for roll in self.all_rolls:
             die = Die(roll)
             if len(self.all_rolls) > 1:
+                # 1999 - 12 for 'You Rolled:'
                 if (die.get_len() + len(roll)) > 1987:
                     responses.append(f'`{roll}` = ' + die.get_short_str())
                 else:
