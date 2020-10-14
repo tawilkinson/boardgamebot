@@ -196,7 +196,9 @@ class Dice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @ commands.command(name='roll', help='Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.')
+    @ commands.command(
+        name='roll',
+        help='Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.')
     async def theme(self, ctx, roll_text):
         roller = Roller(roll_text)
         responses = roller.roll()
