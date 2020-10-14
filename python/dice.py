@@ -55,31 +55,57 @@ class Die():
         if self.sides > 0:
             result = random.randint(1, self.sides)
             if self.explode and result == self.sides:
-                self.exploded = True
-                self.rolls.append(result)
-                self.roll_core()
+                self.rolls.append(self.roll_explodes(result))
             else:
-                self.rolls.append(result)
+                self.rolls.append([result, str(result)])
         else:
-            self.rolls[0] = '0'
+            self.rolls[0] = [0, '0']
+
+    def roll_explodes(self, first_result):
+        self.exploded = True
+        result = first_result
+        explode_str = '['
+        roll = first_result
+        explode_str += str(first_result)
+        while result == first_result:
+            result = random.randint(1, first_result)
+            roll += result
+            explode_str += ' + ' + str(first_result)
+        explode_str += ']'
+
+        return [roll, explode_str]
 
     def discard(self):
         counter = 0
-        print(self.keep)
-        if 'kl' in self.keep:
-            self.rolls = sorted(self.rolls)
-        elif 'k' in self.keep:
-            self.rolls = sorted(self.rolls, reverse=True)
         if self.keep:
+            if 'kl' in self.keep:
+                self.rolls = sorted(self.rolls)
+            elif 'k' in self.keep:
+                self.rolls = sorted(self.rolls, reverse=True)
             for idx, value in enumerate(self.rolls):
                 counter += 1
                 if counter > self.keep_count:
-                    self.rolls[idx] = '~~' + str(value) + '~~'
+                    self.rolls[idx][1] = '~~' + value[1] + '~~'
                 else:
-                    self.total += value
+                    self.total += value[0]
         else:
             for result in self.rolls:
-                self.total += result
+                self.total += result[0]
+
+    def generate_die_str(self, short=False):
+        str_text = ''
+        if short:
+            str_text += self.rolls[0][1]
+            str_text += ' + ... + '
+            str_text += self.rolls[-1][1]
+
+        else:
+            for idx, roll in enumerate(self.rolls):
+                str_text += roll[1]
+                if idx < len(self.rolls):
+                    str_text += ' + '
+
+        return str_text
 
     def roll(self):
         print(f'self.count: {self.count}')
@@ -92,27 +118,33 @@ class Die():
 
         if len(self.rolls) > 1:
             self.die_str = '_'
-            self.die_str += ' + '.join(str(roll) for roll in self.rolls) + '_'
-            self.die_str += ' = '
-            self.short_str += f'_{self.rolls[0]} + ... + {self.rolls[-1]}_ = '
+            self.die_str += self.generate_die_str()
+            self.die_str += '_ = '
+            self.short_str += '_' + self.generate_die_str(True) + '_ = '
+        else:
+            self.die_str = self.rolls[0][1]
+            self.short_str = self.rolls[0][1]
 
         if self.mod:
             if self.plus:
                 self.total += self.mod
-                self.die_str += f' _+ {self.mod}_'
+                self.die_str += f' + {self.mod}'
             if self.minus:
                 self.total -= self.mod
-                self.die_str += f' _- {self.mod}_'
+                self.die_str += f' - {self.mod}'
+            if len(self.rolls) == 1:
+                self.die_str += ' = '
 
         self.die_str += f'**{self.total}**'
         self.short_str += f'**{self.total}**'
 
-        if 'kl' in self.keep:
-            self.die_str = '👎 ' + self.die_str + ' 👎'
-            self.short_str = '👎 ' + self.short_str + ' 👎'
-        elif 'k' in self.keep:
-            self.die_str = '👍 ' + self.die_str + ' 👍'
-            self.short_str = '👍 ' + self.short_str + ' 👍'
+        if self.keep:
+            if 'kl' in self.keep:
+                self.die_str = '👎 ' + self.die_str + ' 👎'
+                self.short_str = '👎 ' + self.short_str + ' 👎'
+            elif 'k' in self.keep:
+                self.die_str = '👍 ' + self.die_str + ' 👍'
+                self.short_str = '👍 ' + self.short_str + ' 👍'
 
         if self.exploded:
             self.die_str = '💥 ' + self.die_str + ' 💥'
