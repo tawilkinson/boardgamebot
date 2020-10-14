@@ -120,11 +120,11 @@ class Die():
             self.die_str += self.generate_die_str()
             self.die_str += '_ = '
             self.short_str += '_' + self.generate_die_str(True) + '_ = '
-        else:
-            self.die_str = self.rolls[0][1]
-            self.short_str = self.rolls[0][1]
 
         if self.mod:
+            if len(self.rolls) == 1:
+                self.die_str = self.rolls[0][1]
+                self.short_str = self.rolls[0][1]
             if self.plus:
                 self.total += self.mod
                 self.die_str += f' + {self.mod}'
