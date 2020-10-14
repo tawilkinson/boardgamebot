@@ -23,7 +23,7 @@ class Die():
                 self.count = False
             try:
                 self.sides = int(self.match.group('sides'))
-            except TypeError:
+            except (TypeError, IndexError):
                 self.sides = False
             if self.match.group('explode') == '!':
                 self.explode = True
@@ -59,7 +59,7 @@ class Die():
             else:
                 self.rolls.append([result, str(result)])
         else:
-            self.rolls[0] = [0, '0']
+            self.rolls.append([0, '0'])
 
     def roll_explodes(self, first_result):
         self.exploded = True
@@ -108,7 +108,6 @@ class Die():
         return str_text
 
     def roll(self):
-        print(f'self.count: {self.count}')
         if self.count:
             for num in range(self.count):
                 self.roll_core()
