@@ -62,15 +62,15 @@ class Agenda(commands.Cog):
                     value += event_str
                 value += '```'
                 embed.add_field(name=name, value=value, inline=True)
+            embeds.append(embed)
         else:
             embed.add_field(name='Empty Schedule',
                             value='_Nothing currently scheduled_')
             embeds.append(embed)
         return embeds
 
-    @commands.command(
-        name='cal',
-        help='Opens a webpage to show the boardgame weekend calender of events!')
+    @commands.command(name='cal',
+                      help='Opens a webpage to show the boardgame weekend calender of events!')
     async def cal(self, ctx):
         await ctx.send(f'Board Game Festival schedule of events is available online here: {self.sharable_calender}')
 
