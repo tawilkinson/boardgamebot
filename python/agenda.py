@@ -39,6 +39,7 @@ class Agenda(commands.Cog):
             return False
 
     def format_full_schedule(self, schedule):
+        embeds = []
         embed = discord.Embed(title='Board Game Festival Agenda')
         if schedule:
             for date in schedule:
@@ -49,7 +50,11 @@ class Agenda(commands.Cog):
                     event_str = event['start_str'] + ' - ' + \
                         event['end_str'] + ' || ' + \
                         event['summary'] + '\n'
-                    if (len(value) + len(event_str)) > 1020:
+                    if (len(embed) + len(event_str)) > 5999:
+                        embeds.append(embed)
+                        embed = discord.Embed(
+                            title='Board Game Festival Agenda (continued)')
+                    elif (len(value) + len(event_str)) > 1020:
                         value += '```'
                         embed.add_field(
                             name=f'{name} (continued)', value=value, inline=True)
@@ -60,7 +65,8 @@ class Agenda(commands.Cog):
         else:
             embed.add_field(name='Empty Schedule',
                             value='_Nothing currently scheduled_')
-        return embed
+            embeds.append(embed)
+        return embeds
 
     @commands.command(
         name='cal',
@@ -72,8 +78,9 @@ class Agenda(commands.Cog):
                       help='Prints the upcoming schedule for the weekend')
     async def agenda(self, ctx):
         schedule = self.scrape_events_from_calender()
-        response = self.format_full_schedule(schedule)
-        await ctx.send(embed=response)
+        responses = self.format_full_schedule(schedule)
+        for response in responses:
+            await ctx.send(embed=response)
 
 
 def setup(bot):
