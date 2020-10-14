@@ -39,6 +39,7 @@ async def on_command_error(ctx, error):
 
 
 @bot.command()
+@commands.has_role('mod')
 async def load(ctx, cog_name: str):
     '''Loads a cog.'''
     try:
@@ -46,17 +47,25 @@ async def load(ctx, cog_name: str):
     except (AttributeError, ImportError) as e:
         await ctx.send('```py\n{}: {}\n```'.format(type(e).__name__, str(e)))
         return
+    except discord.ext.commands.ExtensionAlreadyLoaded:
+        await ctx.send('{} already loaded.'.format(cog_name))
+        return
     await ctx.send('{} loaded.'.format(cog_name))
 
 
 @bot.command()
+@commands.has_role('mod')
 async def unload(ctx, cog_name: str):
     '''Unloads a cog.'''
-    bot.unload_extension(cog_name)
-    await ctx.send('{} unloaded.'.format(cog_name))
+    try:
+        bot.unload_extension(cog_name)
+        await ctx.send('{} unloaded.'.format(cog_name))
+    except discord.ext.commands.ExtensionNotLoaded:
+        await ctx.send('{} not loaded.'.format(cog_name))
 
 
 @bot.command()
+@commands.has_role('mod')
 async def reload(ctx, cog_name: str):
     '''Reloads a cog.'''
     await unload(ctx, cog_name)
