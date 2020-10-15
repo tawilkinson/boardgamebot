@@ -21,11 +21,17 @@ class Agenda(commands.Cog):
             date = event.start.date()
             event_data = {}
             event_data['start'] = event.start.time()
-            event_data['start_str'] = datetime.date.strftime(
-                event.start, "%H:%M")
+            if isinstance(event.start, datetime):
+                event_data['start_str'] = datetime.date.strftime(
+                    event.start, "%H:%M")
+            else:
+                event_data['start_str'] = "All day event"
             event_data['end'] = event.end.time()
-            event_data['end_str'] = datetime.date.strftime(
-                event.end, "%H:%M")
+            if isinstance(event.end, datetime):
+                event_data['end_str'] = datetime.date.strftime(
+                    event.end, "%H:%M")
+            else:
+                event_data['end_str'] = ""
             event_data['summary'] = event.summary
 
             if date in events:
