@@ -135,7 +135,7 @@ def get_non_exact_bgg_data(game, debug=False):
         possible_board_games = [game_search.find('name').get('value') for game_search in board_game_search]
         if debug:
             print(f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
-        closest_match = difflib.get_close_matches(game.name, possible_board_games, 1)[0]
+        closest_match = difflib.get_close_matches(game.name, possible_board_games, 1, 0)[0]
         if debug:
             print(f'--> {closest_match} is closest match')
         return closest_match
