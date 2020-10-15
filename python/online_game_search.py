@@ -3,6 +3,7 @@ import json
 import html
 import requests
 import time
+import difflib
 from bs4 import BeautifulSoup
 
 
@@ -11,7 +12,6 @@ class Webpage(BeautifulSoup):
         self.response = requests.get(url)
         self.page_response = self.response
         self.page_html = BeautifulSoup(self.response.text, 'lxml')
-
 
 class Game:
     def __init__(self, name):
@@ -24,6 +24,7 @@ class Game:
         self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_alpha_num}'
         self.bgg = ''
         self.bgg_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
+        self.bgg_non_exact_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&type=boardgame'
         self.boite = False
         self.boite_search_url = 'http://www.boiteajeux.net/index.php?p=regles'
         self.description = False
@@ -101,6 +102,7 @@ def get_bgg_data(game, debug=False):
         if debug:
             print(f'> !!! {game.name} not found on Board Game Geek !!!')
         return False
+
     else:
         id = bgg_search.page_html.items.item['id']
         bbg_url = game.get_set_bgg_url(id)
@@ -115,6 +117,28 @@ def get_bgg_data(game, debug=False):
             print(f'--> retrieved {game.name} Board Game Geek data')
         return True
 
+def get_non_exact_bgg_data(game, debug=False):
+    if debug:
+        print(f'> Board Game Geek: {game.bgg_non_exact_search_url}')
+    bgg_search = Webpage(game.bgg_non_exact_search_url)
+    games_found = bgg_search.page_html.items['total']
+
+    if games_found == '0':
+        game.set_description(
+            'Game not found on Board Game Geek! Is it even a board game?')
+        if debug:
+            print(f'> !!! No potential matches for {game.name} found on Board Game Geek !!!')
+        return False
+
+    else:
+        board_game_search = bgg_search.page_html.items.findAll('item')
+        possible_board_games = [game_search.find('name').get('value') for game_search in board_game_search]
+        if debug:
+            print(f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
+        closest_match = difflib.get_close_matches(game.name, possible_board_games, 1)[0]
+        if debug:
+            print(f'--> {closest_match} is closest match')
+        return closest_match
 
 def get_tabletopia_data(game, debug=False):
     if debug:
@@ -206,6 +230,10 @@ def search_web_board_game_data(game_name, debug=True):
     if debug:
         print(f'SEARCHING WEB FOR GAME DATA: {game.name}')
     game_on_bgg = get_bgg_data(game, debug)
+    if not game_on_bgg:
+        possible_game = get_non_exact_bgg_data(game, debug)
+        if possible_game:
+            return search_web_board_game_data(possible_game)
     if game_on_bgg:
         get_bga_data(game, debug)
         get_boite_a_jeux_data(game, debug)
