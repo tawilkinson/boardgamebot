@@ -13,6 +13,7 @@ class Webpage(BeautifulSoup):
         self.page_response = self.response
         self.page_html = BeautifulSoup(self.response.text, 'lxml')
 
+
 class Game:
     def __init__(self, name):
         self.name = name.title()
@@ -117,6 +118,7 @@ def get_bgg_data(game, debug=False):
             print(f'--> retrieved {game.name} Board Game Geek data')
         return True
 
+
 def get_non_exact_bgg_data(game, debug=False):
     if debug:
         print(f'> Board Game Geek: {game.bgg_non_exact_search_url}')
@@ -127,18 +129,23 @@ def get_non_exact_bgg_data(game, debug=False):
         game.set_description(
             'Game not found on Board Game Geek! Is it even a board game?')
         if debug:
-            print(f'> !!! No potential matches for {game.name} found on Board Game Geek !!!')
+            print(
+                f'> !!! No potential matches for {game.name} found on Board Game Geek !!!')
         return False
 
     else:
         board_game_search = bgg_search.page_html.items.findAll('item')
-        possible_board_games = [game_search.find('name').get('value') for game_search in board_game_search]
+        possible_board_games = [game_search.find('name').get(
+            'value') for game_search in board_game_search]
         if debug:
-            print(f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
-        closest_match = difflib.get_close_matches(game.name, possible_board_games, 1, 0)[0]
+            print(
+                f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
+        closest_match = difflib.get_close_matches(
+            game.name, possible_board_games, 1, 0)[0]
         if debug:
             print(f'--> {closest_match} is closest match')
         return closest_match
+
 
 def get_tabletopia_data(game, debug=False):
     if debug:
