@@ -18,20 +18,27 @@ class Agenda(commands.Cog):
 
         events = {}
         for event in calendar:
-            date = event.start.date()
-            event_data = {}
-            event_data['start'] = event.start.time()
-            if isinstance(event.start, datetime):
-                event_data['start_str'] = datetime.date.strftime(
-                    event.start, "%H:%M")
+            if isinstance(event.start, datetime.datetime):
+                date = event.start.date()
             else:
-                event_data['start_str'] = "All day event"
-            event_data['end'] = event.end.time()
-            if isinstance(event.end, datetime):
+                date = event.start
+            event_data = {}
+
+            if isinstance(event.start, datetime.datetime):
+                event_data['start'] = event.start.time()
+                event_data['start_str'] = datetime.date.strftime(
+                    event.start, '%H:%M')
+            else:
+                event_data['start'] = ''
+                event_data['start_str'] = 'All day event'
+
+            if isinstance(event.end, datetime.datetime):
+                event_data['end'] = event.end.time()
                 event_data['end_str'] = datetime.date.strftime(
                     event.end, "%H:%M")
             else:
-                event_data['end_str'] = ""
+                event_data['end'] = ''
+                event_data['end_str'] = ''
             event_data['summary'] = event.summary
 
             if date in events:
@@ -49,13 +56,17 @@ class Agenda(commands.Cog):
         embed = discord.Embed(title='Board Game Festival Agenda')
         if schedule:
             for date in schedule:
-                name = datetime.date.strftime(date, "%A %d %B")
+                name = datetime.date.strftime(date, '%A %d %B')
                 value = '```\n'
 
                 for event in schedule[date]:
-                    event_str = event['start_str'] + ' - ' + \
-                        event['end_str'] + ' || ' + \
-                        event['summary'] + '\n'
+                    if event['start_str'] == 'All day event':
+                        event_str = event['start_str'] + ' || ' + \
+                            event['summary'] + '\n'
+                    else:
+                        event_str = event['start_str'] + ' - ' + \
+                            event['end_str'] + ' || ' + \
+                            event['summary'] + '\n'
                     if (len(embed) + len(event_str)) > 5999:
                         embeds.append(embed)
                         embed = discord.Embed(
