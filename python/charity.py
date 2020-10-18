@@ -18,7 +18,8 @@ class Charity(commands.Cog):
         embed = discord.Embed(
             title=title, description=description)
         embed.add_field(
-            name='Donate Now', value='[Board Game Fest on Just Giving](https://www.justgiving.com/fundraising/wilkosboardgamefest)')
+            name='Donate Now',
+            value='[Board Game Fest on Just Giving](https://www.justgiving.com/fundraising/wilkosboardgamefest)')
         embed.set_thumbnail(
             url='https://www.dementiauk.org/wp-content/uploads/2020/07/RYG-hero-image.png')
         await ctx.send(embed=embed)
@@ -43,7 +44,8 @@ class Charity(commands.Cog):
         embed.add_field(
             name='Learn More at Dementia UK', value=value)
         embed.add_field(
-            name='Donate Now', value='[Board Game Fest on Just Giving](https://www.justgiving.com/fundraising/wilkosboardgamefest)')
+            name='Donate Now',
+            value='[Board Game Fest on Just Giving](https://www.justgiving.com/fundraising/wilkosboardgamefest)')
         embed.set_thumbnail(
             url='https://www.dementiauk.org/wp-content/uploads/2020/07/Raise-your-Game-virtual-event-graphic-square.png')
         await ctx.send(embed=embed)
