@@ -11,6 +11,7 @@ class Webpage(BeautifulSoup):
     """
     Creates a BeautifulSoup object of a webpages's HTML.
     """
+
     def __init__(self, url):
         self.response = requests.get(url)
         self.page_response = self.response
@@ -24,6 +25,7 @@ class Game:
     Class methods exist to update the Game the attribuites that are initialised as 'False' with data.
     Class method `return_game_data` formats the Game data as a dictionary.
     """
+
     def __init__(self, name):
         self.name = name.title()
         self.search_name = self.name.lower().replace(' ', '%20')
@@ -102,7 +104,8 @@ def get_boite_a_jeux_data(game, debug=False):
             rules_elem = res.select_one('a', text='Rules')
             rules_href = rules_elem.get('href')
             game_boite_url = f'http://www.boiteajeux.net/{rules_href}'
-            game.set_boite_url(f'[{game.name} on Boite a Jeux]({game_boite_url}')
+            game.set_boite_url(
+                f'[{game.name} on Boite a Jeux]({game_boite_url}')
 
 
 def get_bgg_data(game, debug=False):
