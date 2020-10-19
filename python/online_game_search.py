@@ -107,13 +107,21 @@ def get_bgg_data(game, debug=False):
     else:
         id = bgg_search.page_html.items.item['id']
         bbg_url = game.get_set_bgg_url(id)
+        if debug:
+            print(f'> {game.name} on BGG: {bbg_url}')
         bgg_page = Webpage(bbg_url)
-        game_description = html.unescape(
-            bgg_page.page_html.items.description.text)
-        abridged_game_description = f'{game_description[0:300]} ...'
-        game.set_description(abridged_game_description)
-        game_image = bgg_page.page_html.items.image.text
-        game.set_image(game_image)
+        if bgg_page.page_html.items.description:
+            game_description = html.unescape(
+                bgg_page.page_html.items.description.text)
+            abridged_game_description = f'{game_description[0:300]} ...'
+            game.set_description(abridged_game_description)
+            if debug:
+                print(f'--> retrieved {game.name} description')
+        if bgg_page.page_html.items.image:
+            game_image = bgg_page.page_html.items.image.text
+            game.set_image(game_image)
+            if debug:
+                print(f'--> retrieved {game.name} image')
         if debug:
             print(f'--> retrieved {game.name} Board Game Geek data')
         return True
