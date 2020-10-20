@@ -156,7 +156,11 @@ class Games(commands.Cog):
         if game is None:
             response = f'Please enter a game to search: `m;game <game_name>`. '
             response += f'Use quotes if there is a space in the name. '
-            response += f'\nNumber of games in database: **{len(self.db) - 1}**'
+            try:
+                count = len(self.db['games'])
+                response += f'\nNumber of games in database: **{count}**'
+            except KeyError:
+                response += f'\nNumber of games in database: **Empty Database**'
             await ctx.send(response)
             return
         if self.have_game(game):
