@@ -23,7 +23,7 @@ class Games(commands.Cog):
             description = 'More game links below'
         else:
             title = game['name']
-            description = game['description']
+            description = game['description'][:2047]
 
         embed = discord.Embed(
             title=title, description=description)
