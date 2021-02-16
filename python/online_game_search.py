@@ -45,7 +45,7 @@ class Game:
         self.tabletopia_search_url = f'https://tabletopia.com/playground/playgroundsearch/search?timestamp={int(time.time() * 1000)}&query={self.search_name}'
         self.tts = False
         self.tts_dlc_url = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
-        self.tts_search_url = f'https://steamcommunity.com/workshop/browse/?appid=286160&searchtext={self.name}&browsesort=textsearch&section=readytouseitems&requiredtags%5B0%5D=Game&actualsort=textsearch&p=1'
+        self.tts_search_url = f'https://steamcommunity.com/workshop/browse/?appid=286160&searchtext="{self.name}"&browsesort=textsearch&section=readytouseitems&requiredtags%5B0%5D=Game&actualsort=textsearch&p=1'
         self.yucata = False
         self.yucata_search_url = 'https://www.yucata.de/en/'
 
