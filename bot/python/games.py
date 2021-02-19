@@ -8,14 +8,6 @@ from online_game_search import search_web_board_game_data
 class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        try:
-            with open(os.path.join(dir_path, '../data/games.json')) as json_file:
-                self.db = json.load(json_file)
-        except FileNotFoundError:
-            self.db = {}
-            print(
-                'games.json is empty, all results will need to use search functionality')
 
     def base_embed(self, game, cont=False):
         if cont:
@@ -129,46 +121,17 @@ class Games(commands.Cog):
 
         return embeds
 
-    def have_game(self, game):
-        try:
-            for item in self.db['games']:
-                if game.lower() in item['name'].lower():
-                    return True
-        except KeyError:
-            # Don't crash on an empty db
-            return False
-        return False
-
-    def get_game(self, game):
-        # Get an exact match
-        for item in self.db['games']:
-            if game.lower() == item['name'].lower():
-                return item
-        # Failing that, return an approximate match
-        for item in self.db['games']:
-            if game.lower() in item['name'].lower():
-                return item
-
     @commands.command(name='game',
                       help='Print detailed info about a board game. \
                           Use quotes if there is a space in the name')
     async def game(self, ctx, game=None):
         if game is None:
-            response = f'Please enter a game to search: `m;game <game_name>`. '
+            response = f'Please enter a game to search: `bg game <game_name>`. '
             response += f'Use quotes if there is a space in the name. '
-            try:
-                count = len(self.db['games'])
-                response += f'\nNumber of games in database: **{count}**'
-            except KeyError:
-                response += f'\nNumber of games in database: **Empty Database**'
             await ctx.send(response)
             return
-        if self.have_game(game):
-            responses = self.format_embed(self.get_game(game))
-            for response in responses:
-                await ctx.send(embed=response)
         else:
-            response = game + ' not found in my database, standby whilst I search online...'
+            response = 'Searching for ' + game + ', standby whilst I search online...'
             await ctx.send(response)
             search_game = search_web_board_game_data(game)
             if search_game:
