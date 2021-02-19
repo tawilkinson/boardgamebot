@@ -1,6 +1,13 @@
-# Meeple Bot
+# Board Game Bot
 
-Build for Board Game Fest 2020 [~~Cursed~~ Online Edition]
+A Discord bot to fetch board game data and a list of places you can play them online.
+
+Supported websites/services:
+- [Board Game Arena](https://boardgamearena.com/)
+- [Boite a Jeux](http://www.boiteajeux.net/)
+- [Tabletopia](https://tabletopia.com/)
+- [Tabletop Simulator](https://store.steampowered.com/app/286160/Tabletop_Simulator/)
+- [Yucata.de](https://www.yucata.de/en)
 
 # Quick-Start Guide
 
@@ -32,22 +39,12 @@ This guide assumes the following:
   - Read `requirements.txt` if you need to check what they are
 4. Run `python bot.py` and check to see your bot comes online in Discord!
 
-## Google Calendar API Credentials
-
-_You will need a Google Account_
-
-1. Click `Enable the Google Calendar API` on [this page](https://developers.google.com/calendar/quickstart/python)
-2. Follow the instructions
-3. Download the `credentials.json` file
-4. Move the file to `~/.credentials/credentials.json` for the user who will run `bot.py`
-
 # Feature List
 
 All commands are called using `m;<command>` in a Discord channel. `m;help` will list all currently loaded commands.
 
-- Agenda:
-  - `agenda`: Prints the upcoming schedule for the weekend.
-  - `cal`: Opens a webpage to show the boardgame weekend calender of events!
+- Dice: simple dice roller
+  - `roll`: Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.
 - Fun: a selection of fun bot commands
   - `theme`: generates a random board game theme.
 - Games:
