@@ -11,7 +11,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 # this specifies what extensions to load when the bot starts up
 startup_extensions = ['fun', 'games', 'dice']
 
-bot = commands.Bot(command_prefix='m;')
+bot = commands.Bot(command_prefix='bg')
 
 
 @bot.event
