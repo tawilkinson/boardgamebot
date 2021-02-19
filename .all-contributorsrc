@@ -6,10 +6,28 @@
   "commit": false,
   "contributors": [
     {
+      "login": "tawilkinson",
+      "name": "Tom Wilkinson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3664960?v=4",
+      "profile": "https://tawilkinson.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {      
       "login": "sonmi451",
       "name": "sonmi451",
       "avatar_url": "https://avatars.githubusercontent.com/u/13386970?v=4",
       "profile": "http://aishamclean.co.uk",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+    "login": "ElectricWarr",
+      "name": "Michael Warr",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10360900?v=4",
+      "profile": "https://github.com/ElectricWarr",
       "contributions": [
         "code"
       ]

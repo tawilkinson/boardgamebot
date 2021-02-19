@@ -15,4 +15,3 @@ soupsieve==2.0.1
 urllib3==1.25.10
 yarl==1.6.0
 lxml==4.6.2
-gcsa==0.4.0
