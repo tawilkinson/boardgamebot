@@ -6,7 +6,16 @@
   "commit": false,
   "contributors": [
     {
-      "login": "ElectricWarr",
+      "login": "tawilkinson",
+      "name": "Tom Wilkinson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3664960?v=4",
+      "profile": "https://tawilkinson.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+    "login": "ElectricWarr",
       "name": "Michael Warr",
       "avatar_url": "https://avatars.githubusercontent.com/u/10360900?v=4",
       "profile": "https://github.com/ElectricWarr",
