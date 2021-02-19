@@ -14,6 +14,26 @@ Supported websites/services:
 
 You can [add my version of the bot](https://discord.com/api/oauth2/authorize?client_id=812455891692552202&permissions=117760&scope=bot)
 
+The main feature of the bot is to search Board Game Geek for information on a board game and then try to find online versions of the game to play as showcased below:
+
+![The bot's response to the command `bg game Carcassonne` which shows detials of the game and links to multiple online versions of the game](carcassonne.png)
+
+# Feature List
+
+All commands are called using `bg <command>` in a Discord channel. `bg help` will list all currently loaded commands.
+
+- Dice: simple dice roller
+  - `roll`: Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.
+- Fun: a selection of fun bot commands
+  - `theme`: generates a random board game theme.
+- Games:
+  - `game <game name>`: Prints detailed info about a board game. Uses BGG/local database to find the game and if that game exists gets information on places to play the game virtually.
+- No Category:
+  - `help`: Shows the help message.
+  - `load`: Loads a cog.
+  - `reload`: Reloads a cog.
+  - `unload`: Unloads a cog.
+
 # Quick-Start Guide
 
 Following the steps here should get you a test bot up and running to hack on. If you want to just add the production version to your server, you'll have to wait.
@@ -46,21 +66,6 @@ This guide assumes the following:
   - Read `requirements.txt` if you need to check what they are
 4. Run `python bot.py` and check to see your bot comes online in Discord!
 
-# Feature List
-
-All commands are called using `m;<command>` in a Discord channel. `m;help` will list all currently loaded commands.
-
-- Dice: simple dice roller
-  - `roll`: Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.
-- Fun: a selection of fun bot commands
-  - `theme`: generates a random board game theme.
-- Games:
-  - `game <game name>`: Prints detailed info about a board game. Uses BGG/local database to find the game and if that game exists gets information on places to play the game virtually.
-- No Category:
-  - `help`: Shows the help message.
-  - `load`: Loads a cog.
-  - `reload`: Reloads a cog.
-  - `unload`: Unloads a cog.
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
