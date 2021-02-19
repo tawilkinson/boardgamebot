@@ -1,4 +1,7 @@
 # Board Game Bot
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 A Discord bot to fetch board game data and a list of places you can play them online.
 
@@ -54,3 +57,22 @@ All commands are called using `m;<command>` in a Discord channel. `m;help` will 
   - `load`: Loads a cog.
   - `reload`: Reloads a cog.
   - `unload`: Unloads a cog.
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/ElectricWarr"><img src="https://avatars.githubusercontent.com/u/10360900?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Michael Warr</b></sub></a><br /><a href="https://github.com/tawilkinson/boardgamebot/commits?author=ElectricWarr" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
