@@ -11,7 +11,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 # this specifies what extensions to load when the bot starts up
 startup_extensions = ['fun', 'games', 'dice']
 
-bot = commands.Bot(command_prefix='bg')
+bot = commands.Bot(command_prefix='bg ')
 
 
 @bot.event
@@ -33,7 +33,7 @@ async def on_message(message):
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("No such command. Try using `m;help` to see valid commands.")
+        await ctx.send("No such command. Try using `bg help` to see valid commands.")
     else:
         await ctx.send(f"An error was raised, ask the bot devs:\n```{error}```")
 
