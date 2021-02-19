@@ -39,7 +39,7 @@ async def on_command_error(ctx, error):
 
 
 @bot.command()
-@commands.has_permissions('manage_guild')
+@commands.has_permissions(manage_guild=True)
 async def load(ctx, cog_name: str):
     '''Loads a cog.'''
     try:
@@ -54,7 +54,7 @@ async def load(ctx, cog_name: str):
 
 
 @bot.command()
-@commands.has_permissions('manage_guild')
+@commands.has_permissions(manage_guild=True)
 async def unload(ctx, cog_name: str):
     '''Unloads a cog.'''
     try:
@@ -65,7 +65,7 @@ async def unload(ctx, cog_name: str):
 
 
 @bot.command()
-@commands.has_permissions('manage_guild')
+@commands.has_permissions(manage_guild=True)
 async def reload(ctx, cog_name: str):
     '''Reloads a cog.'''
     await unload(ctx, cog_name)
