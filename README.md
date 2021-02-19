@@ -12,13 +12,15 @@ Supported websites/services:
 - [Tabletop Simulator](https://store.steampowered.com/app/286160/Tabletop_Simulator/)
 - [Yucata.de](https://www.yucata.de/en)
 
+You can [add my version of the bot](https://discord.com/api/oauth2/authorize?client_id=812455891692552202&permissions=117760&scope=bot)
+
 # Quick-Start Guide
 
 Following the steps here should get you a test bot up and running to hack on. If you want to just add the production version to your server, you'll have to wait.
 
 This guide assumes the following:
 
-- You have set up a Discord Application with Administrator permissions in the [Discord Developer Portal](https://discord.com/developers), added it to your Discord Server, and that you have the token at-hand
+- You have set up a Discord Application with Administrator permissions in the [Discord Developer Portal](https://discord.com/developers), added it to your Discord Server, and that you have the token at-hand\*
 - You have `git clone`'d this repo and are currently in its top-level directory
 - Docker is installed and working (try `docker run --rm hello-world`, you'll know if it works!)
   - If you aren't using Docker,  `Quick-Start Guide [No Docker]` after creating your `.env` file (steps 1 & 2)
@@ -33,6 +35,8 @@ This guide assumes the following:
 5. Run `./run.sh` and check to see your bot comes online in Discord!
 
 `CTRL-C` to end execution. Repeat steps 4 & 5 each time you make changes to `bot.py`. 
+
+\* There is a [good guide to this process](https://www.freecodecamp.org/news/create-a-discord-bot-with-python/)
 
 ## Quick-Start Guide [No Docker]
 
