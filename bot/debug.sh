@@ -3,12 +3,14 @@
 . project.cfg
 
 if [ -f python/.env ]; then
-  set -o allexport; source python/.env; set +o allexport
+  set -o allexport
+  source python/.env
+  set +o allexport
 fi
 
 debug_name="debug-$name"
-docker stop "$debug_name" > /dev/null 2>&1
-docker rm -f "$debug_name" > /dev/null 2>&1
+docker stop "$debug_name" >/dev/null 2>&1
+docker rm -f "$debug_name" >/dev/null 2>&1
 
 docker run -it \
   --name="$debug_name" \

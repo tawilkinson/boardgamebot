@@ -132,15 +132,15 @@ class Games(commands.Cog):
             return
         else:
             response = 'Searching for ' + game + ', standby whilst I search online...'
-            await ctx.send(response)
+            message = await ctx.send(response)
             search_game = search_web_board_game_data(game)
             if search_game:
                 responses = self.format_embed(search_game)
                 for response in responses:
-                    await ctx.send(embed=response)
+                    await message.edit(content="", embed=response)
             else:
                 response = game + ' not found online.'
-                await ctx.send(response)
+                await message.edit(content=response)
 
 
 def setup(bot):
