@@ -63,7 +63,7 @@ This guide assumes the following:
 1. Follow steps 1-2 above
 2. Change directory to `bot/python`
 3. Install dependencies by running `pip install -r requirements.txt`
-  - Read `requirements.txt` if you need to check what they are
+   * Read `requirements.txt` if you need to check what they are
 4. Run `python bot.py` and check to see your bot comes online in Discord!
 
 ## Contributors ✨
