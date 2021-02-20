@@ -121,6 +121,43 @@ class Games(commands.Cog):
 
         return embeds
 
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        emoji = reaction.emoji
+        message = reaction.message
+        if user.bot:
+            return
+        if emoji in ['⏮', '◀', '▶', '⏭']:
+            title = message.embeds[0].title.replace(' (continued)', '')
+            search_game = search_web_board_game_data(title)
+            responses = self.format_embed(search_game)
+            idx = 0
+            if emoji == '⏮':
+                idx = 0
+            elif emoji == '◀':
+                count = 0
+                for response in responses:
+                    if response == message.embeds[0]:
+                        idx = count-1
+                        break
+                    count+1
+            elif emoji == '▶':
+                count = 0
+                for response in responses:
+                    if response == message.embeds[0]:
+                        idx = count+1
+                        break
+                    count+1
+            elif emoji == '⏭':
+                idx = len(responses)-1
+            if idx < 0:
+                idx = 0
+            elif idx > len(responses)-1:
+                idx = len(responses)-1
+            await message.edit(content="", embed=responses[idx])
+        else:
+            return
+
     @commands.command(aliases=['g', 'search', 's', 'boardgame', 'bg'],
                       help='Print detailed info about a board game.')
     async def game(self, ctx, *game):
@@ -128,18 +165,23 @@ class Games(commands.Cog):
         if game_str is None:
             response = f'Please enter a game to search: `bg game <game_name>`. '
             await ctx.send(response)
-            return
+            return [response]
         else:
             response = 'Searching for ' + game_str + ', standby whilst I search online...'
             message = await ctx.send(response)
             search_game = search_web_board_game_data(game_str)
             if search_game:
                 responses = self.format_embed(search_game)
-                for response in responses:
-                    await message.edit(content="", embed=response)
+                await message.edit(content="", embed=responses[0])
+                if len(responses) > 1:
+                    emojis = ['⏮', '◀', '▶', '⏭']
+                    for emoji in emojis:
+                        await message.add_reaction(emoji)
+                return responses
             else:
                 response = game_str + ' not found online.'
                 await message.edit(content=response)
+                return [response]
 
 
 def setup(bot):

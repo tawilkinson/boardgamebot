@@ -318,7 +318,7 @@ def search_web_board_game_data(game_name, debug=True):
         "boite": "[<name> on Boite a Jeux](<boite_url>)",
     }
     """
-    game = Game(game_name)
+    game = Game(game_name.lower())
     if debug:
         print(f'SEARCHING WEB FOR GAME DATA: {game.name}')
     game_on_bgg = get_bgg_data(game, debug)
