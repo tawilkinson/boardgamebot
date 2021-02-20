@@ -140,7 +140,7 @@ class Games(commands.Cog):
                     await message.edit(content="", embed=response)
             else:
                 response = game + ' not found online.'
-                await message.edit(response)
+                await message.edit(content=response)
 
 
 def setup(bot):
