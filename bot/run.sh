@@ -3,11 +3,13 @@
 . project.cfg
 
 if [ -f python/.env ]; then
-  set -o allexport; source python/.env; set +o allexport
+  set -o allexport
+  source python/.env
+  set +o allexport
 fi
-  
 
 docker run --rm -it \
+  --cpus=".5" \
   --name="$name" \
   --env DISCORD_TOKEN \
   "$repo":latest \
