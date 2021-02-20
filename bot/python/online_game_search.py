@@ -230,21 +230,30 @@ def get_tts_data(game, debug=False):
             break
     tts_search = Webpage(game.tts_search_url).page_html
     search_results = tts_search.body.select('body a')
+    workshop = ''
     for result in search_results:
         url = result['href']
-        if 'https://steamcommunity.com' in url:
-            url = url.replace(
-                '/url?q=',
-                '').replace(
-                '%3F',
-                '?').replace(
-                '%3D',
-                '=').split('&')[0]
-            game.set_tts_url(f"{dlc}[ {game.name} on Steam Workshop]({url})")
+        try:
+            if 'https://steamcommunity.com/sharedfiles' in url:
+                url_name = result.contents[0].contents[0]
+                print(url_name)
+                url = url.replace(
+                    '/url?q=',
+                    '').replace(
+                    '%3F',
+                    '?').replace(
+                    '%3D',
+                    '=').split('&')[0]
+                workshop += f"\n[{url_name} on Steam Workshop]({url})"
+                if debug:
+                    print(
+                        f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
+        except AttributeError:
             if debug:
                 print(
-                    f'--> retrieved {game.name} Tabletop Simulator Steam Workshop data')
-            break
+                    f'--> No url_name')
+
+    game.set_tts_url(f"{dlc}{workshop}")
 
 
 def get_bga_data(game, debug=False):
