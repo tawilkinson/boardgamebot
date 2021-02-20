@@ -70,7 +70,7 @@ class Die():
         while result == first_result:
             result = random.randint(1, first_result)
             roll += result
-            explode_str += ' + ' + str(first_result)
+            explode_str += ' + ' + str(result)
         explode_str += ']'
 
         return [roll, explode_str]
@@ -102,7 +102,7 @@ class Die():
         else:
             for idx, roll in enumerate(self.rolls):
                 str_text += roll[1]
-                if idx < len(self.rolls):
+                if idx < len(self.rolls) - 1:
                     str_text += ' + '
 
         return str_text
@@ -118,8 +118,12 @@ class Die():
         if len(self.rolls) > 1:
             self.die_str = '_'
             self.die_str += self.generate_die_str()
-            self.die_str += '_ = '
-            self.short_str += '_' + self.generate_die_str(True) + '_ = '
+            if self.mod:
+                self.die_str += '_'
+                self.short_str += '_' + self.generate_die_str(True) + '_'
+            else:
+                self.die_str += '_ = '
+                self.short_str += '_' + self.generate_die_str(True) + '_ = '
 
         if self.mod:
             if len(self.rolls) == 1:
@@ -131,8 +135,7 @@ class Die():
             if self.minus:
                 self.total -= self.mod
                 self.die_str += f' - {self.mod}'
-            if len(self.rolls) == 1:
-                self.die_str += ' = '
+            self.die_str += ' = '
 
         self.die_str += f'**{self.total}**'
         self.short_str += f'**{self.total}**'
@@ -196,10 +199,10 @@ class Dice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @ commands.command(name='roll',
+    @ commands.command(aliases=['r', 'dieroll'],
                        help='Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.')
-    async def theme(self, ctx, roll_text):
-        roller = Roller(roll_text)
+    async def roll(self, ctx, *roll_text):
+        roller = Roller(''.join(roll_text))
         responses = roller.roll()
         final_response = 'You rolled:\n'
         for response in responses:

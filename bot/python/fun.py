@@ -7,7 +7,7 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='theme', help='Generates a random board game theme')
+    @commands.command(aliases=['t'], help='Generates a random board game theme')
     async def theme(self, ctx):
         style = [
             'Eurogame',
