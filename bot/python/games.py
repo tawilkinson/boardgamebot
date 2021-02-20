@@ -121,7 +121,7 @@ class Games(commands.Cog):
 
         return embeds
 
-    @commands.command(name='game',
+    @commands.command(aliases=['g', 'search', 's', 'boardgame', 'bg'],
                       help='Print detailed info about a board game.')
     async def game(self, ctx, *game):
         game_str = ' '.join(game)
