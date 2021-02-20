@@ -122,24 +122,23 @@ class Games(commands.Cog):
         return embeds
 
     @commands.command(name='game',
-                      help='Print detailed info about a board game. \
-                          Use quotes if there is a space in the name')
-    async def game(self, ctx, game=None):
-        if game is None:
+                      help='Print detailed info about a board game.')
+    async def game(self, ctx, *game):
+        game_str = ' '.join(game)
+        if game_str is None:
             response = f'Please enter a game to search: `bg game <game_name>`. '
-            response += f'Use quotes if there is a space in the name. '
             await ctx.send(response)
             return
         else:
-            response = 'Searching for ' + game + ', standby whilst I search online...'
+            response = 'Searching for ' + game_str + ', standby whilst I search online...'
             message = await ctx.send(response)
-            search_game = search_web_board_game_data(game)
+            search_game = search_web_board_game_data(game_str)
             if search_game:
                 responses = self.format_embed(search_game)
                 for response in responses:
                     await message.edit(content="", embed=response)
             else:
-                response = game + ' not found online.'
+                response = game_str + ' not found online.'
                 await message.edit(content=response)
 
 
