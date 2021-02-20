@@ -199,8 +199,11 @@ class Dice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @ commands.command(aliases=['r', 'dieroll'],
-                       help='Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.')
+    @ commands.command(
+        aliases=[
+            'r',
+            'dieroll'],
+        help='Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.')
     async def roll(self, ctx, *roll_text):
         roller = Roller(''.join(roll_text))
         responses = roller.roll()
