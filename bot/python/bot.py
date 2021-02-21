@@ -9,21 +9,11 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # this specifies what extensions to load when the bot starts up
-startup_extensions = ['fun', 'games', 'dice']
+startup_extensions = ['fun', 'games', 'dice', 'help']
 
 bot = commands.Bot(command_prefix='bg ')
 
-
-class BotHelpCommand(commands.MinimalHelpCommand):
-    async def send_pages(self):
-        destination = self.get_destination()
-        e = discord.Embed(color=discord.Color.blurple(), description='')
-        for page in self.paginator.pages:
-            e.description += page
-        await destination.send(embed=e)
-
-
-bot.help_command = BotHelpCommand()
+bot.remove_command('help')
 
 
 @bot.event
