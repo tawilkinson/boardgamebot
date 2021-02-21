@@ -8,6 +8,8 @@ if [ -f python/.env ]; then
   set +o allexport
 fi
 
+docker stop $name
+
 docker run --rm -it \
   --cpus=".5" \
   --name="$name" \
