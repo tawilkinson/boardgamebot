@@ -145,7 +145,7 @@ class Games(commands.Cog):
                     title.replace(str(match[0]), ''))
                 if debug:
                     print(f'> {title} is being fetched again')
-                idx = int(match[0].lstrip(' (').rstrip(')'))-1
+                idx = int(match[0].lstrip(' (').rstrip(')')) - 1
             else:
                 search_game = search_web_board_game_data(title)
                 idx = 0
@@ -160,7 +160,7 @@ class Games(commands.Cog):
             elif emoji == '▶':
                 idx = idx + 1
             elif emoji == '⏭':
-                idx = len(responses)-1
+                idx = len(responses) - 1
 
             if idx < 0:
                 idx = 0
