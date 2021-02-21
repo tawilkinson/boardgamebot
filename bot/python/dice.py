@@ -196,6 +196,8 @@ class Roller():
 
 
 class Dice(commands.Cog):
+    '''A simple dice roller.'''
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -203,7 +205,9 @@ class Dice(commands.Cog):
         aliases=[
             'r',
             'dieroll'],
-        help='Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.')
+        help='Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.\n\
+        examples:\nbg roll <x>d20 - rolls <x> twenty sided die\nbg roll 2d20kl1 - rolls 2 d20 and keeps \
+            the lowest result, i.e. disadvantage')
     async def roll(self, ctx, *roll_text):
         roller = Roller(''.join(roll_text))
         responses = roller.roll()

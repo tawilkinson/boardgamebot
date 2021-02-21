@@ -7,6 +7,8 @@ from online_game_search import search_web_board_game_data
 
 
 class Games(commands.Cog):
+    '''Board game search functions.'''
+
     def __init__(self, bot):
         self.bot = bot
         self.cont = 1

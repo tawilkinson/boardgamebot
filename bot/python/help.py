@@ -6,6 +6,8 @@ Inspired by Jared Newsom (AKA Jared M.F.) - https://gist.github.com/That-Kidd/43
 
 
 class Help(commands.Cog):
+    '''Prints the help message/DM.'''
+
     def __init__(self, bot):
         self.bot = bot
 
