@@ -236,7 +236,6 @@ def get_tts_data(game, debug=False):
         try:
             if 'https://steamcommunity.com/sharedfiles' in url:
                 url_name = result.contents[0].contents[0]
-                print(url_name)
                 url = url.replace(
                     '/url?q=',
                     '').replace(
