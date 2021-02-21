@@ -14,6 +14,18 @@ startup_extensions = ['fun', 'games', 'dice']
 bot = commands.Bot(command_prefix='bg ')
 
 
+class BotHelpCommand(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        e = discord.Embed(color=discord.Color.blurple(), description='')
+        for page in self.paginator.pages:
+            e.description += page
+        await destination.send(embed=e)
+
+
+bot.help_command = BotHelpCommand()
+
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
