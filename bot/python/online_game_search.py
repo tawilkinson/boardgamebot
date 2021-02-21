@@ -296,7 +296,7 @@ def get_yucata_data(game, debug=False):
             print(f'--> retrieved {game.name} Yucata data')
 
 
-def search_web_board_game_data(game_name, debug=True):
+def search_web_board_game_data(game_name, debug=False):
     """
     Willwill search Board Game Geek (BGG) for a board game with that name, or
     else find the next best match. If a match is found on the BGG site the name,
