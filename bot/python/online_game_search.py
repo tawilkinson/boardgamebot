@@ -4,7 +4,17 @@ import html
 import requests
 import time
 import difflib
+import requests_cache
 from bs4 import BeautifulSoup
+
+requests_cache.install_cache(
+    cache_name='cache',
+    backend='memory',
+    expire_after=86400,
+    allowable_codes=(200, ),
+    allowable_methods=('GET', ),
+    old_data_on_error=False,
+)
 
 
 class Webpage(BeautifulSoup):
