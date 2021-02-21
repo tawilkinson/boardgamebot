@@ -28,7 +28,8 @@ class Help(commands.Cog):
                 halp = discord.Embed(title='Cog Listing and Uncatergorized Commands',
                                      description='Use `bg help *cog*` to find out more about them!\n\
                                          (BTW, the Cog Name Must Be in Title Case, Just Like this Sentence.)\
-                                             \n\nClick on ✉ to get this info via DM.')
+                                             \n\nClick on ✉ to get this info via DM.',
+                                     color=discord.Color.blurple())
                 cogs_desc = ''
                 for x in self.bot.cogs:
                     cogs_desc += ('{} - {}'.format(x,
@@ -54,7 +55,8 @@ class Help(commands.Cog):
                         for y in cog:
                             if x == y:
                                 halp = discord.Embed(
-                                    title=cog[0]+' Command Listing', description=self.bot.cogs[cog[0]].__doc__)
+                                    title=cog[0]+' Command Listing', description=self.bot.cogs[cog[0]].__doc__,
+                                    color=discord.Color.blurple())
                                 for c in self.bot.get_cog(y).get_commands():
                                     if not c.hidden:
                                         halp.add_field(
