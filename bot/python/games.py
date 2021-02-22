@@ -7,6 +7,8 @@ from online_game_search import search_web_board_game_data
 
 
 class Games(commands.Cog):
+    '''Board game search functions.'''
+
     def __init__(self, bot):
         self.bot = bot
         self.cont = 1
@@ -173,7 +175,10 @@ class Games(commands.Cog):
             return
 
     @commands.command(aliases=['g', 'search', 's', 'boardgame', 'bg'],
-                      help='Print detailed info about a board game.')
+                      help='Print detailed info about a board game. \
+                          Fetches game info from [BGG](https://boardgamegeek.com/) \
+                              then returns online sources, if they exist, to play \
+                                  the game.')
     async def game(self, ctx, *game):
         game_str = ' '.join(game)
         if game_str is None:

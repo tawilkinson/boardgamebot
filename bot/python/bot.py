@@ -9,9 +9,11 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # this specifies what extensions to load when the bot starts up
-startup_extensions = ['fun', 'games', 'dice']
+startup_extensions = ['fun', 'games', 'dice', 'help']
 
 bot = commands.Bot(command_prefix='bg ')
+
+bot.remove_command('help')
 
 
 @bot.event

@@ -4,11 +4,13 @@ from discord.ext import commands
 
 
 class Fun(commands.Cog):
+    '''Fun commands that aren't part of the bot proper.'''
+
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(aliases=['t'],
-                      help='Generates a random board game theme')
+                      help='Generates a random board game theme.')
     async def theme(self, ctx):
         style = [
             'Eurogame',
