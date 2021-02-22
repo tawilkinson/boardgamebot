@@ -10,7 +10,7 @@ fi
 
 docker stop $name
 
-docker run --rm -it \
+docker run --rm -dit \
   --cpus=".5" \
   --name="$name" \
   --env DISCORD_TOKEN \
