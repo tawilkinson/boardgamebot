@@ -26,7 +26,7 @@ class Help(commands.Cog):
         try:
             if not cog:
                 halp = discord.Embed(
-                    title='Cog Listing and Uncatergorized Commands',
+                    title='Cog Listing and Uncategorised Commands',
                     description='Use `bg help *cog*` to find out more about them!\n\
                                          (BTW, the Cog Name Must Be in Title Case, Just Like this Sentence.)\
                                              \n\nClick on ✉ to get this info via DM.',
@@ -42,7 +42,7 @@ class Help(commands.Cog):
                 for y in self.bot.walk_commands():
                     if not y.cog_name and not y.hidden:
                         cmds_desc += ('{} - {}'.format(y.name, y.help) + '\n')
-                halp.add_field(name='Uncatergorized Commands',
+                halp.add_field(name='Uncategorised Commands',
                                value=cmds_desc[0:len(cmds_desc) - 1],
                                inline=False)
                 message = await ctx.send('', embed=halp)
