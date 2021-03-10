@@ -6,7 +6,7 @@ from discord.ext import commands
 from online_game_search import search_web_board_game_data
 
 
-class Games(commands.Cog):
+class Games(commands.Cog, name='games'):
     '''Board game search functions.'''
 
     def __init__(self, bot):

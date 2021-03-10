@@ -5,7 +5,7 @@ from discord.ext import commands
 Inspired by Jared Newsom (AKA Jared M.F.) - https://gist.github.com/That-Kidd/432b028352a44e434dfd54e3676a6a85"""
 
 
-class Help(commands.Cog):
+class Help(commands.Cog, name='help'):
     '''Prints the help message/DM.'''
 
     def __init__(self, bot):
@@ -27,9 +27,8 @@ class Help(commands.Cog):
             if not cog:
                 halp = discord.Embed(
                     title='Cog Listing and Uncategorised Commands',
-                    description='Use `bg help *cog*` to find out more about them!\n\
-                                         (BTW, the Cog Name Must Be in Title Case, Just Like this Sentence.)\
-                                             \n\nClick on ✉ to get this info via DM.',
+                    description='Use `bg help *cog*` to find out more about them!\
+                                             \nClick on ✉ to get this info via DM.',
                     color=discord.Color.blurple())
                 cogs_desc = ''
                 for x in self.bot.cogs:
@@ -70,7 +69,8 @@ class Help(commands.Cog):
                     if not found:
                         halp = discord.Embed(
                             title='Error!',
-                            description='How do you even use "' + cog[0] + '"?',
+                            description='How do you even use "' +
+                            cog[0] + '"?',
                             color=discord.Color.red())
 
                     message = await ctx.send('', embed=halp)
