@@ -195,7 +195,7 @@ class Roller():
         return responses
 
 
-class Dice(commands.Cog):
+class Dice(commands.Cog, name='dice'):
     '''A simple dice roller.'''
 
     def __init__(self, bot):
@@ -206,7 +206,7 @@ class Dice(commands.Cog):
             'r',
             'dieroll'],
         help='Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.\n\
-        examples:\n- `bg roll <x>d20`: rolls <x> twenty sided die.\n- `bg roll 2d20kl1`: rolls 2 d20 and keeps \
+        Examples:\n- `bg roll <x>d20`: rolls <x> twenty sided die.\n- `bg roll 2d20kl1`: rolls 2 d20 and keeps \
             the lowest result, i.e. disadvantage.\n- `bg roll 2d20k1`: rolls 2 d20 and keeps \
             the highest result, i.e. advantage.\n- `bg roll 10d6!`: rolls 10 d6 and explodes when a 6 is rolled.\n\
             - `bg roll d6+5`: rolls a d6 and adds 5.\n- `bg roll d6-4`: rolls a d6 and subtracts 4.\n\

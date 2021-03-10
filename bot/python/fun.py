@@ -3,7 +3,7 @@ import random
 from discord.ext import commands
 
 
-class Fun(commands.Cog):
+class Fun(commands.Cog, name='fun'):
     '''Fun commands that aren't part of the bot proper.'''
 
     def __init__(self, bot):
