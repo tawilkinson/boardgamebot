@@ -63,12 +63,12 @@ class Games(commands.Cog, name='games'):
         embeds = []
         embed = self.base_embed(game)
 
-        # App field
-        if not game['app']:
-            embed.add_field(name='App:', value='❌')
-        else:
-            link = game['app']
-            embed.add_field(name='App:', value=link)
+        # App field, needs fixing
+        # if not game['app']:
+        #     embed.add_field(name='App:', value='❌')
+        # else:
+        #    link = game['app']
+        #    embed.add_field(name='App:', value=link)
 
         # Board Game Arena field
         if not game['bga']:
