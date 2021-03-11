@@ -393,3 +393,28 @@ def search_web_board_game_data(game_name, debug=False):
             print(f'GAME DATA FOUND:\n{game_data}')
         return game_data
     return False
+
+
+def get_all_bga_games(debug=False):
+    """
+    Takes an object of "Game" Class and searches Board Game Arena for a listing
+    that exactly matches the Game name. Will update the Game Object with url for
+    the webpage of the game on BGA's website.
+    """
+    bga_game_list = f'https://boardgamearena.com/gamelist?section=all'
+    bga_base_url = f'https://boardgamearena.com'
+    if debug:
+        print(f'> Board Game Arena: {bga_game_list}')
+    bga_all_games_page = Webpage(bga_game_list)
+    bga_page = bga_all_games_page.page_html
+    all_links = {}
+    if bga_page:
+        search_results = bga_page.find_all(
+            'div', class_='gameitem_baseline gamename')
+        for result in search_results:
+            name = str(result.contents[0]).lstrip().rstrip()
+            link = bga_base_url + result.parent.get('href')
+            all_links[f'{name}'] = f'[{name}]({link})'
+    else:
+        all_links['BGA Error'] = bga_all_games_page.error
+    return all_links
