@@ -3,7 +3,7 @@ import json
 import os
 import re
 from discord.ext import commands
-from online_game_search import search_web_board_game_data
+from online_game_search import search_web_board_game_data, get_all_bga_games
 
 
 class Games(commands.Cog, name='games'):
@@ -32,13 +32,33 @@ class Games(commands.Cog, name='games'):
                             value=bgg_text, inline=False)
         return embed
 
-    def embed_constrain(self, name, value, embed, embeds, game):
+    def base_bga_embed(self):
+        if self.cont > 1:
+            title = f'Board Game Arena Games ({self.cont})'
+            description = 'More game links below'
+        else:
+            title = f'Board Game Arena Games'
+            description = 'Join the largest boardgame table in the world.\
+                \nNo download necessary - play directly from your web browser.\
+                \nWith your friends and thousands of players from the whole world.\
+                \nFree.'
+
+        embed = discord.Embed(
+            title=title, description=description)
+        embed.set_thumbnail(
+            url='https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png')
+        return embed
+
+    def embed_constrain(self, name, value, embed, embeds, game=None, bga=None):
         embeds.append(embed)
-        embed = self.base_embed(game)
+        if game:
+            embed = self.base_embed(game)
+        elif bga:
+            embed = self.base_bga_embed()
         embed.add_field(name=name, value=value)
         return embed, embeds
 
-    def format_embed(self, game):
+    def format_game_embed(self, game):
         self.cont = 1
         embeds = []
         embed = self.base_embed(game)
@@ -89,12 +109,12 @@ class Games(commands.Cog, name='games'):
                         self.cont += 1
                         if (len(value) + len(embed) > 5999):
                             embed, embeds = self.embed_constrain(
-                                name, value, embed, embeds, game)
+                                name, value, embed, embeds, game=game)
                         value = ''
                     else:
                         value += text
                         embed, embeds = self.embed_constrain(
-                            name, value, embed, embeds, game)
+                            name, value, embed, embeds, game=game)
                         value += '\n'
             else:
                 embed.add_field(name='Tabletopia:', value=link)
@@ -121,12 +141,57 @@ class Games(commands.Cog, name='games'):
                     else:
                         value += text
                         value += '\n'
-                self.cont += 1
-                embed, embeds = self.embed_constrain(name, value,
-                                                     embed, embeds, game)
+                if value:
+                    self.cont += 1
+                    embed, embeds = self.embed_constrain(name, value,
+                                                         embed, embeds, game)
             else:
                 embed.add_field(name='Tabletop Simulator:', value=link)
 
+        embeds.append(embed)
+
+        return embeds
+
+    def format_bga_embed(self):
+        self.cont = 1
+        embeds = []
+        embed = self.base_bga_embed()
+
+        all_links = get_all_bga_games()
+        count = 1
+        alphabet = None
+        value = ''
+        for link, text in sorted(all_links.items()):
+            name = link[0]
+            if alphabet is None:
+                alphabet = name
+            if name != alphabet[0]:
+                if (len(alphabet) + len(value) + len(embed)) > 5999:
+                    count += 1
+                    self.cont += 1
+                    embed, embeds = self.embed_constrain(
+                        alphabet, value, embed, embeds, bga=True)
+                else:
+                    embed.add_field(name=alphabet, value=value)
+                alphabet = name
+                value = text
+            else:
+                if (len(alphabet) + len(value) + len(embed)) > 5998:
+                    count += 1
+                    self.cont += 1
+                    embed, embeds = self.embed_constrain(
+                        alphabet, value, embed, embeds, bga=True)
+                    alphabet = f'{name} (cont...)'
+                    value = text
+                elif (len(alphabet) + len(value) + len(text)) > 1022:
+                    embed.add_field(name=alphabet, value=value)
+                    alphabet = f'{name} (cont...)'
+                    value = text
+                else:
+                    if value:
+                        value += f'; {text}'
+                    else:
+                        value = text
         embeds.append(embed)
 
         return embeds
@@ -140,21 +205,31 @@ class Games(commands.Cog, name='games'):
         if emoji in ['⏮', '◀', '▶', '⏭']:
             title = message.embeds[0].title
             match = self.parser.search(title)
-            if match is not None:
-                if debug:
-                    print(f'> "{match[0]}" page matched')
-                search_game = search_web_board_game_data(
-                    title.replace(str(match[0]), ''))
-                if debug:
-                    print(f'> {title} is being fetched again')
-                idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+            if 'Board Game Arena Games' in title:
+                if match is not None:
+                    if debug:
+                        print(f'> "{match[0]}" page matched')
+                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+                else:
+                    idx = 0
+                responses = self.format_bga_embed()
             else:
-                search_game = search_web_board_game_data(title)
-                idx = 0
-            responses = self.format_embed(search_game)
+                if match is not None:
+                    if debug:
+                        print(f'> "{match[0]}" page matched')
+                    search_game = search_web_board_game_data(
+                        title.replace(str(match[0]), ''))
+                    if debug:
+                        print(f'> {title} is being fetched again')
+                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+                else:
+                    search_game = search_web_board_game_data(title)
+                    idx = 0
+                responses = self.format_game_embed(search_game)
 
             if debug:
                 print(f'Index is {idx}')
+            old_idx = idx
             if emoji == '⏮':
                 idx = 0
             elif emoji == '◀':
@@ -166,11 +241,68 @@ class Games(commands.Cog, name='games'):
 
             if idx < 0:
                 idx = 0
-            elif idx > len(responses):
-                idx = len(responses)
+            elif idx > len(responses) - 1:
+                idx = len(responses) - 1
             if debug:
                 print(f'Index to return is {idx}')
-            await message.edit(content="", embed=responses[idx])
+                print(f'Total embeds: {len(responses)}')
+            if idx != old_idx:
+                await message.edit(content="", embed=responses[idx])
+        else:
+            return
+
+    @commands.Cog.listener()
+    async def on_reaction_remove(self, reaction, user, debug=False):
+        emoji = reaction.emoji
+        message = reaction.message
+        if user.bot:
+            return
+        if emoji in ['⏮', '◀', '▶', '⏭']:
+            title = message.embeds[0].title
+            match = self.parser.search(title)
+            if 'Board Game Arena Games' in title:
+                if match is not None:
+                    if debug:
+                        print(f'> "{match[0]}" page matched')
+                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+                else:
+                    idx = 0
+                responses = self.format_bga_embed()
+            else:
+                if match is not None:
+                    if debug:
+                        print(f'> "{match[0]}" page matched')
+                    search_game = search_web_board_game_data(
+                        title.replace(str(match[0]), ''))
+                    if debug:
+                        print(f'> {title} is being fetched again')
+                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+                else:
+                    search_game = search_web_board_game_data(title)
+                    idx = 0
+                responses = self.format_game_embed(search_game)
+
+            if debug:
+                print(f'Index is {idx}')
+            old_idx = idx
+            if emoji == '⏮':
+                idx = 0
+            elif emoji == '◀':
+                idx = idx - 1
+            elif emoji == '▶':
+                idx = idx + 1
+            elif emoji == '⏭':
+                idx = len(responses) - 1
+
+            if idx < 0:
+                idx = 0
+            elif idx > len(responses) - 1:
+                idx = len(responses) - 1
+            if debug:
+                print(f'Index to return is {idx}')
+                print(f'Total embeds: {len(responses)}')
+            if idx != old_idx:
+                await message.edit(content="", embed=responses[idx])
         else:
             return
 
@@ -190,7 +322,7 @@ class Games(commands.Cog, name='games'):
             message = await ctx.send(response)
             search_game = search_web_board_game_data(game_str)
             if search_game:
-                responses = self.format_embed(search_game)
+                responses = self.format_game_embed(search_game)
                 await message.edit(content="", embed=responses[0])
                 if len(responses) > 1:
                     emojis = ['⏮', '◀', '▶', '⏭']
@@ -201,6 +333,18 @@ class Games(commands.Cog, name='games'):
                 response = game_str + ' not found online.'
                 await message.edit(content=response)
                 return [response]
+
+    @commands.command(help='Prints the list of games currently available on Board Game Arena.')
+    async def bga(self, ctx):
+        response = 'Getting the list of BGA games...'
+        message = await ctx.send(response)
+        responses = self.format_bga_embed()
+        await message.edit(content="", embed=responses[0])
+        if len(responses) > 1:
+            emojis = ['⏮', '◀', '▶', '⏭']
+            for emoji in emojis:
+                await message.add_reaction(emoji)
+        return responses
 
 
 def setup(bot):
