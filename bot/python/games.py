@@ -45,8 +45,7 @@ class Games(commands.Cog, name='games'):
                 \nWith your friends and thousands of players from the whole world.\
                 \nFree.'
 
-        colour = get_discord_colour(
-            'https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png')
+        colour = 0x9566DD
         embed = discord.Embed(
             title=title, description=description, colour=colour)
         embed.set_thumbnail(
