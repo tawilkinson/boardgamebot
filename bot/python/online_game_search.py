@@ -352,7 +352,7 @@ def get_yucata_data(game, debug=False):
         game.set_yucata_url(yucata_page.error)
 
 
-def search_web_board_game_data(game_name, debug=False):
+def search_web_board_game_data(game_name, debug=False, depth=0, max_depth=1):
     """
     Willwill search Board Game Geek (BGG) for a board game with that name, or
     else find the next best match. If a match is found on the BGG site the name,
@@ -380,8 +380,13 @@ def search_web_board_game_data(game_name, debug=False):
     game_on_bgg = get_bgg_data(game, debug)
     if not game_on_bgg:
         possible_game = get_non_exact_bgg_data(game, debug)
-        if possible_game:
-            return search_web_board_game_data(possible_game)
+        # Quick fix for recursion here
+        if depth < max_depth:
+            if possible_game:
+                return search_web_board_game_data(
+                    possible_game, depth=depth + 1, max_depth=20)
+        else:
+            return False
     if game_on_bgg:
         get_bga_data(game, debug)
         get_boite_a_jeux_data(game, debug)
