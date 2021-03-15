@@ -55,7 +55,7 @@ def clamp(x):
 
 def get_rgb_colour(img_url, debug=False):
     '''
-    Calls get_dominant_colour on an image url and 
+    Calls get_dominant_colour on an image url and
     returns the r,g,b colour values limited to 0-255
     '''
     dominant_colour = get_dominant_colour(img_url, debug)
