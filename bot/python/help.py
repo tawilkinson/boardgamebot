@@ -29,7 +29,7 @@ class Help(commands.Cog, name='help'):
                     title='Cog Listing and Uncategorised Commands',
                     description='Use `bg help *cog*` to find out more about them!\
                                              \nClick on ✉ to get this info via DM.',
-                    color=discord.Color.blurple())
+                    colour=discord.Colour.blurple())
                 cogs_desc = ''
                 for x in self.bot.cogs:
                     cogs_desc += ('{} - {}'.format(x,
@@ -51,7 +51,7 @@ class Help(commands.Cog, name='help'):
                     halp = discord.Embed(
                         title='Error!',
                         description='That is way too many cogs!',
-                        color=discord.Color.red())
+                        colour=discord.Colour.red())
                     await ctx.send('', embed=halp)
                 else:
                     found = False
@@ -60,7 +60,7 @@ class Help(commands.Cog, name='help'):
                             if x == y:
                                 halp = discord.Embed(
                                     title=cog[0] + ' Command Listing', description=self.bot.cogs[cog[0]].__doc__,
-                                    color=discord.Color.blurple())
+                                    colour=discord.Colour.blurple())
                                 for c in self.bot.get_cog(y).get_commands():
                                     if not c.hidden:
                                         halp.add_field(
@@ -71,7 +71,7 @@ class Help(commands.Cog, name='help'):
                             title='Error!',
                             description='How do you even use "' +
                             cog[0] + '"?',
-                            color=discord.Color.red())
+                            colour=discord.Colour.red())
 
                     message = await ctx.send('', embed=halp)
                     await message.add_reaction(emoji='✉')

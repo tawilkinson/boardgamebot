@@ -3,6 +3,7 @@ import json
 import os
 import re
 from discord.ext import commands
+from colour import get_discord_colour
 from online_game_search import search_web_board_game_data, get_all_bga_games
 
 
@@ -23,8 +24,9 @@ class Games(commands.Cog, name='games'):
             title = game['name']
             description = game['description'][:2047]
 
+        colour = get_discord_colour(game['image'])
         embed = discord.Embed(
-            title=title, description=description)
+            title=title, description=description, colour=colour)
         embed.set_thumbnail(url=game['image'])
         if self.cont == 1:
             bgg_text = '[' + game['name'] + '](' + game['bgg'] + ')'
@@ -43,8 +45,10 @@ class Games(commands.Cog, name='games'):
                 \nWith your friends and thousands of players from the whole world.\
                 \nFree.'
 
+        colour = get_discord_colour(
+            'https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png')
         embed = discord.Embed(
-            title=title, description=description)
+            title=title, description=description, colour=colour)
         embed.set_thumbnail(
             url='https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png')
         return embed
