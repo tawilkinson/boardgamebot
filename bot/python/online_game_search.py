@@ -5,6 +5,7 @@ import requests
 import time
 import difflib
 import requests_cache
+import string
 from bs4 import BeautifulSoup
 
 requests_cache.install_cache(
@@ -51,7 +52,7 @@ class Game:
     """
 
     def __init__(self, name):
-        self.name = name.title()
+        self.name = string.capwords(name)
         self.search_name = self.name.lower().replace(' ', '%20')
         self.search_name_alpha_num = ''.join(
             [x for x in self.name.lower() if x.isalpha()])
