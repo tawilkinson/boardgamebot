@@ -1,7 +1,6 @@
 import discord
-import json
-import os
 import re
+import string
 from discord.ext import commands
 from colour import get_discord_colour
 from online_game_search import search_web_board_game_data, get_all_bga_games
@@ -316,6 +315,7 @@ class Games(commands.Cog, name='games'):
                                   the game.')
     async def game(self, ctx, *game):
         game_str = ' '.join(game)
+        game_str = string.capwords(game_str)
         if game_str is None:
             response = f'Please enter a game to search: `bg game <game_name>`. '
             await ctx.send(response)
