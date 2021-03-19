@@ -500,16 +500,25 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
     return False
 
 
+def get_all_games(bga, yucata, debug=False):
+    '''
+    Simple wrapper to get all games from each service
+    '''
+    if bga:
+        return get_all_bga_games(debug=debug)
+    if yucata:
+        return get_all_yucata_games(debug=debug)
+    return None
+
+
 def get_all_bga_games(debug=False):
     '''
-    Takes an object of "Game" Class and searches Board Game Arena for a listing
-    that exactly matches the Game name. Will update the Game Object with url for
-    the webpage of the game on BGA's website.
+    Searches Board Game Arena for all games on the site and returns them
     '''
     bga_game_list = f'https://boardgamearena.com/gamelist?section=all'
     bga_base_url = f'https://boardgamearena.com'
     if debug:
-        print(f'> Board Game Arena: {bga_game_list}')
+        print(f'> Board Game Arena all games: {bga_game_list}')
     bga_all_games_page = Webpage(bga_game_list)
     bga_page = bga_all_games_page.page_html
     all_links = {}
@@ -522,4 +531,32 @@ def get_all_bga_games(debug=False):
             all_links[f'{name}'] = f'[{name}]({link})'
     else:
         all_links['BGA Error'] = bga_all_games_page.error
+        if debug:
+            print(f'--> all BGA games:\n{all_links}')
+    return all_links
+
+
+def get_all_yucata_games(debug=False):
+    '''
+    Searches Yucata for all games on the site and returns them
+    '''
+    yucata_search_url = 'https://www.yucata.de/en/'
+    if debug:
+        print(f'> Yucata all games: {yucata_search_url}')
+    yucata_all_games_page = Webpage(yucata_search_url)
+    yucata_directory_page = yucata_all_games_page.page_html
+    all_links = {}
+    if yucata_directory_page:
+        search_results = yucata_directory_page.find_all(
+            'a', class_='jGameInfo')
+        for result in search_results:
+            game_href = result['href']
+            game_name = result.text
+            link = f'https://www.yucata.de{game_href}'
+            if game_name:
+                all_links[f'{game_name}'] = f'[{game_name}]({link})'
+    else:
+        all_links['BGA Error'] = yucata_all_games_page.error
+    if debug:
+        print(f'--> all Yucata games:\n{all_links}')
     return all_links

@@ -3,7 +3,7 @@ import re
 import string
 from discord.ext import commands
 from colour import get_discord_colour
-from online_game_search import search_web_board_game_data, get_all_bga_games
+from online_game_search import search_web_board_game_data, get_all_games
 
 
 class Games(commands.Cog, name='games'):
@@ -43,12 +43,28 @@ class Games(commands.Cog, name='games'):
                 \nNo download necessary - play directly from your web browser.\
                 \nWith your friends and thousands of players from the whole world.\
                 \nFree.'
-
+        url = 'https://boardgamearena.com/gamelist'
         colour = 0x9566DD
         embed = discord.Embed(
-            title=title, description=description, colour=colour)
+            title=title, description=description, colour=colour, url=url)
         embed.set_thumbnail(
             url='https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png')
+        return embed
+
+    def base_yucata_embed(self):
+        if self.cont > 1:
+            title = f'Yucata.de Games ({self.cont})'
+            description = 'More game links below'
+        else:
+            title = f'Yucata.de Games'
+            description = 'Online gaming portal, free and without advertisements \
+                where you may play more than 60 different games.'
+        url = 'https://www.yucata.de/en'
+        colour = 0x00305E
+        embed = discord.Embed(
+            title=title, description=description, colour=colour, url=url)
+        embed.set_thumbnail(
+            url='https://www.yucata.de/bundles/images/Logo.jpg')
         return embed
 
     def embed_constrain(self, name, value, embed, embeds, game=None, bga=None):
@@ -157,12 +173,16 @@ class Games(commands.Cog, name='games'):
 
         return embeds
 
-    def format_bga_embed(self):
+    def format_all_games_embed(self, bga=False, yucata=False):
         self.cont = 1
         embeds = []
-        embed = self.base_bga_embed()
-
-        all_links = get_all_bga_games()
+        if bga:
+            embed = self.base_bga_embed()
+        if yucata:
+            embed = self.base_yucata_embed()
+        all_links = get_all_games(bga, yucata)
+        if all_links is None:
+            return embeds
         count = 1
         alphabet = None
         value = ''
@@ -217,7 +237,15 @@ class Games(commands.Cog, name='games'):
                     idx = int(match[0].lstrip(' (').rstrip(')')) - 1
                 else:
                     idx = 0
-                responses = self.format_bga_embed()
+                responses = self.format_all_games_embed(bga=True)
+            elif 'Yucata.de Games' in title:
+                if match is not None:
+                    if debug:
+                        print(f'> "{match[0]}" page matched')
+                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+                else:
+                    idx = 0
+                responses = self.format_all_games_embed(yucata=True)
             else:
                 if match is not None:
                     if debug:
@@ -272,7 +300,15 @@ class Games(commands.Cog, name='games'):
                     idx = int(match[0].lstrip(' (').rstrip(')')) - 1
                 else:
                     idx = 0
-                responses = self.format_bga_embed()
+                responses = self.format_all_games_embed(bga=True)
+            elif 'Yucata.de Games' in title:
+                if match is not None:
+                    if debug:
+                        print(f'> "{match[0]}" page matched')
+                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+                else:
+                    idx = 0
+                responses = self.format_all_games_embed(yucata=True)
             else:
                 if match is not None:
                     if debug:
@@ -345,7 +381,19 @@ class Games(commands.Cog, name='games'):
     async def bga(self, ctx):
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
-        responses = self.format_bga_embed()
+        responses = self.format_all_games_embed(bga=True)
+        await message.edit(content="", embed=responses[0])
+        if len(responses) > 1:
+            emojis = ['⏮', '◀', '▶', '⏭']
+            for emoji in emojis:
+                await message.add_reaction(emoji)
+        return responses
+
+    @commands.command(help='Prints the list of games currently available on Yucata.de.')
+    async def yucata(self, ctx):
+        response = 'Getting the list of Yucata games...'
+        message = await ctx.send(response)
+        responses = self.format_all_games_embed(yucata=True)
         await message.edit(content="", embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
