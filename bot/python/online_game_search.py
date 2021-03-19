@@ -1,3 +1,5 @@
+import asyncio
+import collections
 import discord
 import lxml
 import json
@@ -196,7 +198,7 @@ def get_bgg_data(game, debug=False):
         return False
 
 
-async def get_non_exact_bgg_data(game, message, ctx, debug=False):
+async def get_non_exact_bgg_data(game, message=None, ctx=None, debug=False):
     """
     Takes an object of "Game" Class and searches Board Game Geeks API for a boardgame
     that best matches the Game name. Will return the BGG name of the best match, or
@@ -219,9 +221,12 @@ async def get_non_exact_bgg_data(game, message, ctx, debug=False):
 
         else:
             board_game_search = bgg_search.page_html.items.findAll('item')
-            possible_board_games = {}
-            match_str = ''
+            possible_board_games = collections.OrderedDict()
             count = 0
+            title = 'Ambiguous Game Name'
+            description = ''
+            response = discord.Embed(title=title,
+                                     description=description, colour=discord.Colour.dark_purple())
             for game_search in board_game_search:
                 count += 1
                 possible_name = game_search.find('name').get(
@@ -230,31 +235,47 @@ async def get_non_exact_bgg_data(game, message, ctx, debug=False):
                     'value')
                 possible_board_games[possible_name] = {
                     'id': game_search['id'], 'year': possible_year}
-                match_str += f'{count}: {possible_name} ({possible_year})\n'
+                name = f'{count}: {possible_name}'
+                value = f'{possible_year}'
+                if (len(response) + len(name) + len(value)) > 5999:
+                    break
+                else:
+                    response.add_field(name=name, value=value)
+            description = f'{len(possible_board_games)} potential matches on Board Game Geek.'
+            description += '\nPlease respond with the number of the game you were looking for...'
+            response.description = description
             if debug:
                 print(
                     f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
-            await message.edit(content=f'{len(possible_board_games)} potential matches on Board Game Geek.\n{match_str}')
+            difflib_closest = difflib.get_close_matches(
+                game.name, possible_board_games.keys(), 1, 0)[0]
+            await message.edit(content='', embed=response)
 
-            def check(m):
-                '''
-                Checks message is by original command user, in the same channel
-                and is a number
-                '''
+            if ctx:
+                def check(m):
+                    '''
+                    Checks message is by original command user, in the same channel
+                    and is a number
+                    '''
+                    try:
+                        _ = int(m.content)
+                        is_int = True
+                    except ValueError:
+                        is_int = False
+                    return is_int and m.channel == ctx.channel and m.author == ctx.author
                 try:
-                    _ = int(m.content)
-                    is_int = True
-                except ValueError:
-                    is_int = False
-                return is_int and m.channel == ctx.channel and m.author == ctx.author
-
-            msg = await ctx.bot.wait_for('message', timeout=30, check=check)
-            if msg:
-                key = list(possible_board_games.keys())[int(msg.content)]
-                closest_match = key
-            else:
-                closest_match = difflib.get_close_matches(
-                    game.name, possible_board_games.keys(), 1, 0)[0]
+                    msg = await ctx.bot.wait_for('message', timeout=30, check=check)
+                    if msg:
+                        key = list(possible_board_games.keys())[
+                            int(msg.content)-1]
+                        game.name = key
+                        closest_match = key
+                    else:
+                        game.name = difflib_closest
+                        closest_match = difflib_closest
+                except asyncio.TimeoutError:
+                    game.name = difflib_closest
+                    closest_match = difflib_closest
             if closest_match:
                 if debug:
                     print(f'--> {closest_match} is closest match')
@@ -422,7 +443,7 @@ def get_yucata_data(game, debug=False):
         game.set_yucata_url(yucata_page.error)
 
 
-async def search_web_board_game_data(game_name, message, ctx, debug=False, depth=0, max_depth=1):
+async def search_web_board_game_data(game_name, message=None, ctx=None, debug=False, depth=0, max_depth=1):
     """
     Willwill search Board Game Geek (BGG) for a board game with that name, or
     else find the next best match. If a match is found on the BGG site the name,
