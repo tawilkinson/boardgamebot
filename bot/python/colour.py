@@ -12,13 +12,16 @@ def get_dominant_colour(img_url, debug=False):
     and return it
     '''
     img = io.imread(img_url)
+    shape = np.shape(img)
+
     if debug:
         print(f'Original shape: {np.shape(img)}')
     # Reshape to save memory for web
-    img = rescale(img, 0.1, multichannel=True)
-    img = img * 255
-    if debug:
-        print(f'x0.10 Scaled shape: {np.shape(img)}')
+    if shape[0] > 1920 and shape[1] > 1080:
+        img = rescale(img, 0.1, multichannel=True)
+        img = img * 255
+        if debug:
+            print(f'x0.10 Scaled shape: {np.shape(img)}')
     img = img.reshape((-1, 3))
     if debug:
         print(f'Vectorised shape: {np.shape(img)}')
