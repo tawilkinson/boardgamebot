@@ -1,3 +1,5 @@
+## [Add it to your server!](https://discord.com/api/oauth2/authorize?client_id=812455891692552202&permissions=117760&scope=bot)
+
 # Board Game Bot
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
@@ -11,8 +13,6 @@ Supported websites/services:
 - [Tabletopia](https://tabletopia.com/)
 - [Tabletop Simulator](https://store.steampowered.com/app/286160/Tabletop_Simulator/)
 - [Yucata.de](https://www.yucata.de/en)
-
-You can [add my version of the bot](https://discord.com/api/oauth2/authorize?client_id=812455891692552202&permissions=117760&scope=bot)
 
 The main feature of the bot is to search Board Game Geek for information on a board game and then try to find online versions of the game to play as showcased below:
 
