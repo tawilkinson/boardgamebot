@@ -17,8 +17,9 @@ class Help(commands.Cog, name='help'):
         message = reaction.message
         if user.bot:
             return
-        if emoji == '✉':
-            await user.send('', embed=message.embeds[0])
+        if message.author.id is self.bot.user.id:
+            if emoji == '✉':
+                await user.send('', embed=message.embeds[0])
 
     @ commands.command()
     async def help(self, ctx, *cog, debug=False):
