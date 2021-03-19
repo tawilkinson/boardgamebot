@@ -222,13 +222,13 @@ class Games(commands.Cog, name='games'):
                 if match is not None:
                     if debug:
                         print(f'> "{match[0]}" page matched')
-                    search_game = search_web_board_game_data(
+                    search_game = await search_web_board_game_data(
                         title.replace(str(match[0]), ''))
                     if debug:
                         print(f'> {title} is being fetched again')
                     idx = int(match[0].lstrip(' (').rstrip(')')) - 1
                 else:
-                    search_game = search_web_board_game_data(title)
+                    search_game = await search_web_board_game_data(title)
                     idx = 0
                 responses = self.format_game_embed(search_game)
 
@@ -277,13 +277,13 @@ class Games(commands.Cog, name='games'):
                 if match is not None:
                     if debug:
                         print(f'> "{match[0]}" page matched')
-                    search_game = search_web_board_game_data(
+                    search_game = await search_web_board_game_data(
                         title.replace(str(match[0]), ''))
                     if debug:
                         print(f'> {title} is being fetched again')
                     idx = int(match[0].lstrip(' (').rstrip(')')) - 1
                 else:
-                    search_game = search_web_board_game_data(title)
+                    search_game = await search_web_board_game_data(title)
                     idx = 0
                 responses = self.format_game_embed(search_game)
 
@@ -326,7 +326,8 @@ class Games(commands.Cog, name='games'):
         else:
             response = 'Searching for ' + game_str + ', standby whilst I search online...'
             message = await ctx.send(response)
-            search_game = search_web_board_game_data(game_str)
+            search_game = await search_web_board_game_data(
+                game_str, message, ctx)
             if search_game:
                 responses = self.format_game_embed(search_game)
                 await message.edit(content="", embed=responses[0])
