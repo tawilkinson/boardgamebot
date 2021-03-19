@@ -59,6 +59,7 @@ class Game:
         self.app = ''
         self.bga = False
         self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_alpha_num}'
+        self.bga_non_exact_search_url = f'https://boardgamearena.com/gamelist?section=all'
         self.bgg = ''
         self.bgg_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
         self.bgg_non_exact_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&type=boardgame'
@@ -320,6 +321,27 @@ def get_bga_data(game, debug=False):
             game.set_bga_url(f'[{game.name} on BGA]({game.bga_search_url})')
             if debug:
                 print(f'--> retrieved {game.name} Board Game Arena data')
+        else:
+            if debug:
+                print(f'> Board Game Arena: {game.bga_non_exact_search_url}')
+            bga_page = Webpage(game.bga_non_exact_search_url)
+            bga_search_page = bga_page.page_html
+            if bga_search_page:
+                search_results = bga_search_page.find_all(
+                    'div', class_='gameitem_baseline gamename')
+                games = {}
+                for result in search_results:
+                    name = str(result.contents[0]).lstrip().rstrip()
+                    games[name] = result
+                bga_base_url = f'https://boardgamearena.com'
+                closest_match = difflib.get_close_matches(
+                    game.name, games.keys(), 1)
+                if len(closest_match) > 0:
+                    name = str(
+                        games[closest_match[0]].contents[0]).lstrip().rstrip()
+                    link = bga_base_url + \
+                        games[closest_match[0]].parent.get('href')
+                    game.set_bga_url(f'[{name} on BGA]({link})')
     else:
         game.set_bga_url(bga_page.error)
 
