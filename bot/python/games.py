@@ -353,7 +353,8 @@ class Games(commands.Cog, name='games'):
                 await message.add_reaction(emoji)
         return responses
 
-    @commands.command(help='Lists the help for command category `games`.', pass_context=True)
+    @commands.command(help='Lists the help for command category `games`.',
+                      pass_context=True)
     async def games(self, ctx):
         await ctx.invoke(self.bot.get_command('help'), 'games')
 

@@ -61,7 +61,8 @@ class Fun(commands.Cog, name='fun'):
             style) + ' using ' + random.choice(component) + ' set in ' + random.choice(setting)
         await ctx.send(response)
 
-    @commands.command(help='Lists the help for command category `fun`.', pass_context=True)
+    @commands.command(help='Lists the help for command category `fun`.',
+                      pass_context=True)
     async def fun(self, ctx):
         await ctx.invoke(self.bot.get_command('help'), 'fun')
 
