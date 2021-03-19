@@ -230,8 +230,10 @@ async def get_non_exact_bgg_data(game, message=None, ctx=None, debug=False):
             count = 0
             title = 'Ambiguous Game Name'
             description = ''
-            response = discord.Embed(title=title,
-                                     description=description, colour=discord.Colour.dark_purple())
+            response = discord.Embed(
+                title=title,
+                description=description,
+                colour=discord.Colour.dark_purple())
             for game_search in board_game_search:
                 count += 1
                 possible_name = game_search.find('name').get(
@@ -272,7 +274,7 @@ async def get_non_exact_bgg_data(game, message=None, ctx=None, debug=False):
                     msg = await ctx.bot.wait_for('message', timeout=30, check=check)
                     if msg:
                         key = list(possible_board_games.keys())[
-                            int(msg.content)-1]
+                            int(msg.content) - 1]
                         game.update_name(key)
                         closest_match = key
                         if ctx.channel.type is not discord.ChannelType.private:
