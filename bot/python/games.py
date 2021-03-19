@@ -110,15 +110,15 @@ class Games(commands.Cog, name='games'):
                         count += 1
                         self.cont += 1
                         if (len(value) + len(embed) > 5999):
+                            value = value.replace('\n', '; ')
                             embed, embeds = self.embed_constrain(
                                 name, value, embed, embeds, game=game)
                         value = ''
                     else:
                         value += text
-                        embed, embeds = self.embed_constrain(
-                            name, value, embed, embeds, game=game)
                         value += '\n'
             else:
+                link = link.replace('\n', '; ')
                 embed.add_field(name='Tabletopia:', value=link)
 
         # Tabletop Simulator field
@@ -136,6 +136,7 @@ class Games(commands.Cog, name='games'):
                         len(text)) > 1023 or (len(value) +
                                               len(embed) > 5999):
                         self.cont += 1
+                        value = value.replace('\n', '; ')
                         embed, embeds = self.embed_constrain(
                             name, value, embed, embeds, game)
                         count += 1
@@ -145,9 +146,11 @@ class Games(commands.Cog, name='games'):
                         value += '\n'
                 if value:
                     self.cont += 1
+                    value = value.replace('\n', '; ')
                     embed, embeds = self.embed_constrain(name, value,
                                                          embed, embeds, game)
             else:
+                link = link.replace('\n', '; ')
                 embed.add_field(name='Tabletop Simulator:', value=link)
 
         embeds.append(embed)

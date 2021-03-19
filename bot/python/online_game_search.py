@@ -271,7 +271,7 @@ def get_tts_data(game, debug=False):
                 url = result.parent.parent['href']
                 url = url.split('?snr=')[0]
                 dlc = f'[{this_name}]({url})'
-                dlc = (f"[ {game.name} on Tabletop Simulator]({url})\n")
+                dlc = (f"[{game.name} on Tabletop Simulator]({url})\n")
                 if debug:
                     print(
                         f'--> retrieved {game.name} Tabletop Simulator DLC data')
@@ -291,7 +291,7 @@ def get_tts_data(game, debug=False):
                         '?').replace(
                         '%3D',
                         '=').split('&')[0]
-                    workshop += f"\n[{url_name} on Steam Workshop]({url})"
+                    workshop += f'[{url_name} on Steam Workshop]({url})\n'
                     if debug:
                         print(
                             f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
@@ -299,7 +299,9 @@ def get_tts_data(game, debug=False):
                 if debug:
                     print(
                         f'--> No url_name')
-
+        if workshop:
+            if workshop[-1:] == '\n':
+                workshop = workshop[:-1]
         game.set_tts_url(f"{dlc}{workshop}")
     else:
         game.set_tts_url(tts_dlc_page.error)
