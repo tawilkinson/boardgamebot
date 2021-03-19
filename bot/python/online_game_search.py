@@ -78,6 +78,12 @@ class Game:
         self.yucata = False
         self.yucata_search_url = 'https://www.yucata.de/en/'
 
+    def update_name(self, new_name):
+        self.name = string.capwords(new_name)
+        self.search_name = self.name.lower().replace(' ', '%20')
+        self.search_name_alpha_num = ''.join(
+            [x for x in self.name.lower() if x.isalpha()])
+
     def set_description(self, description):
         self.description = description
 
@@ -268,13 +274,15 @@ async def get_non_exact_bgg_data(game, message=None, ctx=None, debug=False):
                     if msg:
                         key = list(possible_board_games.keys())[
                             int(msg.content)-1]
-                        game.name = key
+                        game.update_name(key)
                         closest_match = key
+                        if ctx.channel.type is not discord.ChannelType.private:
+                            await msg.delete()
                     else:
-                        game.name = difflib_closest
+                        game.update_name(difflib_closest)
                         closest_match = difflib_closest
                 except asyncio.TimeoutError:
-                    game.name = difflib_closest
+                    game.update_name(difflib_closest)
                     closest_match = difflib_closest
             if closest_match:
                 if debug:
