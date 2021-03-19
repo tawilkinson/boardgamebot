@@ -59,6 +59,7 @@ class Game:
         self.app = ''
         self.bga = False
         self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_alpha_num}'
+        self.bga_non_exact_search_url = f'https://boardgamearena.com/gamelist?section=all'
         self.bgg = ''
         self.bgg_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
         self.bgg_non_exact_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&type=boardgame'
@@ -138,6 +139,34 @@ def get_boite_a_jeux_data(game, debug=False):
         game.set_boite_url(boite_page.error)
 
 
+def bgg_data_from_id(game, id, debug=False):
+    '''
+    Takes an item of Game class and a known BGG id. Sets relevant
+    game data from the BGG page referenced by id.
+    '''
+    bgg_url = game.get_set_bgg_url(id)
+    if debug:
+        print(f'> {game.name} on BGG: {bgg_url}')
+    bgg_page = Webpage(bgg_url)
+    if bgg_page.page_html.items.description:
+        game_description = html.unescape(
+            bgg_page.page_html.items.description.text)
+        abridged_game_description = f'{game_description[0:300]} ...'
+        game.set_description(abridged_game_description)
+        if debug:
+            print(f'--> retrieved {game.name} description')
+        if bgg_page.page_html.items.image:
+            game_image = bgg_page.page_html.items.image.text
+            game.set_image(game_image)
+            if debug:
+                print(f'--> retrieved {game.name} image')
+        if debug:
+            print(f'--> retrieved {game.name} Board Game Geek data')
+        return True
+    else:
+        return False
+
+
 def get_bgg_data(game, debug=False):
     """
     Takes an object of "Game" Class and searches Board Game Geeks API for a boardgame
@@ -159,25 +188,7 @@ def get_bgg_data(game, debug=False):
 
         else:
             id = bgg_search.page_html.items.item['id']
-            bbg_url = game.get_set_bgg_url(id)
-            if debug:
-                print(f'> {game.name} on BGG: {bbg_url}')
-            bgg_page = Webpage(bbg_url)
-            if bgg_page.page_html.items.description:
-                game_description = html.unescape(
-                    bgg_page.page_html.items.description.text)
-                abridged_game_description = f'{game_description[0:300]} ...'
-                game.set_description(abridged_game_description)
-                if debug:
-                    print(f'--> retrieved {game.name} description')
-            if bgg_page.page_html.items.image:
-                game_image = bgg_page.page_html.items.image.text
-                game.set_image(game_image)
-                if debug:
-                    print(f'--> retrieved {game.name} image')
-            if debug:
-                print(f'--> retrieved {game.name} Board Game Geek data')
-            return True
+            return bgg_data_from_id(game, id)
     else:
         if debug:
             print(f'--> {bgg_search.error}')
@@ -190,6 +201,7 @@ def get_non_exact_bgg_data(game, debug=False):
     that best matches the Game name. Will return the BGG name of the best match, or
     False if no match is found.
     """
+    id = 0
     if debug:
         print(f'> Board Game Geek: {game.bgg_non_exact_search_url}')
     bgg_search = Webpage(game.bgg_non_exact_search_url)
@@ -202,24 +214,30 @@ def get_non_exact_bgg_data(game, debug=False):
             if debug:
                 print(
                     f'> !!! No potential matches for {game.name} found on Board Game Geek !!!')
-            return False
+            return False, id
 
         else:
             board_game_search = bgg_search.page_html.items.findAll('item')
-            possible_board_games = [game_search.find('name').get(
-                'value') for game_search in board_game_search]
+            possible_board_games = {}
+            for game_search in board_game_search:
+                possible_board_games[game_search.find('name').get(
+                    'value')] = game_search['id']
             if debug:
                 print(
                     f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
             closest_match = difflib.get_close_matches(
-                game.name, possible_board_games, 1, 0)[0]
-            if debug:
-                print(f'--> {closest_match} is closest match')
-            return closest_match
+                game.name, possible_board_games.keys(), 1, 0)[0]
+            if closest_match:
+                if debug:
+                    print(f'--> {closest_match} is closest match')
+                id = possible_board_games[closest_match]
+                return closest_match, id
+            else:
+                return False, id
     else:
         if debug:
             print(f'--> {bgg_search.error}')
-        return False
+        return False, id
 
 
 def get_tabletopia_data(game, debug=False):
@@ -270,7 +288,7 @@ def get_tts_data(game, debug=False):
                 url = result.parent.parent['href']
                 url = url.split('?snr=')[0]
                 dlc = f'[{this_name}]({url})'
-                dlc = (f"[ {game.name} on Tabletop Simulator]({url})\n")
+                dlc = (f"[{game.name} on Tabletop Simulator]({url})\n")
                 if debug:
                     print(
                         f'--> retrieved {game.name} Tabletop Simulator DLC data')
@@ -290,7 +308,7 @@ def get_tts_data(game, debug=False):
                         '?').replace(
                         '%3D',
                         '=').split('&')[0]
-                    workshop += f"\n[{url_name} on Steam Workshop]({url})"
+                    workshop += f'[{url_name} on Steam Workshop]({url})\n'
                     if debug:
                         print(
                             f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
@@ -298,7 +316,9 @@ def get_tts_data(game, debug=False):
                 if debug:
                     print(
                         f'--> No url_name')
-
+        if workshop:
+            if workshop[-1:] == '\n':
+                workshop = workshop[:-1]
         game.set_tts_url(f"{dlc}{workshop}")
     else:
         game.set_tts_url(tts_dlc_page.error)
@@ -320,6 +340,27 @@ def get_bga_data(game, debug=False):
             game.set_bga_url(f'[{game.name} on BGA]({game.bga_search_url})')
             if debug:
                 print(f'--> retrieved {game.name} Board Game Arena data')
+        else:
+            if debug:
+                print(f'> Board Game Arena: {game.bga_non_exact_search_url}')
+            bga_page = Webpage(game.bga_non_exact_search_url)
+            bga_search_page = bga_page.page_html
+            if bga_search_page:
+                search_results = bga_search_page.find_all(
+                    'div', class_='gameitem_baseline gamename')
+                games = {}
+                for result in search_results:
+                    name = str(result.contents[0]).lstrip().rstrip()
+                    games[name] = result
+                bga_base_url = f'https://boardgamearena.com'
+                closest_match = difflib.get_close_matches(
+                    game.name, games.keys(), 1)
+                if len(closest_match) > 0:
+                    name = str(
+                        games[closest_match[0]].contents[0]).lstrip().rstrip()
+                    link = bga_base_url + \
+                        games[closest_match[0]].parent.get('href')
+                    game.set_bga_url(f'[{name} on BGA]({link})')
     else:
         game.set_bga_url(bga_page.error)
 
@@ -380,12 +421,10 @@ def search_web_board_game_data(game_name, debug=False, depth=0, max_depth=1):
         print(f'SEARCHING WEB FOR GAME DATA: {game.name}')
     game_on_bgg = get_bgg_data(game, debug)
     if not game_on_bgg:
-        possible_game = get_non_exact_bgg_data(game, debug)
-        # Quick fix for recursion here
-        if depth < max_depth:
-            if possible_game:
-                return search_web_board_game_data(
-                    possible_game, depth=depth + 1, max_depth=20)
+        possible_game, id = get_non_exact_bgg_data(game, debug)
+        if possible_game:
+            bgg_data_from_id(game, id)
+            game_on_bgg = True
         else:
             return False
     if game_on_bgg:
