@@ -142,7 +142,7 @@ def get_boite_a_jeux_data(game, debug=False):
                 rules_href = rules_elem.get('href')
                 game_boite_url = f'http://www.boiteajeux.net/{rules_href}'
                 game.set_boite_url(
-                    f'[{game.name} on Boite a Jeux]({game_boite_url}')
+                    f'[{game.name}]({game_boite_url}')
     else:
         game.set_boite_url(boite_page.error)
 
@@ -299,7 +299,7 @@ def get_tabletopia_data(game, debug=False):
             game_name = result.text.strip()
             game_tabletopia_url = result['href']
             game_tabletopia_url = f'https://tabletopia.com{game_tabletopia_url}'
-            formatted_link = f'[{game_name} on Tabletopia]({game_tabletopia_url})'
+            formatted_link = f'[{game_name}]({game_tabletopia_url})'
             tabletopia_games.append(formatted_link)
         if tabletopia_games:
             game.set_tabletopia_url('\n'.join(tabletopia_games))
@@ -329,7 +329,7 @@ def get_tts_data(game, debug=False):
                 url = result.parent.parent['href']
                 url = url.split('?snr=')[0]
                 dlc = f'[{this_name}]({url})'
-                dlc = (f"[{game.name} on Tabletop Simulator]({url})\n")
+                dlc = (f"[{game.name} (DLC)]({url})\n")
                 if debug:
                     print(
                         f'--> retrieved {game.name} Tabletop Simulator DLC data')
@@ -349,7 +349,7 @@ def get_tts_data(game, debug=False):
                         '?').replace(
                         '%3D',
                         '=').split('&')[0]
-                    workshop += f'[{url_name} on Steam Workshop]({url})\n'
+                    workshop += f'[{url_name}]({url})\n'
                     if debug:
                         print(
                             f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
@@ -378,7 +378,7 @@ def get_bga_data(game, debug=False):
     if bga_search_page:
         bga_page_text = bga_search_page.body.text
         if 'Sorry, an unexpected error has occurred...' not in bga_page_text:
-            game.set_bga_url(f'[{game.name} on BGA]({game.bga_search_url})')
+            game.set_bga_url(f'[{game.name}]({game.bga_search_url})')
             if debug:
                 print(f'--> retrieved {game.name} Board Game Arena data')
         else:
@@ -401,7 +401,7 @@ def get_bga_data(game, debug=False):
                         games[closest_match[0]].contents[0]).lstrip().rstrip()
                     link = bga_base_url + \
                         games[closest_match[0]].parent.get('href')
-                    game.set_bga_url(f'[{name} on BGA]({link})')
+                    game.set_bga_url(f'[{name}]({link})')
     else:
         game.set_bga_url(bga_page.error)
 

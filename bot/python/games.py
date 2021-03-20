@@ -105,7 +105,7 @@ class Games(commands.Cog, name='games'):
                 for text in all_links:
                     name = 'Tabletopia ' + str(count) + ':'
                     if (len(value) +
-                        len(text)) > 1023 or (len(value) +
+                        len(text)) > 1022 or (len(value) +
                                               len(embed) > 5999):
                         count += 1
                         self.cont += 1
@@ -133,7 +133,7 @@ class Games(commands.Cog, name='games'):
                 for text in all_links:
                     name = 'Tabletop Simulator ' + str(count) + ':'
                     if (len(value) +
-                        len(text)) > 1023 or (len(value) +
+                        len(text)) > 1022 or (len(value) +
                                               len(embed) > 5999):
                         self.cont += 1
                         value = value.replace('\n', '; ')
