@@ -219,7 +219,12 @@ class Games(commands.Cog, name='games'):
 
         return embeds
 
-    def format_all_games_embed(self, bga=False, boite=False, tts=False, yucata=False):
+    def format_all_games_embed(
+            self,
+            bga=False,
+            boite=False,
+            tts=False,
+            yucata=False):
         self.cont = 1
         embeds = []
         if bga:
@@ -400,8 +405,14 @@ class Games(commands.Cog, name='games'):
                 await message.add_reaction(emoji)
         return responses
 
-    @commands.command(aliases=['boite_a_jeux', 'boiteajeux', 'boîte', 'boîte_à_jeux', 'boîteàjeux'],
-                      help='Prints the list of games currently available on Boîte à Jeux.')
+    @commands.command(
+        aliases=[
+            'boite_a_jeux',
+            'boiteajeux',
+            'boîte',
+            'boîte_à_jeux',
+            'boîteàjeux'],
+        help='Prints the list of games currently available on Boîte à Jeux.')
     async def boite(self, ctx):
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
