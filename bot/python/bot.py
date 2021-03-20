@@ -1,7 +1,8 @@
 # bot.py
-import os
-
 import discord
+import os
+import sys
+import traceback
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -37,6 +38,8 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("No such command. Try using `bg help` to see valid commands.")
     else:
+        traceback.print_exception(
+            type(error), error, error.__traceback__, file=sys.stderr)
         await ctx.send(f"An error was raised, ask the bot devs:\n```{error}```")
 
 
