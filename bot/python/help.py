@@ -46,7 +46,8 @@ class Help(commands.Cog, name='help'):
                                value=cmds_desc[0:len(cmds_desc) - 1],
                                inline=False)
                 message = await ctx.send('', embed=halp)
-                await message.add_reaction(emoji='✉')
+                if ctx.channel.type is not discord.ChannelType.private:
+                    await message.add_reaction(emoji='✉')
             else:
                 if len(cog) > 1:
                     halp = discord.Embed(
@@ -75,7 +76,8 @@ class Help(commands.Cog, name='help'):
                             colour=discord.Colour.red())
 
                     message = await ctx.send('', embed=halp)
-                    await message.add_reaction(emoji='✉')
+                    if ctx.channel.type is not discord.ChannelType.private:
+                        await message.add_reaction(emoji='✉')
         except Exception as e:
             if debug:
                 print(e)
