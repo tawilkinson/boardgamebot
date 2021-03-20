@@ -67,12 +67,33 @@ class Games(commands.Cog, name='games'):
             url='https://www.yucata.de/bundles/images/Logo.jpg')
         return embed
 
-    def embed_constrain(self, name, value, embed, embeds, game=None, bga=None, yucata=None):
+    def base_boite_embed(self):
+        if self.cont > 1:
+            title = f'Boîte à Jeux Games ({self.cont})'
+            description = 'More game links below'
+        else:
+            title = f'Boîte à Jeux Games'
+            description = 'Boîte à Jeux is a predominantly French online game system. The \
+                interface has been translated to English and more recently, German as well.\
+                \nGames are played in a web browser one turn at a time, which could take hours \
+                or weeks, depending on the game and how often the players take their turns. \
+                    Live games are possible if players are both logged in at the same time.'
+        url = 'http://www.boiteajeux.net/'
+        colour = 0x55774C
+        embed = discord.Embed(
+            title=title, description=description, colour=colour, url=url)
+        embed.set_thumbnail(
+            url='http://www.boiteajeux.net/img/banniere_baj_en.png')
+        return embed
+
+    def embed_constrain(self, name, value, embed, embeds, game=None, bga=None, yucata=None, boite=None):
         embeds.append(embed)
         if game:
             embed = self.base_embed(game)
         elif bga:
             embed = self.base_bga_embed()
+        elif boite:
+            embed = self.base_boite_embed()
         elif yucata:
             embed = self.base_yucata_embed()
         embed.add_field(name=name, value=value)
@@ -92,28 +113,28 @@ class Games(commands.Cog, name='games'):
 
         # Board Game Arena field
         if not game['bga']:
-            embed.add_field(name='Board Game Arena:', value='❌')
+            embed.add_field(name='Board Game Arena', value='❌')
         else:
             link = game['bga']
-            embed.add_field(name='Board Game Arena:', value=link)
+            embed.add_field(name='Board Game Arena', value=link)
 
         # Boîte à Jeux field
         if not game['boite']:
-            embed.add_field(name='Boîte à Jeux :', value='❌')
+            embed.add_field(name='Boîte à Jeux', value='❌')
         else:
             link = game['boite']
-            embed.add_field(name='Boîte à Jeux :', value=link)
+            embed.add_field(name='Boîte à Jeux', value=link)
 
         # Yucata field
         if not game['yucata']:
-            embed.add_field(name='Yucata:', value='❌')
+            embed.add_field(name='Yucata', value='❌')
         else:
             link = game['yucata']
-            embed.add_field(name='Yucata:', value=link)
+            embed.add_field(name='Yucata', value=link)
 
         # Tabletopia field
         if not game['tabletopia']:
-            embed.add_field(name='Tabletopia:', value='❌')
+            embed.add_field(name='Tabletopia', value='❌')
         else:
             link = game['tabletopia']
             if len(link) > 1023:
@@ -137,11 +158,11 @@ class Games(commands.Cog, name='games'):
                         value += '\n'
             else:
                 link = link.replace('\n', '; ')
-                embed.add_field(name='Tabletopia:', value=link)
+                embed.add_field(name='Tabletopia', value=link)
 
         # Tabletop Simulator field
         if not game['tts']:
-            embed.add_field(name='Tabletop Simulator:', value='❌')
+            embed.add_field(name='Tabletop Simulator', value='❌')
         else:
             link = game['tts']
             if len(link) > 1023:
@@ -169,20 +190,22 @@ class Games(commands.Cog, name='games'):
                                                          embed, embeds, game)
             else:
                 link = link.replace('\n', '; ')
-                embed.add_field(name='Tabletop Simulator:', value=link)
+                embed.add_field(name='Tabletop Simulator', value=link)
 
         embeds.append(embed)
 
         return embeds
 
-    def format_all_games_embed(self, bga=False, yucata=False):
+    def format_all_games_embed(self, bga=False, yucata=False, boite=False):
         self.cont = 1
         embeds = []
         if bga:
             embed = self.base_bga_embed()
         if yucata:
             embed = self.base_yucata_embed()
-        all_links = get_all_games(bga, yucata)
+        if boite:
+            embed = self.base_boite_embed()
+        all_links = get_all_games(bga, yucata, boite)
         if all_links is None:
             return embeds
         count = 1
@@ -197,7 +220,7 @@ class Games(commands.Cog, name='games'):
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, bga=bga, yucata=yucata)
+                        alphabet, value, embed, embeds, bga=bga, yucata=yucata, boite=boite)
                 else:
                     embed.add_field(name=alphabet, value=value)
                 alphabet = name
@@ -207,7 +230,7 @@ class Games(commands.Cog, name='games'):
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, bga=bga, yucata=yucata)
+                        alphabet, value, embed, embeds, bga=bga, yucata=yucata, boite=boite)
                     alphabet = f'{name} (cont...)'
                     value = text
                 elif (len(alphabet) + len(value) + len(text)) > 1022:
@@ -239,6 +262,14 @@ class Games(commands.Cog, name='games'):
                 else:
                     idx = 0
                 responses = self.format_all_games_embed(bga=True)
+            elif 'Boîte à Jeux' in title:
+                if match is not None:
+                    if debug:
+                        print(f'> "{match[0]}" page matched')
+                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+                else:
+                    idx = 0
+                responses = self.format_all_games_embed(boite=True)
             elif 'Yucata.de Games' in title:
                 if match is not None:
                     if debug:
@@ -335,6 +366,18 @@ class Games(commands.Cog, name='games'):
                 await message.add_reaction(emoji)
         return responses
 
+    @commands.command(help='Prints the list of games currently available on Boîte à Jeux.')
+    async def boite(self, ctx):
+        response = 'Getting the list of Boîte à Jeux games...'
+        message = await ctx.send(response)
+        responses = self.format_all_games_embed(boite=True)
+        await message.edit(content="", embed=responses[0])
+        if len(responses) > 1:
+            emojis = ['⏮', '◀', '▶', '⏭']
+            for emoji in emojis:
+                await message.add_reaction(emoji)
+        return responses
+
     @commands.command(help='Prints the list of games currently available on Yucata.de.')
     async def yucata(self, ctx):
         response = 'Getting the list of Yucata games...'
@@ -346,6 +389,15 @@ class Games(commands.Cog, name='games'):
             for emoji in emojis:
                 await message.add_reaction(emoji)
         return responses
+
+    @commands.command(help='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
+    async def tabletopia(self, ctx):
+        description = 'Tabletopia has over 1600 games. Full list at [Tabletopia: All Games](https://tabletopia.com/games?page=1).'
+        embed = discord.Embed(title='Tabletopia Games',
+                              description=description, colour=0xFD9705, url='https://tabletopia.com/games?page=1')
+        embed.set_thumbnail(
+            url='https://tabletopia.com/Content/Images/logo.png')
+        await ctx.send(embed=embed)
 
     @commands.command(help='Lists the help for command category `games`.',
                       pass_context=True)

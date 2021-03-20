@@ -125,12 +125,12 @@ class Game:
 
 def get_boite_a_jeux_data(game, debug=False):
     '''
-    Takes an object of "Game" Class and searches Boite a Jeux "all games" webpage
+    Takes an object of "Game" Class and searches Boîte à Jeux "all games" webpage
     to see if the game's name is listed. Will update the Game Object with url for
-    the webpage of the game on Boite a Jeux's website.
+    the webpage of the game on Boîte à Jeux's website.
     '''
     if debug:
-        print(f'> Boite a Jeux: {game.boite_search_url}')
+        print(f'> Boîte à Jeux: {game.boite_search_url}')
     boite_page = Webpage(game.boite_search_url)
     boite_directory_page = boite_page.page_html
     if boite_directory_page:
@@ -454,7 +454,7 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
         "tts": "[<name> on Tabletop Simulator](<tts_url>)",
         "bga": "[<name> on BGA](<bga_url>)",
         "yucata": "[<name> on Yucata](<yucata_url>)",
-        "boite": "[<name> on Boite a Jeux](<boite_url>)",
+        "boite": "[<name> on Boîte à Jeux](<boite_url>)",
     }
     '''
     game = Game(game_name.lower())
@@ -480,7 +480,7 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
     return False
 
 
-def get_all_games(bga, yucata, debug=False):
+def get_all_games(bga, yucata, boite, debug=False):
     '''
     Simple wrapper to get all games from each service
     '''
@@ -488,6 +488,8 @@ def get_all_games(bga, yucata, debug=False):
         return get_all_bga_games(debug=debug)
     if yucata:
         return get_all_yucata_games(debug=debug)
+    if boite:
+        return get_all_boite_games(debug=debug)
     return None
 
 
@@ -495,8 +497,8 @@ def get_all_bga_games(debug=False):
     '''
     Searches Board Game Arena for all games on the site and returns them
     '''
-    bga_game_list = f'https://boardgamearena.com/gamelist?section=all'
-    bga_base_url = f'https://boardgamearena.com'
+    bga_game_list = 'https://boardgamearena.com/gamelist?section=all'
+    bga_base_url = 'https://boardgamearena.com'
     if debug:
         print(f'> Board Game Arena all games: {bga_game_list}')
     bga_all_games_page = Webpage(bga_game_list)
@@ -510,9 +512,35 @@ def get_all_bga_games(debug=False):
             link = bga_base_url + result.parent.get('href')
             all_links[f'{name}'] = f'[{name}]({link})'
     else:
-        all_links['BGA Error'] = bga_all_games_page.error
+        all_links['Board Game Arena Error'] = bga_all_games_page.error
         if debug:
             print(f'--> all BGA games:\n{all_links}')
+    return all_links
+
+
+def get_all_boite_games(debug=False):
+    '''
+    Searches Boîte à Jeux for all games on the site and returns them
+    '''
+    boite_game_list = 'http://www.boiteajeux.net/index.php?p=regles'
+    if debug:
+        print(f'> Board Game Arena all games: {boite_game_list}')
+    boite_all_games_page = Webpage(boite_game_list)
+    boite_page = boite_all_games_page.page_html
+    all_links = {}
+    if boite_page:
+        search_results = boite_page.find_all(
+            'div', class_='jeuxRegles')
+        for result in search_results:
+            rules_elem = result.select_one('a', text='Rules')
+            rules_href = rules_elem.get('href')
+            link = f'http://www.boiteajeux.net/{rules_href}'
+            name = string.capwords(str(result.contents[0]).lstrip().rstrip())
+            all_links[f'{name}'] = f'[{name}]({link})'
+    else:
+        all_links['Boîte à Jeux Error'] = boite_all_games_page.error
+        if debug:
+            print(f'--> all Boîte à Jeux games:\n{all_links}')
     return all_links
 
 
@@ -536,7 +564,7 @@ def get_all_yucata_games(debug=False):
             if game_name:
                 all_links[f'{game_name}'] = f'[{game_name}]({link})'
     else:
-        all_links['BGA Error'] = yucata_all_games_page.error
+        all_links['Yucata.de Error'] = yucata_all_games_page.error
     if debug:
         print(f'--> all Yucata games:\n{all_links}')
     return all_links
