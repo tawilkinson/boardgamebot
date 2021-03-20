@@ -67,12 +67,14 @@ class Games(commands.Cog, name='games'):
             url='https://www.yucata.de/bundles/images/Logo.jpg')
         return embed
 
-    def embed_constrain(self, name, value, embed, embeds, game=None, bga=None):
+    def embed_constrain(self, name, value, embed, embeds, game=None, bga=None, yucata=None):
         embeds.append(embed)
         if game:
             embed = self.base_embed(game)
         elif bga:
             embed = self.base_bga_embed()
+        elif yucata:
+            embed = self.base_yucata_embed()
         embed.add_field(name=name, value=value)
         return embed, embeds
 
@@ -195,7 +197,7 @@ class Games(commands.Cog, name='games'):
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, bga=True)
+                        alphabet, value, embed, embeds, bga=bga, yucata=yucata)
                 else:
                     embed.add_field(name=alphabet, value=value)
                 alphabet = name
@@ -205,7 +207,7 @@ class Games(commands.Cog, name='games'):
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, bga=True)
+                        alphabet, value, embed, embeds, bga=bga, yucata=yucata)
                     alphabet = f'{name} (cont...)'
                     value = text
                 elif (len(alphabet) + len(value) + len(text)) > 1022:
@@ -229,7 +231,7 @@ class Games(commands.Cog, name='games'):
         if emoji in ['⏮', '◀', '▶', '⏭']:
             title = message.embeds[0].title
             match = self.parser.search(title)
-            if 'Board Game Arena Games' in title:
+            if 'Board Game Arena Games' == title:
                 if match is not None:
                     if debug:
                         print(f'> "{match[0]}" page matched')
@@ -237,7 +239,7 @@ class Games(commands.Cog, name='games'):
                 else:
                     idx = 0
                 responses = self.format_all_games_embed(bga=True)
-            elif 'Yucata.de Games' in title:
+            elif 'Yucata.de Games' == title:
                 if match is not None:
                     if debug:
                         print(f'> "{match[0]}" page matched')
