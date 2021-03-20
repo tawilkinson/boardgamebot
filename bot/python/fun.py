@@ -1,64 +1,36 @@
 import discord
+import json
+import os
 import random
 from discord.ext import commands
 
 
 class Fun(commands.Cog, name='fun'):
-    '''Fun commands that aren't part of the bot proper.'''
+    '''
+    Fun commands that aren't part of the bot proper.
+    '''
 
     def __init__(self, bot):
         self.bot = bot
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        try:
+            with open(os.path.join(dir_path, '../data/theme_data.json')) as json_file:
+                self.theme_data = json.load(json_file)
+        except FileNotFoundError:
+            self.theme_data = {}
+            print(
+                'theme_data.json is empty. Can''t generate random themes.')
 
     @commands.command(aliases=['t'],
                       help='Generates a random board game theme.')
     async def theme(self, ctx):
-        style = [
-            'Eurogame',
-            'Card game',
-            'Roll & Write',
-            'Strategy game',
-            'Worker placement',
-            'Engine builder',
-            '4X',
-            'Deck builder',
-            'Abstract game',
-            'Dexterity game',
-            'Drafting game',
-            'Roll & move',
-            'Push-your-luck',
-            'Social deduction']
-        component = [
-            'meeples',
-            'legacy mechanics',
-            'tableau',
-            'area control',
-            'hidden roles',
-            'deck building',
-            'rondels',
-            'storytelling',
-            'trick-taking',
-            'hand management',
-            'victory points',
-            'tile placement',
-            'drafting',
-            'custom dice']
-        setting = [
-            'Istanbul',
-            'Carcassonne',
-            'London',
-            'America',
-            'a sushi restaurant',
-            'Tokyo',
-            'Warsaw',
-            'a space ship',
-            'the bottom of the ocean',
-            'Birmingham',
-            'a factory',
-            'the world of Warhammer Fantasy Battles',
-            'Waterdeep']
-
-        response = random.choice(
-            style) + ' using ' + random.choice(component) + ' set in ' + random.choice(setting)
+        '''
+        Makes a random board game concept from a style, a component and
+         a setting. Taken from the JSON file, theme_data.json.
+        '''
+        response = random.choice(self.theme_data['styles']) + ' using ' +\
+            random.choice(self.theme_data['components']) + ' set in ' +\
+            random.choice(self.theme_data['settings'])
         await ctx.send(response)
 
     @commands.command(help='Lists the help for command category `fun`.',
