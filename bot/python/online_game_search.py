@@ -329,7 +329,7 @@ def get_tts_data(game, debug=False):
                 url = result.parent.parent['href']
                 url = url.split('?snr=')[0]
                 dlc = f'[{this_name}]({url})'
-                dlc = (f"[{game.name} (DLC)]({url})\n")
+                dlc = (f'[{game.name} (DLC)]({url})\n')
                 if debug:
                     print(
                         f'--> retrieved {game.name} Tabletop Simulator DLC data')
@@ -360,7 +360,7 @@ def get_tts_data(game, debug=False):
         if workshop:
             if workshop[-1:] == '\n':
                 workshop = workshop[:-1]
-        game.set_tts_url(f"{dlc}{workshop}")
+        game.set_tts_url(f'{dlc}{workshop}')
     else:
         game.set_tts_url(tts_dlc_page.error)
 
@@ -450,11 +450,11 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
         "description": "<description>",
         "bgg": "https://boardgamegeek.com/boardgame/<ID>/<name>",
         "image": "<image_url>",
-        "tabletopia": "[<name> on Tabletopia](<tabletopia_url>)",
-        "tts": "[<name> on Tabletop Simulator](<tts_url>)",
-        "bga": "[<name> on BGA](<bga_url>)",
-        "yucata": "[<name> on Yucata](<yucata_url>)",
-        "boite": "[<name> on Boîte à Jeux](<boite_url>)",
+        "tabletopia": "[<name>](<tabletopia_url>)",
+        "tts": "[<name>](<tts_url>)",
+        "bga": "[<name>](<bga_url>)",
+        "yucata": "[<name>](<yucata_url>)",
+        "boite": "[<name>](<boite_url>)",
     }
     '''
     game = Game(game_name.lower())
