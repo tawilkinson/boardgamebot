@@ -1,4 +1,5 @@
 import discord
+import DiscordUtils
 import re
 import string
 from discord.ext import commands
@@ -242,72 +243,6 @@ class Games(commands.Cog, name='games'):
 
         return embeds
 
-    async def embed_navigator(self, reaction, user, debug=False):
-        emoji = reaction.emoji
-        message = reaction.message
-        if user.bot:
-            return
-        if emoji in ['⏮', '◀', '▶', '⏭']:
-            title = message.embeds[0].title
-            match = self.parser.search(title)
-            if match is not None:
-                if debug:
-                    print(f'> "{match[0]}" page matched')
-                idx = int(match[0].lstrip(' (').rstrip(')')) - 1
-            else:
-                idx = 0
-            if 'Board Game Arena Games' in title:
-                responses = self.format_all_games_embed(bga=True)
-            elif 'Boîte à Jeux' in title:
-                responses = self.format_all_games_embed(boite=True)
-            elif 'Tabletop Simulator DLC' in title:
-                responses = self.format_all_games_embed(tts=True)
-            elif 'Yucata.de Games' in title:
-                responses = self.format_all_games_embed(yucata=True)
-            else:
-                if match is not None:
-                    search_game = await search_web_board_game_data(
-                        title.replace(str(match[0]), ''), message, reaction)
-                    if debug:
-                        print(f'> {title} is being fetched again')
-                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
-                else:
-                    search_game = await search_web_board_game_data(title, message, reaction)
-                    idx = 0
-                responses = self.format_game_embed(search_game)
-
-            if debug:
-                print(f'Index is {idx}')
-            old_idx = idx
-            if emoji == '⏮':
-                idx = 0
-            elif emoji == '◀':
-                idx = idx - 1
-            elif emoji == '▶':
-                idx = idx + 1
-            elif emoji == '⏭':
-                idx = len(responses) - 1
-
-            if idx < 0:
-                idx = 0
-            elif idx > len(responses) - 1:
-                idx = len(responses) - 1
-            if debug:
-                print(f'Index to return is {idx}')
-                print(f'Total embeds: {len(responses)}')
-            if idx != old_idx:
-                await message.edit(content='', embed=responses[idx])
-        else:
-            return
-
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user, debug=False):
-        await self.embed_navigator(reaction, user, debug=debug)
-
-    @commands.Cog.listener()
-    async def on_reaction_remove(self, reaction, user, debug=False):
-        await self.embed_navigator(reaction, user, debug=debug)
-
     @commands.command(aliases=['g', 'search', 's', 'boardgame', 'bg'],
                       help='Print detailed info about a board game. \
                           Fetches game info from [BGG](https://boardgamegeek.com/) \
@@ -319,7 +254,6 @@ class Games(commands.Cog, name='games'):
         if game_str is None:
             response = f'Please enter a game to search: `bg game <game_name>`. '
             await ctx.send(response)
-            return [response]
         else:
             response = 'Searching for ' + game_str + ', standby whilst I search online...'
             message = await ctx.send(response)
@@ -327,16 +261,12 @@ class Games(commands.Cog, name='games'):
                 game_str, message, ctx)
             if search_game:
                 responses = self.format_game_embed(search_game)
-                await message.edit(content='', embed=responses[0])
-                if len(responses) > 1:
-                    emojis = ['⏮', '◀', '▶', '⏭']
-                    for emoji in emojis:
-                        await message.add_reaction(emoji)
-                return responses
+                paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+                await message.delete()
+                await paginator.run(responses)
             else:
                 response = game_str + ' not found online.'
                 await message.edit(content=response)
-                return [response]
 
     @commands.command(aliases=['board_game_arena', 'boardgamearena'],
                       help='Prints the list of games currently available on Board Game Arena.')
@@ -344,12 +274,9 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(bga=True)
-        await message.edit(content='', embed=responses[0])
-        if len(responses) > 1:
-            emojis = ['⏮', '◀', '▶', '⏭']
-            for emoji in emojis:
-                await message.add_reaction(emoji)
-        return responses
+        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+        await message.delete()
+        await paginator.run(responses)
 
     @commands.command(
         aliases=[
@@ -363,12 +290,9 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(boite=True)
-        await message.edit(content='', embed=responses[0])
-        if len(responses) > 1:
-            emojis = ['⏮', '◀', '▶', '⏭']
-            for emoji in emojis:
-                await message.add_reaction(emoji)
-        return responses
+        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+        await message.delete()
+        await paginator.run(responses)
 
     @commands.command(help='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
     async def tabletopia(self, ctx):
@@ -388,12 +312,9 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Tabletop Simulator DLC...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(tts=True)
-        await message.edit(content='', embed=responses[0])
-        if len(responses) > 1:
-            emojis = ['⏮', '◀', '▶', '⏭']
-            for emoji in emojis:
-                await message.add_reaction(emoji)
-        return responses
+        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+        await message.delete()
+        await paginator.run(responses)
 
     @commands.command(aliases=['yucata.de'],
                       help='Prints the list of games currently available on Yucata.de.')
@@ -401,12 +322,9 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(yucata=True)
-        await message.edit(content='', embed=responses[0])
-        if len(responses) > 1:
-            emojis = ['⏮', '◀', '▶', '⏭']
-            for emoji in emojis:
-                await message.add_reaction(emoji)
-        return responses
+        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+        await message.delete()
+        await paginator.run(responses)
 
     @commands.command(help='Lists the help for command category `games`.',
                       pass_context=True)
