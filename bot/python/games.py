@@ -296,7 +296,7 @@ class Games(commands.Cog, name='games'):
                 print(f'Index to return is {idx}')
                 print(f'Total embeds: {len(responses)}')
             if idx != old_idx:
-                await message.edit(content="", embed=responses[idx])
+                await message.edit(content='', embed=responses[idx])
         else:
             return
 
@@ -327,7 +327,7 @@ class Games(commands.Cog, name='games'):
                 game_str, message, ctx)
             if search_game:
                 responses = self.format_game_embed(search_game)
-                await message.edit(content="", embed=responses[0])
+                await message.edit(content='', embed=responses[0])
                 if len(responses) > 1:
                     emojis = ['⏮', '◀', '▶', '⏭']
                     for emoji in emojis:
@@ -344,7 +344,7 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(bga=True)
-        await message.edit(content="", embed=responses[0])
+        await message.edit(content='', embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
             for emoji in emojis:
@@ -363,7 +363,7 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(boite=True)
-        await message.edit(content="", embed=responses[0])
+        await message.edit(content='', embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
             for emoji in emojis:
@@ -388,7 +388,7 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Tabletop Simulator DLC...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(tts=True)
-        await message.edit(content="", embed=responses[0])
+        await message.edit(content='', embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
             for emoji in emojis:
@@ -401,7 +401,7 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(yucata=True)
-        await message.edit(content="", embed=responses[0])
+        await message.edit(content='', embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
             for emoji in emojis:

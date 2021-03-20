@@ -49,12 +49,12 @@ async def on_command_error(ctx, error):
     Makes it easier to debug errors in chat.
     '''
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("No such command. Try using `bg help` to see valid commands.")
+        await ctx.send('No such command. Try using `bg help` to see valid commands.')
     else:
         # Better traceback to stdout for debugging
         traceback.print_exception(
             type(error), error, error.__traceback__, file=sys.stderr)
-        await ctx.send(f"An error was raised, ask the bot devs:\n```{error}```")
+        await ctx.send(f'An error was raised, ask the bot devs:\n```{error}```')
 
 
 @bot.command()
