@@ -201,8 +201,7 @@ class Games(commands.Cog, name='games'):
 
         return embeds
 
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user, debug=False):
+    async def embed_navigator(self, reaction, user, debug=False):
         emoji = reaction.emoji
         message = reaction.message
         if user.bot:
@@ -255,61 +254,14 @@ class Games(commands.Cog, name='games'):
                 await message.edit(content="", embed=responses[idx])
         else:
             return
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user, debug=False):
+        await self.embed_navigator(reaction, user, debug=debug)
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user, debug=False):
-        emoji = reaction.emoji
-        message = reaction.message
-        if user.bot:
-            return
-        if emoji in ['⏮', '◀', '▶', '⏭']:
-            title = message.embeds[0].title
-            match = self.parser.search(title)
-            if 'Board Game Arena Games' in title:
-                if match is not None:
-                    if debug:
-                        print(f'> "{match[0]}" page matched')
-                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
-                else:
-                    idx = 0
-                responses = self.format_bga_embed()
-            else:
-                if match is not None:
-                    if debug:
-                        print(f'> "{match[0]}" page matched')
-                    search_game = await search_web_board_game_data(
-                        title.replace(str(match[0]), ''), message, reaction)
-                    if debug:
-                        print(f'> {title} is being fetched again')
-                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
-                else:
-                    search_game = await search_web_board_game_data(title, message, reaction)
-                    idx = 0
-                responses = self.format_game_embed(search_game)
-
-            if debug:
-                print(f'Index is {idx}')
-            old_idx = idx
-            if emoji == '⏮':
-                idx = 0
-            elif emoji == '◀':
-                idx = idx - 1
-            elif emoji == '▶':
-                idx = idx + 1
-            elif emoji == '⏭':
-                idx = len(responses) - 1
-
-            if idx < 0:
-                idx = 0
-            elif idx > len(responses) - 1:
-                idx = len(responses) - 1
-            if debug:
-                print(f'Index to return is {idx}')
-                print(f'Total embeds: {len(responses)}')
-            if idx != old_idx:
-                await message.edit(content="", embed=responses[idx])
-        else:
-            return
+        await self.embed_navigator(reaction, user, debug=debug)
 
     @commands.command(aliases=['g', 'search', 's', 'boardgame', 'bg'],
                       help='Print detailed info about a board game. \
