@@ -27,7 +27,7 @@ class Help(commands.Cog, name='help'):
         try:
             if not cog:
                 halp = discord.Embed(
-                    title='Cog Listing and Uncategorised Commands',
+                    title='Command Listing and Uncategorised Commands',
                     description='Use `bg help *command*` to find out more about them!\
                                              \nClick on ✉ to get this info via DM.',
                     colour=discord.Colour.blurple())
