@@ -5,17 +5,26 @@ from discord.ext import commands
 
 
 class Die():
+    '''
+    Die Class which is instantiated with the text string used to call the roller 
+    command. Uses regex to analyse the string and then rolls dice based on the
+    input parameters.
+    '''
+
     def __init__(self, die_text):
+        # Setup regex string
         self.dice_regex = r'(?P<count>\d{1,4})?d(?P<sides>\d{1,4})(?P<explode>!)?'
         self.dice_regex += r'(?P<keep>kl?(?P<keepCount>\d{1,2}))?((?P<plus>\+)?'
         self.dice_regex += r'(?P<minus>-)?(?P<mod>\d{1,2})|$)'
         self.parser = re.compile(self.dice_regex)
         self.match = self.parser.search(die_text)
+        # Setup variables used across Die commands
         self.rolls = []
         self.die_str = ''
         self.short_str = ''
         self.exploded = False
         self.total = 0
+        # Try to get the various parts of the roll from the regex
         try:
             try:
                 self.count = int(self.match.group('count'))
@@ -52,6 +61,9 @@ class Die():
             self.short_str = self.die_str
 
     def roll_core(self):
+        '''
+        The core rolling function.
+        '''
         if self.sides > 0:
             result = random.randint(1, self.sides)
             if self.explode and result == self.sides:
@@ -62,6 +74,9 @@ class Die():
             self.rolls.append([0, '0'])
 
     def roll_explodes(self, first_result):
+        '''
+        Handle exploding dice rolls.
+        '''
         self.exploded = True
         result = first_result
         explode_str = '['
@@ -76,6 +91,11 @@ class Die():
         return [roll, explode_str]
 
     def discard(self):
+        '''
+        When we choose to keep lower (kl) or keep higher (k)
+        dice rolls this function discards the other results and 
+        generates a sting with stikethrough text to display this.
+        '''
         counter = 0
         if self.keep:
             if 'kl' in self.keep:
@@ -93,6 +113,9 @@ class Die():
                 self.total += result[0]
 
     def generate_die_str(self, short=False):
+        '''
+        Generates the string for a dice roll
+        '''
         str_text = ''
         if short:
             str_text += self.rolls[0][1]
@@ -108,14 +131,23 @@ class Die():
         return str_text
 
     def roll(self):
+        '''
+        Main dice rolling function. Uses the variables from
+        the regex above to work out which rolling functions to 
+        call.
+        '''
         if self.count:
+            # Roll mutliple dice
             for _ in range(self.count):
                 self.roll_core()
         else:
+            # Roll one die
             self.roll_core()
+        # Discard rolls if needed
         self.discard()
 
         if len(self.rolls) > 1:
+            # Multiple rolls need to be displayed nicely
             self.die_str = '_'
             self.die_str += self.generate_die_str()
             if self.mod:
@@ -126,6 +158,7 @@ class Die():
                 self.short_str += '_' + self.generate_die_str(True) + '_ = '
 
         if self.mod:
+            # Handle static positive/negative modifiers
             if len(self.rolls) == 1:
                 self.die_str = self.rolls[0][1]
                 self.short_str = self.rolls[0][1]
@@ -137,10 +170,12 @@ class Die():
                 self.die_str += f' - {self.mod}'
             self.die_str += ' = '
 
+        # Generate the total string
         self.die_str += f'**{self.total}**'
         self.short_str += f'**{self.total}**'
 
         if self.keep:
+            # Add emojis for keep/keep lower
             if 'kl' in self.keep:
                 self.die_str = '👎 ' + self.die_str + ' 👎'
                 self.short_str = '👎 ' + self.short_str + ' 👎'
@@ -149,6 +184,7 @@ class Die():
                 self.short_str = '👍 ' + self.short_str + ' 👍'
 
         if self.exploded:
+            # Add emojis for exploding dice
             self.die_str = '💥 ' + self.die_str + ' 💥'
             self.short_str = '💥 ' + self.short_str + ' 💥'
 
@@ -156,26 +192,50 @@ class Die():
         self.short_str += '\n'
 
     def reroll(self):
+        '''
+        Re-rolls a die
+        '''
         self.die_str = ''
         self.total = 0
         self.exploded = False
         self.roll()
 
     def get_str(self):
+        '''
+        Returns the die string
+        '''
         return self.die_str
 
     def get_short_str(self):
+        '''
+        Returns the short die string
+        '''
         return self.short_str
 
     def get_len(self):
+        '''
+        Utility function of get length of die_str
+        '''
         return len(self.die_str)
 
 
 class Roller():
+    '''
+    Roller class that splits up multiple rolls and then uses the
+    Die class to roll each individual roll
+    '''
+
     def __init__(self, roll_text):
+        '''
+        Splits incoming rolls into separate commands
+        '''
         self.all_rolls = roll_text.split('|')
 
     def roll(self):
+        '''
+        Makes the rolls and setups up multiple respones messages
+        if needed
+        '''
         responses = []
 
         for roll in self.all_rolls:
@@ -212,6 +272,9 @@ class Dice(commands.Cog, name='dice'):
             - `bg roll d6+5`: rolls a d6 and adds 5.\n- `bg roll d6-4`: rolls a d6 and subtracts 4.\n\
             - `bg roll d6|d8|d20`: rolls a d, a d8 and a d20. All above functionality is supported.\n')
     async def roll(self, ctx, *roll_text):
+        '''
+        bg roll command
+        '''
         roller = Roller(''.join(roll_text))
         responses = roller.roll()
         final_response = 'You rolled:\n'
