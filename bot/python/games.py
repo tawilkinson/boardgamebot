@@ -223,12 +223,12 @@ class Games(commands.Cog, name='games'):
                     if debug:
                         print(f'> "{match[0]}" page matched')
                     search_game = await search_web_board_game_data(
-                        title.replace(str(match[0]), ''))
+                        title.replace(str(match[0]), ''), message, reaction)
                     if debug:
                         print(f'> {title} is being fetched again')
                     idx = int(match[0].lstrip(' (').rstrip(')')) - 1
                 else:
-                    search_game = await search_web_board_game_data(title)
+                    search_game = await search_web_board_game_data(title, message, reaction)
                     idx = 0
                 responses = self.format_game_embed(search_game)
 
@@ -278,12 +278,12 @@ class Games(commands.Cog, name='games'):
                     if debug:
                         print(f'> "{match[0]}" page matched')
                     search_game = await search_web_board_game_data(
-                        title.replace(str(match[0]), ''))
+                        title.replace(str(match[0]), ''), message, reaction)
                     if debug:
                         print(f'> {title} is being fetched again')
                     idx = int(match[0].lstrip(' (').rstrip(')')) - 1
                 else:
-                    search_game = await search_web_board_game_data(title)
+                    search_game = await search_web_board_game_data(title, message, reaction)
                     idx = 0
                 responses = self.format_game_embed(search_game)
 

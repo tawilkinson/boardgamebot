@@ -175,15 +175,21 @@ def bgg_data_from_id(game, id, debug=False):
         return False
 
 
-def get_bgg_data(game, debug=False):
+async def get_bgg_data(game,  message, ctx, exact=True, debug=False):
     '''
     Takes an object of "Game" Class and searches Board Game Geeks API for a boardgame
     that exactly matches the Game name. Will update the Game Object with url for
     the webpage of the game on BBGs website, as well as the Game's image, and description.
     '''
-    if debug:
-        print(f'> Board Game Geek: {game.bgg_search_url}')
-    bgg_search = Webpage(game.bgg_search_url)
+    id = 0
+    if exact:
+        if debug:
+            print(f'> Board Game Geek: {game.bgg_search_url}')
+        bgg_search = Webpage(game.bgg_search_url)
+    else:
+        if debug:
+            print(f'> Board Game Geek: {game.bgg_non_exact_search_url}')
+        bgg_search = Webpage(game.bgg_non_exact_search_url)
     if bgg_search.page_html:
         games_found = bgg_search.page_html.items['total']
 
@@ -193,38 +199,8 @@ def get_bgg_data(game, debug=False):
             if debug:
                 print(f'> !!! {game.name} not found on Board Game Geek !!!')
             return False
-
-        else:
-            id = bgg_search.page_html.items.item['id']
-            return bgg_data_from_id(game, id)
-    else:
-        if debug:
-            print(f'--> {bgg_search.error}')
-        return False
-
-
-async def get_non_exact_bgg_data(game, message=None, ctx=None, debug=False):
-    '''
-    Takes an object of "Game" Class and searches Board Game Geeks API for a boardgame
-    that best matches the Game name. Will return the BGG name of the best match, or
-    False if no match is found.
-    '''
-    id = 0
-    if debug:
-        print(f'> Board Game Geek: {game.bgg_non_exact_search_url}')
-    bgg_search = Webpage(game.bgg_non_exact_search_url)
-    if bgg_search.page_html:
-        games_found = bgg_search.page_html.items['total']
-
-        if games_found == '0':
-            game.set_description(
-                'Game not found on Board Game Geek! Is it even a board game?')
-            if debug:
-                print(
-                    f'> !!! No potential matches for {game.name} found on Board Game Geek !!!')
-            return False, id
-
-        else:
+        elif int(games_found) > 1:
+            closest_match = None
             board_game_search = bgg_search.page_html.items.findAll('item')
             possible_board_games = collections.OrderedDict()
             count = 0
@@ -240,8 +216,8 @@ async def get_non_exact_bgg_data(game, message=None, ctx=None, debug=False):
                     'value')
                 possible_year = game_search.find('yearpublished').get(
                     'value')
-                possible_board_games[possible_name] = {
-                    'id': game_search['id'], 'year': possible_year}
+                possible_board_games[game_search['id']] = {
+                    'name': possible_name, 'year': possible_year}
                 name = f'{count}: {possible_name}'
                 value = f'{possible_year}'
                 if (len(response) + len(name) + len(value)) > 5999:
@@ -273,10 +249,10 @@ async def get_non_exact_bgg_data(game, message=None, ctx=None, debug=False):
                 try:
                     msg = await ctx.bot.wait_for('message', timeout=30, check=check)
                     if msg:
-                        key = list(possible_board_games.keys())[
-                            int(msg.content) - 1]
-                        game.update_name(key)
-                        closest_match = key
+                        idx = int(msg.content) - 1
+                        key = list(possible_board_games.keys())[idx]
+                        closest_match = possible_board_games[key]['name']
+                        game.update_name(closest_match)
                         if ctx.channel.type is not discord.ChannelType.private:
                             await msg.delete()
                     else:
@@ -288,14 +264,21 @@ async def get_non_exact_bgg_data(game, message=None, ctx=None, debug=False):
             if closest_match:
                 if debug:
                     print(f'--> {closest_match} is closest match')
-                id = possible_board_games[closest_match]['id']
-                return closest_match, id
+                if key:
+                    return bgg_data_from_id(game, key)
+                else:
+                    game.update_name(closest_match)
+                    id = possible_board_games[closest_match]['id']
+                    return bgg_data_from_id(game, id)
             else:
-                return False, id
+                return False
+        else:
+            id = bgg_search.page_html.items.item['id']
+            return bgg_data_from_id(game, id)
     else:
         if debug:
             print(f'--> {bgg_search.error}')
-        return False, id
+        return False
 
 
 def get_tabletopia_data(game, debug=False):
@@ -474,16 +457,13 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
         "boite": "[<name> on Boite a Jeux](<boite_url>)",
     }
     '''
-    debug = True
     game = Game(game_name.lower())
     if debug:
         print(f'SEARCHING WEB FOR GAME DATA: {game.name}')
-    game_on_bgg = get_bgg_data(game, debug)
+    game_on_bgg = await get_bgg_data(game, message, ctx, debug=debug)
     if not game_on_bgg:
-        possible_game, id = await get_non_exact_bgg_data(
-            game, message, ctx, debug)
+        possible_game = await get_bgg_data(game, message, ctx, False, debug)
         if possible_game:
-            bgg_data_from_id(game, id)
             game_on_bgg = True
         else:
             return False
