@@ -109,7 +109,7 @@ class Die():
 
     def roll(self):
         if self.count:
-            for num in range(self.count):
+            for _ in range(self.count):
                 self.roll_core()
         else:
             self.roll_core()
@@ -201,7 +201,7 @@ class Dice(commands.Cog, name='dice'):
     def __init__(self, bot):
         self.bot = bot
 
-    @ commands.command(
+    @commands.command(
         aliases=[
             'r',
             'dieroll'],
@@ -221,6 +221,11 @@ class Dice(commands.Cog, name='dice'):
                 final_response = ''
             final_response += response
         await ctx.send(final_response)
+
+    @commands.command(help='Lists the help for command category `dice`.',
+                      pass_context=True)
+    async def dice(self, ctx):
+        await ctx.invoke(self.bot.get_command('help'), 'dice')
 
 
 def setup(bot):
