@@ -86,7 +86,16 @@ class Games(commands.Cog, name='games'):
             url='http://www.boiteajeux.net/img/banniere_baj_en.png')
         return embed
 
-    def embed_constrain(self, name, value, embed, embeds, game=None, bga=None, yucata=None, boite=None):
+    def embed_constrain(
+            self,
+            name,
+            value,
+            embed,
+            embeds,
+            game=None,
+            bga=None,
+            yucata=None,
+            boite=None):
         embeds.append(embed)
         if game:
             embed = self.base_embed(game)
@@ -396,8 +405,11 @@ class Games(commands.Cog, name='games'):
     @commands.command(help='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
     async def tabletopia(self, ctx):
         description = 'Tabletopia has over 1600 games. Full list at [Tabletopia: All Games](https://tabletopia.com/games?page=1).'
-        embed = discord.Embed(title='Tabletopia Games',
-                              description=description, colour=0xFD9705, url='https://tabletopia.com/games?page=1')
+        embed = discord.Embed(
+            title='Tabletopia Games',
+            description=description,
+            colour=0xFD9705,
+            url='https://tabletopia.com/games?page=1')
         embed.set_thumbnail(
             url='https://tabletopia.com/Content/Images/logo.png')
         await ctx.send(embed=embed)
