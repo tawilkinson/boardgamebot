@@ -231,7 +231,7 @@ class Games(commands.Cog, name='games'):
         if emoji in ['⏮', '◀', '▶', '⏭']:
             title = message.embeds[0].title
             match = self.parser.search(title)
-            if 'Board Game Arena Games' == title:
+            if 'Board Game Arena Games' in title:
                 if match is not None:
                     if debug:
                         print(f'> "{match[0]}" page matched')
@@ -239,7 +239,7 @@ class Games(commands.Cog, name='games'):
                 else:
                     idx = 0
                 responses = self.format_all_games_embed(bga=True)
-            elif 'Yucata.de Games' == title:
+            elif 'Yucata.de Games' in title:
                 if match is not None:
                     if debug:
                         print(f'> "{match[0]}" page matched')
