@@ -261,7 +261,8 @@ class Games(commands.Cog, name='games'):
                 game_str, message, ctx)
             if search_game:
                 responses = self.format_game_embed(search_game)
-                paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+                paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+                    ctx, timeout=60, auto_footer=True)
                 await message.delete()
                 await paginator.run(responses)
             else:
@@ -274,7 +275,8 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(bga=True)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+            ctx, timeout=60, auto_footer=True)
         await message.delete()
         await paginator.run(responses)
 
@@ -290,7 +292,8 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(boite=True)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+            ctx, timeout=60, auto_footer=True)
         await message.delete()
         await paginator.run(responses)
 
@@ -312,7 +315,8 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Tabletop Simulator DLC...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(tts=True)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+            ctx, timeout=60, auto_footer=True)
         await message.delete()
         await paginator.run(responses)
 
@@ -322,7 +326,8 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(yucata=True)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(ctx)
+        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+            ctx, timeout=60, auto_footer=True)
         await message.delete()
         await paginator.run(responses)
 
