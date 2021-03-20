@@ -15,7 +15,7 @@ class Games(commands.Cog, name='games'):
         self.end_regex = r'\s\([0-9]+\)$'
         self.parser = re.compile(self.end_regex)
 
-    def base_embed(self, game):
+    def base_game_embed(self, game):
         if self.cont > 1:
             title = game['name'] + f' ({self.cont})'
             description = 'More game links below'
@@ -33,99 +33,71 @@ class Games(commands.Cog, name='games'):
                             value=bgg_text, inline=False)
         return embed
 
-    def base_bga_embed(self):
-        if self.cont > 1:
-            title = f'Board Game Arena Games ({self.cont})'
-            description = 'More game links below'
-        else:
-            title = f'Board Game Arena Games'
+    def base_site_embed(self, bga=None, boite=None, yucata=None, tts=None):
+        title_str = ''
+        if bga:
+            title_str = 'Board Game Arena Games'
             description = 'Join the largest boardgame table in the world.\
                 \nNo download necessary - play directly from your web browser.\
                 \nWith your friends and thousands of players from the whole world.\
                 \nFree.'
-        url = 'https://boardgamearena.com/gamelist'
-        colour = 0x9566DD
-        embed = discord.Embed(
-            title=title, description=description, colour=colour, url=url)
-        embed.set_thumbnail(
-            url='https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png')
-        return embed
-
-    def base_yucata_embed(self):
-        if self.cont > 1:
-            title = f'Yucata.de Games ({self.cont})'
-            description = 'More game links below'
-        else:
-            title = f'Yucata.de Games'
-            description = 'Online gaming portal, free and without advertisements \
-                where you may play more than 60 different games.'
-        url = 'https://www.yucata.de/en'
-        colour = 0x00305E
-        embed = discord.Embed(
-            title=title, description=description, colour=colour, url=url)
-        embed.set_thumbnail(
-            url='https://www.yucata.de/bundles/images/Logo.jpg')
-        return embed
-
-    def base_boite_embed(self):
-        if self.cont > 1:
-            title = f'Boîte à Jeux Games ({self.cont})'
-            description = 'More game links below'
-        else:
-            title = f'Boîte à Jeux Games'
+            url = 'https://boardgamearena.com/gamelist'
+            colour = 0x9566DD
+            thumb_url = 'https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png'
+        if boite:
+            title_str = 'Boîte à Jeux Games'
             description = 'Boîte à Jeux is a predominantly French online game system. The \
                 interface has been translated to English and more recently, German as well.\
                 \nGames are played in a web browser one turn at a time, which could take hours \
                 or weeks, depending on the game and how often the players take their turns. \
                     Live games are possible if players are both logged in at the same time.'
-        url = 'http://www.boiteajeux.net/'
-        colour = 0x55774C
-        embed = discord.Embed(
-            title=title, description=description, colour=colour, url=url)
-        embed.set_thumbnail(
-            url='http://www.boiteajeux.net/img/banniere_baj_en.png')
-        return embed
-
-    def base_tts_embed(self):
-        if self.cont > 1:
-            title = f'Tabletop Simulator DLC ({self.cont})'
-            description = 'More game links below'
-        else:
-            title = f'Tabletop Simulator DLC'
+            url = 'http://www.boiteajeux.net/'
+            colour = 0x55774C
+            thumb_url = 'http://www.boiteajeux.net/img/banniere_baj_en.png'
+        if yucata:
+            title_str = 'Yucata.de Games'
+            description = 'Online gaming portal, free and without advertisements \
+                where you may play more than 60 different games.'
+            url = 'https://www.yucata.de/en'
+            colour = 0x00305E
+            thumb_url = 'https://www.yucata.de/bundles/images/Logo.jpg'
+        if tts:
+            title_str = 'Tabletop Simulator DLC'
             description = 'Tabletop Simulator is the only simulator \
                 where you can let your aggression out by flipping the \
                 table! There are no rules to follow: just you, a physics \
                 sandbox, and your friends. Make your own online board \
                 games or play the thousands of community created mods. \
                 Unlimited gaming possibilities!'
-        url = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
-        colour = 0xE86932
+            url = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
+            colour = 0xE86932
+            thumb_url = 'https://cdn.akamai.steamstatic.com/steam/apps/286160/header.jpg'
+        if self.cont > 1:
+            title = f'{title_str} ({self.cont})'
+            description = 'More game links below'
+        else:
+            title = f'{title_str}'
+
         embed = discord.Embed(
             title=title, description=description, colour=colour, url=url)
-        embed.set_thumbnail(
-            url='https://cdn.akamai.steamstatic.com/steam/apps/286160/header.jpg')
+        embed.set_thumbnail(url=thumb_url)
         return embed
 
     def embed_constrain(self, name, value, embed, embeds, game=None, bga=None,
                         boite=None, yucata=None, tts=None):
         embeds.append(embed)
         if game:
-            embed = self.base_embed(game)
-        elif bga:
-            embed = self.base_bga_embed()
-        elif boite:
-            embed = self.base_boite_embed()
-        elif tts:
-            embed = self.base_tts_embed()
-        elif yucata:
-            embed = self.base_yucata_embed()
+            embed = self.base_game_embed(game)
+        else:
+            embed = self.base_site_embed(
+                bga=bga, boite=boite, tts=tts, yucata=yucata)
         embed.add_field(name=name, value=value)
         return embed, embeds
 
     def format_game_embed(self, game):
         self.cont = 1
         embeds = []
-        embed = self.base_embed(game)
+        embed = self.base_game_embed(game)
 
         # App field, needs fixing
         # if not game['app']:
@@ -227,14 +199,8 @@ class Games(commands.Cog, name='games'):
             yucata=False):
         self.cont = 1
         embeds = []
-        if bga:
-            embed = self.base_bga_embed()
-        if yucata:
-            embed = self.base_yucata_embed()
-        if boite:
-            embed = self.base_boite_embed()
-        if tts:
-            embed = self.base_tts_embed()
+        embed = self.base_site_embed(
+            bga=bga, boite=boite, tts=tts, yucata=yucata)
         all_links = get_all_games(bga, boite, tts, yucata)
         if all_links is None:
             return embeds
@@ -284,42 +250,22 @@ class Games(commands.Cog, name='games'):
         if emoji in ['⏮', '◀', '▶', '⏭']:
             title = message.embeds[0].title
             match = self.parser.search(title)
+            if match is not None:
+                if debug:
+                    print(f'> "{match[0]}" page matched')
+                idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+            else:
+                idx = 0
             if 'Board Game Arena Games' in title:
-                if match is not None:
-                    if debug:
-                        print(f'> "{match[0]}" page matched')
-                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
-                else:
-                    idx = 0
                 responses = self.format_all_games_embed(bga=True)
             elif 'Boîte à Jeux' in title:
-                if match is not None:
-                    if debug:
-                        print(f'> "{match[0]}" page matched')
-                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
-                else:
-                    idx = 0
                 responses = self.format_all_games_embed(boite=True)
             elif 'Tabletop Simulator DLC' in title:
-                if match is not None:
-                    if debug:
-                        print(f'> "{match[0]}" page matched')
-                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
-                else:
-                    idx = 0
                 responses = self.format_all_games_embed(tts=True)
             elif 'Yucata.de Games' in title:
-                if match is not None:
-                    if debug:
-                        print(f'> "{match[0]}" page matched')
-                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
-                else:
-                    idx = 0
                 responses = self.format_all_games_embed(yucata=True)
             else:
                 if match is not None:
-                    if debug:
-                        print(f'> "{match[0]}" page matched')
                     search_game = await search_web_board_game_data(
                         title.replace(str(match[0]), ''), message, reaction)
                     if debug:
@@ -350,7 +296,7 @@ class Games(commands.Cog, name='games'):
                 print(f'Index to return is {idx}')
                 print(f'Total embeds: {len(responses)}')
             if idx != old_idx:
-                await message.edit(content="", embed=responses[idx])
+                await message.edit(content='', embed=responses[idx])
         else:
             return
 
@@ -381,7 +327,7 @@ class Games(commands.Cog, name='games'):
                 game_str, message, ctx)
             if search_game:
                 responses = self.format_game_embed(search_game)
-                await message.edit(content="", embed=responses[0])
+                await message.edit(content='', embed=responses[0])
                 if len(responses) > 1:
                     emojis = ['⏮', '◀', '▶', '⏭']
                     for emoji in emojis:
@@ -398,7 +344,7 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(bga=True)
-        await message.edit(content="", embed=responses[0])
+        await message.edit(content='', embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
             for emoji in emojis:
@@ -417,7 +363,7 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(boite=True)
-        await message.edit(content="", embed=responses[0])
+        await message.edit(content='', embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
             for emoji in emojis:
@@ -442,7 +388,7 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Tabletop Simulator DLC...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(tts=True)
-        await message.edit(content="", embed=responses[0])
+        await message.edit(content='', embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
             for emoji in emojis:
@@ -455,7 +401,7 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(yucata=True)
-        await message.edit(content="", embed=responses[0])
+        await message.edit(content='', embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
             for emoji in emojis:

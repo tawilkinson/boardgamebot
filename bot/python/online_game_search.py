@@ -329,7 +329,7 @@ def get_tts_data(game, debug=False):
                 url = result.parent.parent['href']
                 url = url.split('?snr=')[0]
                 dlc = f'[{this_name}]({url})'
-                dlc = (f"[{game.name} (DLC)]({url})\n")
+                dlc = (f'[{game.name} (DLC)]({url})\n')
                 if debug:
                     print(
                         f'--> retrieved {game.name} Tabletop Simulator DLC data')
@@ -360,7 +360,7 @@ def get_tts_data(game, debug=False):
         if workshop:
             if workshop[-1:] == '\n':
                 workshop = workshop[:-1]
-        game.set_tts_url(f"{dlc}{workshop}")
+        game.set_tts_url(f'{dlc}{workshop}')
     else:
         game.set_tts_url(tts_dlc_page.error)
 
@@ -450,11 +450,11 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
         "description": "<description>",
         "bgg": "https://boardgamegeek.com/boardgame/<ID>/<name>",
         "image": "<image_url>",
-        "tabletopia": "[<name> on Tabletopia](<tabletopia_url>)",
-        "tts": "[<name> on Tabletop Simulator](<tts_url>)",
-        "bga": "[<name> on BGA](<bga_url>)",
-        "yucata": "[<name> on Yucata](<yucata_url>)",
-        "boite": "[<name> on Boîte à Jeux](<boite_url>)",
+        "tabletopia": "[<name>](<tabletopia_url>)",
+        "tts": "[<name>](<tts_url>)",
+        "bga": "[<name>](<bga_url>)",
+        "yucata": "[<name>](<yucata_url>)",
+        "boite": "[<name>](<boite_url>)",
     }
     '''
     game = Game(game_name.lower())
@@ -485,117 +485,53 @@ def get_all_games(bga, boite, tts, yucata, debug=False):
     Simple wrapper to get all games from each service
     '''
     if bga:
-        return get_all_bga_games(debug=debug)
+        game_list = 'https://boardgamearena.com/gamelist?section=all'
+        bga_base_url = 'https://boardgamearena.com'
     if boite:
-        return get_all_boite_games(debug=debug)
+        game_list = 'http://www.boiteajeux.net/index.php?p=regles'
     if yucata:
-        return get_all_yucata_games(debug=debug)
+        game_list = 'https://www.yucata.de/en/'
     if tts:
-        return get_all_tts_dlc(debug=debug)
-    return None
-
-
-def get_all_bga_games(debug=False):
-    '''
-    Searches Board Game Arena for all games on the site and returns them
-    '''
-    bga_game_list = 'https://boardgamearena.com/gamelist?section=all'
-    bga_base_url = 'https://boardgamearena.com'
+        game_list = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
     if debug:
-        print(f'> Board Game Arena all games: {bga_game_list}')
-    bga_all_games_page = Webpage(bga_game_list)
-    bga_page = bga_all_games_page.page_html
+        print(f'> Board Game Arena all games: {game_list}')
+    all_games_page = Webpage(game_list)
+    page = all_games_page.page_html
     all_links = {}
-    if bga_page:
-        search_results = bga_page.find_all(
-            'div', class_='gameitem_baseline gamename')
+    if page:
+        if bga:
+            search_results = page.find_all(
+                'div', class_='gameitem_baseline gamename')
+        if boite:
+            search_results = page.find_all('div', class_='jeuxRegles')
+        if yucata:
+            search_results = page.find_all('a', class_='jGameInfo')
+        if tts:
+            search_results = page.find_all('div', {'class': 'search_name'})
         for result in search_results:
-            name = str(result.contents[0]).lstrip().rstrip()
-            link = bga_base_url + result.parent.get('href')
-            all_links[f'{name}'] = f'[{name}]({link})'
+            if bga:
+                name = str(result.contents[0]).lstrip().rstrip()
+                link = bga_base_url + result.parent.get('href')
+            elif boite:
+                rules_elem = result.select_one('a', text='Rules')
+                rules_href = rules_elem.get('href')
+                link = f'http://www.boiteajeux.net/{rules_href}'
+                name = string.capwords(
+                    str(result.contents[0]).lstrip().rstrip())
+            elif yucata:
+                game_href = result['href']
+                name = result.text
+                link = f'https://www.yucata.de{game_href}'
+            elif tts:
+                name = result.text.lstrip('\n').rstrip('\n ')
+                link = result.parent.parent['href']
+                link = link.split('?snr=')[0]
+            if name:
+                if 'Tabletop Simulator - ' in name:
+                    name = name.replace('Tabletop Simulator - ', '')
+                all_links[f'{name}'] = f'[{name}]({link})'
     else:
-        all_links['Board Game Arena Error'] = bga_all_games_page.error
-        if debug:
-            print(f'--> all BGA games:\n{all_links}')
-    return all_links
-
-
-def get_all_boite_games(debug=False):
-    '''
-    Searches Boîte à Jeux for all games on the site and returns them
-    '''
-    boite_game_list = 'http://www.boiteajeux.net/index.php?p=regles'
+        all_links['All Games Error'] = all_games_page.error
     if debug:
-        print(f'> Board Game Arena all games: {boite_game_list}')
-    boite_all_games_page = Webpage(boite_game_list)
-    boite_page = boite_all_games_page.page_html
-    all_links = {}
-    if boite_page:
-        search_results = boite_page.find_all(
-            'div', class_='jeuxRegles')
-        for result in search_results:
-            rules_elem = result.select_one('a', text='Rules')
-            rules_href = rules_elem.get('href')
-            link = f'http://www.boiteajeux.net/{rules_href}'
-            name = string.capwords(str(result.contents[0]).lstrip().rstrip())
-            all_links[f'{name}'] = f'[{name}]({link})'
-    else:
-        all_links['Boîte à Jeux Error'] = boite_all_games_page.error
-        if debug:
-            print(f'--> all Boîte à Jeux games:\n{all_links}')
-    return all_links
-
-
-def get_all_yucata_games(debug=False):
-    '''
-    Searches Yucata for all games on the site and returns them
-    '''
-    yucata_search_url = 'https://www.yucata.de/en/'
-    if debug:
-        print(f'> Yucata all games: {yucata_search_url}')
-    yucata_all_games_page = Webpage(yucata_search_url)
-    yucata_directory_page = yucata_all_games_page.page_html
-    all_links = {}
-    if yucata_directory_page:
-        search_results = yucata_directory_page.find_all(
-            'a', class_='jGameInfo')
-        for result in search_results:
-            game_href = result['href']
-            game_name = result.text
-            link = f'https://www.yucata.de{game_href}'
-            if game_name:
-                all_links[f'{game_name}'] = f'[{game_name}]({link})'
-    else:
-        all_links['Yucata.de Error'] = yucata_all_games_page.error
-    if debug:
-        print(f'--> all Yucata games:\n{all_links}')
-    return all_links
-
-
-def get_all_tts_dlc(debug=False):
-    '''
-    Searches Steam for all Tabletop Simulator DLC* and returns them
-
-    *Not Steam Workshop
-    '''
-    tts_dlc_url = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
-    if debug:
-        print(f'> TTS DLC url: {tts_dlc_url}')
-    tts_dlc_page = Webpage(tts_dlc_url)
-    tts_dlc_search = tts_dlc_page.page_html
-    all_links = {}
-    if tts_dlc_search:
-        dlc_results = tts_dlc_search.find_all(
-            'div', {'class': 'search_name'})
-        for result in dlc_results:
-            game_name = result.text.lstrip('\n').rstrip('\n ')
-            if 'Tabletop Simulator - ' in game_name:
-                game_name = game_name.replace('Tabletop Simulator - ', '')
-                url = result.parent.parent['href']
-                url = url.split('?snr=')[0]
-                all_links[f'{game_name}'] = f'[{game_name}]({url})'
-    else:
-        all_links['Steam TTS Error'] = tts_dlc_page.error
-    if debug:
-        print(f'--> all Tabletop Simulator DLC:\n{all_links}')
+        print(f'--> all games:\n{all_links}')
     return all_links

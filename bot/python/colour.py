@@ -41,7 +41,7 @@ def get_dominant_colour(img_url, debug=False):
 
     if debug:
         for i in range(len(centroid)):
-            print(centroid[i], "{:0.2f}%".format(percent[i] * 100))
+            print(centroid[i], '{:0.2f}%'.format(percent[i] * 100))
     indices = np.argsort(percent)[::-1]
     dominant = centroid[indices[0]]
 
@@ -67,7 +67,8 @@ def get_rgb_colour(img_url, debug=False):
     b = dominant_colour[2]
 
     if debug:
-        hex_str = "#{0:02x}{1:02x}{2:02x}".format(clamp(r), clamp(g), clamp(b))
+        # Print the hex string
+        hex_str = '#{0:02x}{1:02x}{2:02x}'.format(clamp(r), clamp(g), clamp(b))
         print(f'{hex_str}')
 
     rgb_colour = (clamp(r), clamp(g), clamp(b))
