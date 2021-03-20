@@ -67,6 +67,7 @@ def get_rgb_colour(img_url, debug=False):
     b = dominant_colour[2]
 
     if debug:
+        # Print the hex string
         hex_str = "#{0:02x}{1:02x}{2:02x}".format(clamp(r), clamp(g), clamp(b))
         print(f'{hex_str}')
 
