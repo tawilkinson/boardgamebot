@@ -6,7 +6,9 @@ Inspired by Jared Newsom (AKA Jared M.F.) - https://gist.github.com/That-Kidd/43
 
 
 class Help(commands.Cog, name='help'):
-    '''Prints the help message/DM.'''
+    '''
+    Prints the help message/DM.
+    '''
 
     def __init__(self, bot):
         self.bot = bot
@@ -23,7 +25,9 @@ class Help(commands.Cog, name='help'):
 
     @ commands.command()
     async def help(self, ctx, *cog, debug=False):
-        '''Gets all cogs and commands of this bot.'''
+        '''
+        Gets all cogs and commands of this bot.
+        '''
         try:
             if not cog:
                 halp = discord.Embed(
