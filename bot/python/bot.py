@@ -12,7 +12,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # this specifies what extensions to load when the bot starts up
-startup_extensions = ['fun', 'games', 'dice', 'help']
+startup_extensions = ['fun', 'games', 'dice', 'help', 'git']
 # set the bot prefix read by Discord
 bot = commands.Bot(command_prefix='bg ')
 # We are going to use help.py to add an embed help.
