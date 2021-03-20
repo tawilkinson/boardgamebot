@@ -86,16 +86,28 @@ class Games(commands.Cog, name='games'):
             url='http://www.boiteajeux.net/img/banniere_baj_en.png')
         return embed
 
-    def embed_constrain(
-            self,
-            name,
-            value,
-            embed,
-            embeds,
-            game=None,
-            bga=None,
-            yucata=None,
-            boite=None):
+    def base_tts_embed(self):
+        if self.cont > 1:
+            title = f'Tabletop Simulator DLC ({self.cont})'
+            description = 'More game links below'
+        else:
+            title = f'Tabletop Simulator DLC'
+            description = 'Tabletop Simulator is the only simulator \
+                where you can let your aggression out by flipping the \
+                table! There are no rules to follow: just you, a physics \
+                sandbox, and your friends. Make your own online board \
+                games or play the thousands of community created mods. \
+                Unlimited gaming possibilities!'
+        url = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
+        colour = 0xE86932
+        embed = discord.Embed(
+            title=title, description=description, colour=colour, url=url)
+        embed.set_thumbnail(
+            url='https://cdn.akamai.steamstatic.com/steam/apps/286160/header.jpg')
+        return embed
+
+    def embed_constrain(self, name, value, embed, embeds, game=None, bga=None,
+                        boite=None, yucata=None, tts=None):
         embeds.append(embed)
         if game:
             embed = self.base_embed(game)
@@ -103,6 +115,8 @@ class Games(commands.Cog, name='games'):
             embed = self.base_bga_embed()
         elif boite:
             embed = self.base_boite_embed()
+        elif tts:
+            embed = self.base_tts_embed()
         elif yucata:
             embed = self.base_yucata_embed()
         embed.add_field(name=name, value=value)
@@ -205,7 +219,7 @@ class Games(commands.Cog, name='games'):
 
         return embeds
 
-    def format_all_games_embed(self, bga=False, yucata=False, boite=False):
+    def format_all_games_embed(self, bga=False, boite=False, tts=False, yucata=False):
         self.cont = 1
         embeds = []
         if bga:
@@ -214,7 +228,9 @@ class Games(commands.Cog, name='games'):
             embed = self.base_yucata_embed()
         if boite:
             embed = self.base_boite_embed()
-        all_links = get_all_games(bga, yucata, boite)
+        if tts:
+            embed = self.base_tts_embed()
+        all_links = get_all_games(bga, boite, tts, yucata)
         if all_links is None:
             return embeds
         count = 1
@@ -229,7 +245,7 @@ class Games(commands.Cog, name='games'):
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, bga=bga, yucata=yucata, boite=boite)
+                        alphabet, value, embed, embeds, bga=bga, boite=boite, tts=tts, yucata=yucata)
                 else:
                     embed.add_field(name=alphabet, value=value)
                 alphabet = name
@@ -239,7 +255,7 @@ class Games(commands.Cog, name='games'):
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, bga=bga, yucata=yucata, boite=boite)
+                        alphabet, value, embed, embeds, bga=bga, boite=boite, tts=tts, yucata=yucata)
                     alphabet = f'{name} (cont...)'
                     value = text
                 elif (len(alphabet) + len(value) + len(text)) > 1022:
@@ -279,6 +295,14 @@ class Games(commands.Cog, name='games'):
                 else:
                     idx = 0
                 responses = self.format_all_games_embed(boite=True)
+            elif 'Tabletop Simulator DLC' in title:
+                if match is not None:
+                    if debug:
+                        print(f'> "{match[0]}" page matched')
+                    idx = int(match[0].lstrip(' (').rstrip(')')) - 1
+                else:
+                    idx = 0
+                responses = self.format_all_games_embed(tts=True)
             elif 'Yucata.de Games' in title:
                 if match is not None:
                     if debug:
@@ -363,7 +387,7 @@ class Games(commands.Cog, name='games'):
                 await message.edit(content=response)
                 return [response]
 
-    @commands.command(aliases=['board_game_arena'],
+    @commands.command(aliases=['board_game_arena', 'boardgamearena'],
                       help='Prints the list of games currently available on Board Game Arena.')
     async def bga(self, ctx):
         response = 'Getting the list of BGA games...'
@@ -376,12 +400,37 @@ class Games(commands.Cog, name='games'):
                 await message.add_reaction(emoji)
         return responses
 
-    @commands.command(aliases=['boite_a_jeux', 'boîte', 'boîte_à_jeux'],
+    @commands.command(aliases=['boite_a_jeux', 'boiteajeux', 'boîte', 'boîte_à_jeux', 'boîteàjeux'],
                       help='Prints the list of games currently available on Boîte à Jeux.')
     async def boite(self, ctx):
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(boite=True)
+        await message.edit(content="", embed=responses[0])
+        if len(responses) > 1:
+            emojis = ['⏮', '◀', '▶', '⏭']
+            for emoji in emojis:
+                await message.add_reaction(emoji)
+        return responses
+
+    @commands.command(help='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
+    async def tabletopia(self, ctx):
+        description = 'Tabletopia has over 1600 games. Full list at [Tabletopia: All Games](https://tabletopia.com/games?page=1).'
+        embed = discord.Embed(
+            title='Tabletopia Games',
+            description=description,
+            colour=0xFD9705,
+            url='https://tabletopia.com/games?page=1')
+        embed.set_thumbnail(
+            url='https://tabletopia.com/Content/Images/logo.png')
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['tabletop_simulator', 'tabletopsimulator'],
+                      help='Prints the list of DLC currently available for Tabletop Simulator.')
+    async def tts(self, ctx):
+        response = 'Getting the list of Tabletop Simulator DLC...'
+        message = await ctx.send(response)
+        responses = self.format_all_games_embed(tts=True)
         await message.edit(content="", embed=responses[0])
         if len(responses) > 1:
             emojis = ['⏮', '◀', '▶', '⏭']
@@ -401,18 +450,6 @@ class Games(commands.Cog, name='games'):
             for emoji in emojis:
                 await message.add_reaction(emoji)
         return responses
-
-    @commands.command(help='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
-    async def tabletopia(self, ctx):
-        description = 'Tabletopia has over 1600 games. Full list at [Tabletopia: All Games](https://tabletopia.com/games?page=1).'
-        embed = discord.Embed(
-            title='Tabletopia Games',
-            description=description,
-            colour=0xFD9705,
-            url='https://tabletopia.com/games?page=1')
-        embed.set_thumbnail(
-            url='https://tabletopia.com/Content/Images/logo.png')
-        await ctx.send(embed=embed)
 
     @commands.command(help='Lists the help for command category `games`.',
                       pass_context=True)

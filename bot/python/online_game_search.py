@@ -480,16 +480,18 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
     return False
 
 
-def get_all_games(bga, yucata, boite, debug=False):
+def get_all_games(bga, boite, tts, yucata, debug=False):
     '''
     Simple wrapper to get all games from each service
     '''
     if bga:
         return get_all_bga_games(debug=debug)
-    if yucata:
-        return get_all_yucata_games(debug=debug)
     if boite:
         return get_all_boite_games(debug=debug)
+    if yucata:
+        return get_all_yucata_games(debug=debug)
+    if tts:
+        return get_all_tts_dlc(debug=debug)
     return None
 
 
@@ -567,4 +569,32 @@ def get_all_yucata_games(debug=False):
         all_links['Yucata.de Error'] = yucata_all_games_page.error
     if debug:
         print(f'--> all Yucata games:\n{all_links}')
+    return all_links
+
+
+def get_all_tts_dlc(debug=False):
+    '''
+    Searches Steam for all Tabletop Simulator DLC* and returns them
+
+    *Not Steam Workshop
+    '''
+    tts_dlc_url = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
+    if debug:
+        print(f'> TTS DLC url: {tts_dlc_url}')
+    tts_dlc_page = Webpage(tts_dlc_url)
+    tts_dlc_search = tts_dlc_page.page_html
+    all_links = {}
+    if tts_dlc_search:
+        dlc_results = tts_dlc_search.find_all(
+            'div', {'class': 'search_name'})
+        for result in dlc_results:
+            game_name = result.text.lstrip('\n').rstrip('\n ')
+            url = result.parent.parent['href']
+            url = url.split('?snr=')[0]
+            if game_name:
+                all_links[f'{game_name}'] = f'[{game_name}]({url})'
+    else:
+        all_links['Steam TTS Error'] = tts_dlc_page.error
+    if debug:
+        print(f'--> all Tabletop Simulator DLC:\n{all_links}')
     return all_links
