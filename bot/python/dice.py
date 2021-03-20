@@ -109,7 +109,7 @@ class Die():
 
     def roll(self):
         if self.count:
-            for num in range(self.count):
+            for _ in range(self.count):
                 self.roll_core()
         else:
             self.roll_core()
