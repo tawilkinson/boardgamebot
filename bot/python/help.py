@@ -35,7 +35,7 @@ class Help(commands.Cog, name='help'):
                 for x in self.bot.cogs:
                     cogs_desc += ('{} - {}'.format(x,
                                                    self.bot.cogs[x].__doc__) + '\n')
-                halp.add_field(name='Cogs',
+                halp.add_field(name='Command Categories',
                                value=cogs_desc[0:len(cogs_desc) - 1],
                                inline=False)
                 cmds_desc = ''
