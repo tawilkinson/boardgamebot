@@ -589,9 +589,10 @@ def get_all_tts_dlc(debug=False):
             'div', {'class': 'search_name'})
         for result in dlc_results:
             game_name = result.text.lstrip('\n').rstrip('\n ')
-            url = result.parent.parent['href']
-            url = url.split('?snr=')[0]
-            if game_name:
+            if 'Tabletop Simulator - ' in game_name:
+                game_name = game_name.replace('Tabletop Simulator - ', '')
+                url = result.parent.parent['href']
+                url = url.split('?snr=')[0]
                 all_links[f'{game_name}'] = f'[{game_name}]({url})'
     else:
         all_links['Steam TTS Error'] = tts_dlc_page.error
