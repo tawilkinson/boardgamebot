@@ -175,7 +175,7 @@ def bgg_data_from_id(game, id, debug=False):
         return False
 
 
-async def get_bgg_data(game,  message, ctx, exact=True, debug=False):
+async def get_bgg_data(game, message, ctx, exact=True, debug=False):
     '''
     Takes an object of "Game" Class and searches Board Game Geeks API for a boardgame
     that exactly matches the Game name. Will update the Game Object with url for
