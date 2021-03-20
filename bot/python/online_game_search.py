@@ -505,36 +505,31 @@ def get_all_games(bga, boite, tts, yucata, debug=False):
         if boite:
             search_results = page.find_all('div', class_='jeuxRegles')
         if yucata:
-            search_results = page.find_all(
-                'a', class_='jGameInfo')
+            search_results = page.find_all('a', class_='jGameInfo')
         if tts:
-            search_results = page.find_all(
-                'div', {'class': 'search_name'})
+            search_results = page.find_all('div', {'class': 'search_name'})
         for result in search_results:
             if bga:
                 name = str(result.contents[0]).lstrip().rstrip()
                 link = bga_base_url + result.parent.get('href')
-                all_links[f'{name}'] = f'[{name}]({link})'
-            if boite:
+            elif boite:
                 rules_elem = result.select_one('a', text='Rules')
                 rules_href = rules_elem.get('href')
                 link = f'http://www.boiteajeux.net/{rules_href}'
                 name = string.capwords(
                     str(result.contents[0]).lstrip().rstrip())
-                all_links[f'{name}'] = f'[{name}]({link})'
-            if yucata:
+            elif yucata:
                 game_href = result['href']
-                game_name = result.text
+                name = result.text
                 link = f'https://www.yucata.de{game_href}'
-                if game_name:
-                    all_links[f'{game_name}'] = f'[{game_name}]({link})'
-            if tts:
-                game_name = result.text.lstrip('\n').rstrip('\n ')
-                if 'Tabletop Simulator - ' in game_name:
-                    game_name = game_name.replace('Tabletop Simulator - ', '')
-                    url = result.parent.parent['href']
-                    url = url.split('?snr=')[0]
-                    all_links[f'{game_name}'] = f'[{game_name}]({url})'
+            elif tts:
+                name = result.text.lstrip('\n').rstrip('\n ')
+                link = result.parent.parent['href']
+                link = link.split('?snr=')[0]
+            if name:
+                if 'Tabletop Simulator - ' in name:
+                    name = name.replace('Tabletop Simulator - ', '')
+                all_links[f'{name}'] = f'[{name}]({link})'
     else:
         all_links['All Games Error'] = all_games_page.error
     if debug:
