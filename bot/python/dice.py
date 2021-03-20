@@ -6,7 +6,7 @@ from discord.ext import commands
 
 class Die():
     '''
-    Die Class which is instantiated with the text string used to call the roller 
+    Die Class which is instantiated with the text string used to call the roller
     command. Uses regex to analyse the string and then rolls dice based on the
     input parameters.
     '''
@@ -93,7 +93,7 @@ class Die():
     def discard(self):
         '''
         When we choose to keep lower (kl) or keep higher (k)
-        dice rolls this function discards the other results and 
+        dice rolls this function discards the other results and
         generates a sting with stikethrough text to display this.
         '''
         counter = 0
@@ -133,7 +133,7 @@ class Die():
     def roll(self):
         '''
         Main dice rolling function. Uses the variables from
-        the regex above to work out which rolling functions to 
+        the regex above to work out which rolling functions to
         call.
         '''
         if self.count:
