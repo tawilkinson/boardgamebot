@@ -354,7 +354,8 @@ class Games(commands.Cog, name='games'):
                 await message.edit(content=response)
                 return [response]
 
-    @commands.command(help='Prints the list of games currently available on Board Game Arena.')
+    @commands.command(aliases=['board_game_arena'],
+                      help='Prints the list of games currently available on Board Game Arena.')
     async def bga(self, ctx):
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
@@ -366,7 +367,8 @@ class Games(commands.Cog, name='games'):
                 await message.add_reaction(emoji)
         return responses
 
-    @commands.command(help='Prints the list of games currently available on Boîte à Jeux.')
+    @commands.command(aliases=['boite_a_jeux', 'boîte', 'boîte_à_jeux'],
+                      help='Prints the list of games currently available on Boîte à Jeux.')
     async def boite(self, ctx):
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
@@ -378,7 +380,8 @@ class Games(commands.Cog, name='games'):
                 await message.add_reaction(emoji)
         return responses
 
-    @commands.command(help='Prints the list of games currently available on Yucata.de.')
+    @commands.command(aliases=['yucata.de'],
+                      help='Prints the list of games currently available on Yucata.de.')
     async def yucata(self, ctx):
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
