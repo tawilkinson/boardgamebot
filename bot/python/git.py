@@ -54,7 +54,10 @@ class Git(commands.Cog, name='git'):
         versions = self.get_release_text()
         for version, info in versions.items():
             embed = discord.Embed(
-                title=version, description=info[0], url=info[1], colour=discord.Colour.lighter_grey())
+                title=version,
+                description=info[0],
+                url=info[1],
+                colour=discord.Colour.lighter_grey())
             embeds.append(embed)
         return embeds
 
@@ -85,7 +88,10 @@ class Git(commands.Cog, name='git'):
         cur_dir = os.path.dirname(os.path.abspath(__file__))
         file = discord.File(os.path.join(cur_dir, '../data/GitHub.png'))
         response = discord.Embed(
-            title=title, description=description, url=url, colour=discord.Colour.lighter_grey())
+            title=title,
+            description=description,
+            url=url,
+            colour=discord.Colour.lighter_grey())
         response.set_thumbnail(url='attachment://GitHub.png')
         await ctx.send('', embed=response, file=file)
 
