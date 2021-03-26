@@ -86,7 +86,7 @@ class Git(commands.Cog, name='git'):
             \nDocumentation is coming soon...'
         url = 'https://github.com/tawilkinson/boardgamebot'
         cur_dir = os.path.dirname(os.path.abspath(__file__))
-        file = discord.File(os.path.join(cur_dir, '../data/GitHub.png'))
+        file = discord.File(os.path.join(cur_dir, 'data/GitHub.png'))
         response = discord.Embed(
             title=title,
             description=description,
