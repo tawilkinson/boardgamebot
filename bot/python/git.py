@@ -2,10 +2,10 @@ import discord
 import DiscordUtils
 import html
 import html2text
-import os
 from bs4 import BeautifulSoup
 from discord.ext import commands
 from online_game_search import Webpage
+from subprocess import check_output
 
 
 class Git(commands.Cog, name='git'):
@@ -85,8 +85,7 @@ class Git(commands.Cog, name='git'):
             [create a new issue](https://github.com/tawilkinson/boardgamebot/issues).\
             \nDocumentation is coming soon...'
         url = 'https://github.com/tawilkinson/boardgamebot'
-        cur_dir = os.path.dirname(os.path.abspath(__file__))
-        file = discord.File(os.path.join(cur_dir, 'data/GitHub.png'))
+        file = discord.File('data/GitHub.png')
         response = discord.Embed(
             title=title,
             description=description,
@@ -95,8 +94,8 @@ class Git(commands.Cog, name='git'):
         response.set_thumbnail(url='attachment://GitHub.png')
         await ctx.send('', embed=response, file=file)
 
-    @commands.command(help='Lists the help for command category `git`.',
-                      pass_context=True)
+    @ commands.command(help='Lists the help for command category `git`.',
+                       pass_context=True)
     async def git(self, ctx):
         await ctx.invoke(self.bot.get_command('help'), 'git')
 
