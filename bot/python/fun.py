@@ -14,7 +14,7 @@ class Fun(commands.Cog, name='fun'):
         self.bot = bot
         dir_path = os.path.dirname(os.path.realpath(__file__))
         try:
-            with open(os.path.join(dir_path, '../data/theme_data.json')) as json_file:
+            with open(os.path.join(dir_path, 'data/theme_data.json')) as json_file:
                 self.theme_data = json.load(json_file)
         except FileNotFoundError:
             self.theme_data = {}
