@@ -142,7 +142,7 @@ def get_boite_a_jeux_data(game, debug=False):
                 rules_href = rules_elem.get('href')
                 game_boite_url = f'http://www.boiteajeux.net/{rules_href}'
                 game.set_boite_url(
-                    f'[{game.name}]({game_boite_url}')
+                    f'[{game.name}]({game_boite_url})')
     else:
         game.set_boite_url(boite_page.error)
 
