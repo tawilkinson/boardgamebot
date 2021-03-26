@@ -142,7 +142,7 @@ def get_boite_a_jeux_data(game, debug=False):
                 rules_href = rules_elem.get('href')
                 game_boite_url = f'http://www.boiteajeux.net/{rules_href}'
                 game.set_boite_url(
-                    f'[{game.name}]({game_boite_url}')
+                    f'[{game.name}]({game_boite_url})')
     else:
         game.set_boite_url(boite_page.error)
 
@@ -337,22 +337,28 @@ def get_tts_data(game, debug=False):
         tts_search = Webpage(game.tts_search_url).page_html
         search_results = tts_search.body.select('body a')
         workshop = ''
+        #
         for result in search_results:
             url = result['href']
             try:
                 if 'https://steamcommunity.com/sharedfiles' in url:
                     url_name = result.contents[0].contents[0]
-                    url = url.replace(
-                        '/url?q=',
-                        '').replace(
-                        '%3F',
-                        '?').replace(
-                        '%3D',
-                        '=').split('&')[0]
-                    workshop += f'[{url_name}]({url})\n'
+                    match_factor = difflib.SequenceMatcher(
+                        None, game.name, url_name).ratio()
                     if debug:
-                        print(
-                            f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
+                        print(f'{game.name} vs. {url_name} ={match_factor}')
+                    if (match_factor > 0.5) or (game.name in url_name):
+                        url = url.replace(
+                            '/url?q=',
+                            '').replace(
+                            '%3F',
+                            '?').replace(
+                            '%3D',
+                            '=').split('&')[0]
+                        workshop += f'[{url_name}]({url})\n'
+                        if debug:
+                            print(
+                                f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
             except AttributeError:
                 if debug:
                     print(

@@ -261,10 +261,14 @@ class Games(commands.Cog, name='games'):
                 game_str, message, ctx)
             if search_game:
                 responses = self.format_game_embed(search_game)
-                paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                    ctx, timeout=60, auto_footer=True)
+                if len(responses) > 1:
+                    paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+                        ctx, timeout=60, auto_footer=True)
+                    await paginator.run(responses)
+                else:
+                    await ctx.send(content='', embed=responses[0])
                 await message.delete()
-                await paginator.run(responses)
+
             else:
                 response = game_str + ' not found online.'
                 await message.edit(content=response)
