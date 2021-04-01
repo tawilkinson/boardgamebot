@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-'''This custom help command is a perfect replacement for the default one on any Discord Bot written in Discord.py Rewrite!
 
-Inspired by Jared Newsom (AKA Jared M.F.) - https://gist.github.com/That-Kidd/432b028352a44e434dfd54e3676a6a85'''
+# This custom help command is a perfect replacement for the default one on any Discord Bot written in Discord.py Rewrite!
+# Inspired by Jared Newsom (AKA Jared M.F.) - https://gist.github.com/That-Kidd/432b028352a44e434dfd54e3676a6a85
 
 
 class Help(commands.Cog, name='help'):
