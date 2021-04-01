@@ -281,10 +281,13 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(bga=True)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-            ctx, timeout=60, auto_footer=True)
         await message.delete()
-        await paginator.run(responses)
+        if len(responses) > 1:
+            paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+                ctx, timeout=60, auto_footer=True)
+            await paginator.run(responses)
+        else:
+            await ctx.send(content='', embed=responses[0])
 
     @commands.command(
         aliases=[
@@ -298,10 +301,13 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(boite=True)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-            ctx, timeout=60, auto_footer=True)
         await message.delete()
-        await paginator.run(responses)
+        if len(responses) > 1:
+            paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+                ctx, timeout=60, auto_footer=True)
+            await paginator.run(responses)
+        else:
+            await ctx.send(content='', embed=responses[0])
 
     @commands.command(help='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
     async def tabletopia(self, ctx):
@@ -321,10 +327,13 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Tabletop Simulator DLC...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(tts=True)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-            ctx, timeout=60, auto_footer=True)
         await message.delete()
-        await paginator.run(responses)
+        if len(responses) > 1:
+            paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+                ctx, timeout=60, auto_footer=True)
+            await paginator.run(responses)
+        else:
+            await ctx.send(content='', embed=responses[0])
 
     @commands.command(aliases=['yucata.de'],
                       help='Prints the list of games currently available on Yucata.de.')
@@ -332,10 +341,13 @@ class Games(commands.Cog, name='games'):
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
         responses = self.format_all_games_embed(yucata=True)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-            ctx, timeout=60, auto_footer=True)
         await message.delete()
-        await paginator.run(responses)
+        if len(responses) > 1:
+            paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
+                ctx, timeout=60, auto_footer=True)
+            await paginator.run(responses)
+        else:
+            await ctx.send(content='', embed=responses[0])
 
     @commands.command(help='Lists the help for command category `games`.',
                       pass_context=True)
