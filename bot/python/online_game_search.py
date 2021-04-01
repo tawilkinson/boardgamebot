@@ -181,7 +181,7 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
     that exactly matches the Game name. Will update the Game Object with url for
     the webpage of the game on BBGs website, as well as the Game's image, and description.
     '''
-    id = 0
+    game_id = 0
     if exact:
         if debug:
             print(f'> Board Game Geek: {game.bgg_search_url}')
@@ -266,19 +266,16 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
                     print(f'--> {closest_match} is closest match')
                 if key:
                     return bgg_data_from_id(game, key)
-                else:
-                    game.update_name(closest_match)
-                    id = possible_board_games[closest_match]['id']
-                    return bgg_data_from_id(game, id)
-            else:
-                return False
+                game.update_name(closest_match)
+                game_id = possible_board_games[closest_match]['id']
+                return bgg_data_from_id(game, game_id)
+            return False
         else:
-            id = bgg_search.page_html.items.item['id']
-            return bgg_data_from_id(game, id)
-    else:
-        if debug:
-            print(f'--> {bgg_search.error}')
-        return False
+            game_id = bgg_search.page_html.items.item['id']
+            return bgg_data_from_id(game, game_id)
+    if debug:
+        print(f'--> {bgg_search.error}')
+    return False
 
 
 def get_tabletopia_data(game, debug=False):
