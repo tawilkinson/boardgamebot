@@ -16,7 +16,7 @@ beautifulsoup4 == 4.9.3
 # python/git.py: 1,7
 # python/help.py: 1,2
 # python/online_game_search.py: 3
-discord.py == 1.5.0
+discord.py == 1.6.0
 
 # python/git.py: 4
 html2text == 2020.1.16
@@ -25,19 +25,19 @@ html2text == 2020.1.16
 lxml == 4.6.3
 
 # python/colour.py: 2
-numpy == 1.20.1
+numpy == 1.20.2
 
 # python/bot.py: 7
-python_dotenv == 0.14.0
+python_dotenv == 0.16.0
 
 # python/online_game_search.py: 6
-requests == 2.24.0
+requests == 2.25.1
 
 # python/online_game_search.py: 9
 requests_cache == 0.5.2
 
 # python/colour.py: 4,5
-scikit_image == 0.17.2
+scikit_image == 0.18.1
 
 # python/colour.py: 3
 scikit_learn == 0.24.1
