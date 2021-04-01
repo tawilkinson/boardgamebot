@@ -1,10 +1,7 @@
 ## [Add it to your server!](https://discord.com/api/oauth2/authorize?client_id=812455891692552202&permissions=117760&scope=bot)
 
 # Board Game Bot
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-[![CodeFactor](https://www.codefactor.io/repository/github/tawilkinson/boardgamebot/badge)](https://www.codefactor.io/repository/github/tawilkinson/boardgamebot)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-) [![CodeFactor](https://www.codefactor.io/repository/github/tawilkinson/boardgamebot/badge)](https://www.codefactor.io/repository/github/tawilkinson/boardgamebot) [![Maintainability](https://api.codeclimate.com/v1/badges/54d6c7104004d9e94c5a/maintainability)](https://codeclimate.com/github/tawilkinson/boardgamebot/maintainability)
 
 A Discord bot to fetch board game data and a list of places you can play them online.
 
