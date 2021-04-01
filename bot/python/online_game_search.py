@@ -104,9 +104,9 @@ class Game:
     def set_yucata_url(self, url):
         self.yucata = url
 
-    def get_set_bgg_url(self, id):
-        self.bgg = f'https://boardgamegeek.com/boardgame/{id}/'
-        return f'http://www.boardgamegeek.com/xmlapi2/thing?id={id}'
+    def get_set_bgg_url(self, game_id):
+        self.bgg = f'https://boardgamegeek.com/boardgame/{game_id}/'
+        return f'http://www.boardgamegeek.com/xmlapi2/thing?id={game_id}'
 
     def return_game_data(self):
         return dict(
@@ -147,12 +147,12 @@ def get_boite_a_jeux_data(game, debug=False):
         game.set_boite_url(boite_page.error)
 
 
-def bgg_data_from_id(game, id, debug=False):
+def bgg_data_from_id(game, game_id, debug=False):
     '''
     Takes an item of Game class and a known BGG id. Sets relevant
     game data from the BGG page referenced by id.
     '''
-    bgg_url = game.get_set_bgg_url(id)
+    bgg_url = game.get_set_bgg_url(game_id)
     if debug:
         print(f'> {game.name} on BGG: {bgg_url}')
     bgg_page = Webpage(bgg_url)
@@ -171,8 +171,7 @@ def bgg_data_from_id(game, id, debug=False):
         if debug:
             print(f'--> retrieved {game.name} Board Game Geek data')
         return True
-    else:
-        return False
+    return False
 
 
 async def get_bgg_data(game, message, ctx, exact=True, debug=False):
@@ -198,7 +197,6 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
                 'Game not found on Board Game Geek! Is it even a board game?')
             if debug:
                 print(f'> !!! {game.name} not found on Board Game Geek !!!')
-            return False
         elif int(games_found) > 1:
             closest_match = None
             board_game_search = bgg_search.page_html.items.findAll('item')
