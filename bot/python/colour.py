@@ -34,14 +34,14 @@ def get_dominant_colour(img_url, debug=False):
 
     percent = []
     _, counts = np.unique(labels, return_counts=True)
-    for i in range(len(centroid)):
-        j = counts[i]
+    for count, _ in enumerate(centroid):
+        j = counts[count]
         j = j / (len(labels))
         percent.append(j)
 
     if debug:
-        for i in range(len(centroid)):
-            print(centroid[i], '{:0.2f}%'.format(percent[i] * 100))
+        for count, value in enumerate(centroid):
+            print(value, '{:0.2f}%'.format(percent[count] * 100))
     indices = np.argsort(percent)[::-1]
     dominant = centroid[indices[0]]
 
