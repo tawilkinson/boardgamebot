@@ -133,15 +133,15 @@ class Games(commands.Cog, name='games'):
             embed.add_field(name='Tabletopia', value='❌')
         else:
             link = game['tabletopia']
-            if len(link) > 1023:
+            if len(link) > 1022:
                 all_links = link.split('\n')
                 count = 1
                 value = ''
                 for text in all_links:
                     name = 'Tabletopia ' + str(count) + ':'
-                    if (len(value) +
-                        len(text)) > 1022 or (len(value) +
-                                              len(embed) > 5999):
+                    field_len = len(value) + len(text) + len(name)
+                    embed_len = field_len + len(embed)
+                    if (field_len) > 1022 or (embed_len > 5999):
                         count += 1
                         self.cont += 1
                         if (len(value) + len(embed) > 5999):
@@ -153,7 +153,7 @@ class Games(commands.Cog, name='games'):
                         value += text
                         value += '\n'
             else:
-                link = link.replace('\n', '; ')
+                link = link.rstrip('\n').replace('\n', '; ')
                 embed.add_field(name='Tabletopia', value=link)
 
         # Tabletop Simulator field
@@ -161,15 +161,15 @@ class Games(commands.Cog, name='games'):
             embed.add_field(name='Tabletop Simulator', value='❌')
         else:
             link = game['tts']
-            if len(link) > 1023:
+            if len(link) > 1022:
                 all_links = link.split('\n')
                 count = 1
                 value = ''
                 for text in all_links:
                     name = 'Tabletop Simulator ' + str(count) + ':'
-                    if (len(value) +
-                        len(text)) > 1022 or (len(value) +
-                                              len(embed) > 5999):
+                    field_len = len(value) + len(text) + len(name)
+                    embed_len = field_len + len(embed)
+                    if (field_len) > 1022 or (embed_len > 5999):
                         self.cont += 1
                         value = value.replace('\n', '; ')
                         embed, embeds = self.embed_constrain(
@@ -185,7 +185,7 @@ class Games(commands.Cog, name='games'):
                     embed, embeds = self.embed_constrain(name, value,
                                                          embed, embeds, game)
             else:
-                link = link.replace('\n', '; ')
+                link = link.rstrip('\n').replace('\n', '; ')
                 embed.add_field(name='Tabletop Simulator', value=link)
 
         embeds.append(embed)
@@ -212,8 +212,10 @@ class Games(commands.Cog, name='games'):
             name = link[0]
             if alphabet is None:
                 alphabet = name
+            embed_len = len(alphabet) + len(value) + len(embed) + len(name)
+            field_len = len(alphabet) + len(value) + len(text) + len(name)
             if name != alphabet[0]:
-                if (len(alphabet) + len(value) + len(embed)) > 5999:
+                if embed_len > 5998:
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
@@ -223,14 +225,14 @@ class Games(commands.Cog, name='games'):
                 alphabet = name
                 value = text
             else:
-                if (len(alphabet) + len(value) + len(embed)) > 5998:
+                if embed_len > 5998:
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
                         alphabet, value, embed, embeds, bga=bga, boite=boite, tts=tts, yucata=yucata)
                     alphabet = f'{name} (cont...)'
                     value = text
-                elif (len(alphabet) + len(value) + len(text)) > 1022:
+                elif field_len > 1022:
                     embed.add_field(name=alphabet, value=value)
                     alphabet = f'{name} (cont...)'
                     value = text
