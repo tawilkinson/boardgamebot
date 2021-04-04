@@ -16,7 +16,7 @@ beautifulsoup4 == 4.9.3
 # python/git.py: 1,7
 # python/help.py: 1,2
 # python/online_game_search.py: 3
-discord.py == 1.6.0
+discord.py==1.7.0
 
 # python/git.py: 4
 html2text == 2020.1.16
