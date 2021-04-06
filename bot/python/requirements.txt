@@ -2,7 +2,7 @@
 
 # python/games.py: 2
 # python/git.py: 2
-DiscordUtils == 1.2.8
+DiscordUtils==1.2.9.1
 
 # python/git.py: 6
 # python/online_game_search.py: 11
