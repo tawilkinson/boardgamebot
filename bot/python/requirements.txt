@@ -34,7 +34,7 @@ python_dotenv==0.17.0
 requests == 2.25.1
 
 # python/online_game_search.py: 9
-requests_cache == 0.5.2
+requests_cache==0.6.3
 
 # python/colour.py: 4,5
 scikit_image == 0.18.1
