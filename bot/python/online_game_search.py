@@ -190,87 +190,92 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
             print(f'> Board Game Geek: {game.bgg_non_exact_search_url}')
         bgg_search = Webpage(game.bgg_non_exact_search_url)
     if bgg_search.page_html:
-        games_found = bgg_search.page_html.items['total']
+        if bgg_search.page_html.items is not None:
+            games_found = bgg_search.page_html.items['total']
 
-        if games_found == '0':
-            game.set_description(
-                'Game not found on Board Game Geek! Is it even a board game?')
-            if debug:
-                print(f'> !!! {game.name} not found on Board Game Geek !!!')
-        elif int(games_found) > 1:
-            closest_match = None
-            board_game_search = bgg_search.page_html.items.findAll('item')
-            possible_board_games = collections.OrderedDict()
-            count = 0
-            title = 'Ambiguous Game Name'
-            description = ''
-            response = discord.Embed(
-                title=title,
-                description=description,
-                colour=discord.Colour.dark_purple())
-            for game_search in board_game_search:
-                count += 1
-                possible_name = game_search.find('name').get(
-                    'value')
-                possible_year = game_search.find('yearpublished').get(
-                    'value')
-                possible_board_games[game_search['id']] = {
-                    'name': possible_name, 'year': possible_year}
-                name = f'{count}: {possible_name}'
-                value = f'{possible_year}'
-                if (len(response) + len(name) + len(value)) > 5999:
-                    break
-                else:
-                    response.add_field(name=name, value=value)
-            description = f'{len(possible_board_games)} potential matches on Board Game Geek.'
-            description += '\nPlease respond with the number of the game you were looking for...'
-            response.description = description
-            if debug:
-                print(
-                    f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
-            difflib_closest = difflib.get_close_matches(
-                game.name, possible_board_games.keys(), 1, 0)[0]
-            await message.edit(content='', embed=response)
-
-            if ctx:
-                def check(m):
-                    '''
-                    Checks message is by original command user, in the same channel
-                    and is a number
-                    '''
-                    try:
-                        _ = int(m.content)
-                        is_int = True
-                    except ValueError:
-                        is_int = False
-                    return is_int and m.channel == ctx.channel and m.author == ctx.author
-                try:
-                    msg = await ctx.bot.wait_for('message', timeout=30, check=check)
-                    if msg:
-                        idx = int(msg.content) - 1
-                        key = list(possible_board_games.keys())[idx]
-                        closest_match = possible_board_games[key]['name']
-                        game.update_name(closest_match)
-                        if ctx.channel.type is not discord.ChannelType.private:
-                            await msg.delete()
+            if games_found == '0':
+                game.set_description(
+                    'Game not found on Board Game Geek! Is it even a board game?')
+                if debug:
+                    print(
+                        f'> !!! {game.name} not found on Board Game Geek !!!')
+            elif int(games_found) > 1:
+                closest_match = None
+                board_game_search = bgg_search.page_html.items.findAll('item')
+                possible_board_games = collections.OrderedDict()
+                count = 0
+                title = 'Ambiguous Game Name'
+                description = ''
+                response = discord.Embed(
+                    title=title,
+                    description=description,
+                    colour=discord.Colour.dark_purple())
+                for game_search in board_game_search:
+                    count += 1
+                    possible_name = game_search.find('name').get(
+                        'value')
+                    possible_year = game_search.find('yearpublished').get(
+                        'value')
+                    possible_board_games[game_search['id']] = {
+                        'name': possible_name, 'year': possible_year}
+                    name = f'{count}: {possible_name}'
+                    value = f'{possible_year}'
+                    if (len(response) + len(name) + len(value)) > 5999:
+                        break
                     else:
+                        response.add_field(name=name, value=value)
+                description = f'{len(possible_board_games)} potential matches on Board Game Geek.'
+                description += '\nPlease respond with the number of the game you were looking for...'
+                response.description = description
+                if debug:
+                    print(
+                        f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
+                difflib_closest = difflib.get_close_matches(
+                    game.name, possible_board_games.keys(), 1, 0)[0]
+                await message.edit(content='', embed=response)
+
+                if ctx:
+                    def check(m):
+                        '''
+                        Checks message is by original command user, in the same channel
+                        and is a number
+                        '''
+                        try:
+                            _ = int(m.content)
+                            is_int = True
+                        except ValueError:
+                            is_int = False
+                        return is_int and m.channel == ctx.channel and m.author == ctx.author
+                    try:
+                        msg = await ctx.bot.wait_for('message', timeout=30, check=check)
+                        if msg:
+                            idx = int(msg.content) - 1
+                            key = list(possible_board_games.keys())[idx]
+                            closest_match = possible_board_games[key]['name']
+                            game.update_name(closest_match)
+                            if ctx.channel.type is not discord.ChannelType.private:
+                                await msg.delete()
+                        else:
+                            game.update_name(difflib_closest)
+                            closest_match = difflib_closest
+                    except asyncio.TimeoutError:
                         game.update_name(difflib_closest)
                         closest_match = difflib_closest
-                except asyncio.TimeoutError:
-                    game.update_name(difflib_closest)
-                    closest_match = difflib_closest
-            if closest_match:
-                if debug:
-                    print(f'--> {closest_match} is closest match')
-                if key:
-                    return bgg_data_from_id(game, key)
-                game.update_name(closest_match)
-                game_id = possible_board_games[closest_match]['id']
+                if closest_match:
+                    if debug:
+                        print(f'--> {closest_match} is closest match')
+                    if key:
+                        return bgg_data_from_id(game, key)
+                    game.update_name(closest_match)
+                    game_id = possible_board_games[closest_match]['id']
+                    return bgg_data_from_id(game, game_id)
+                return False
+            else:
+                game_id = bgg_search.page_html.items.item['id']
                 return bgg_data_from_id(game, game_id)
-            return False
         else:
-            game_id = bgg_search.page_html.items.item['id']
-            return bgg_data_from_id(game, game_id)
+            if ctx and exact:
+                await ctx.send('BBG Unreachable. Is BGG online?')
     if debug:
         print(f'--> {bgg_search.error}')
     return False
