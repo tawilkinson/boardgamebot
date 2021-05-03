@@ -40,4 +40,4 @@ requests_cache==0.6.3
 scikit_image == 0.18.1
 
 # python/colour.py: 3
-scikit_learn == 0.24.1
+scikit_learn==0.24.2
