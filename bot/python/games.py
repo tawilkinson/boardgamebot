@@ -254,6 +254,8 @@ class Games(commands.Cog, name='games'):
                               then returns online sources, if they exist, to play \
                                   the game.')
     async def game(self, ctx, *game):
+        if logger.level >= 10:
+            logger.debug('+++ Starting Game Search +++')
         game_str = ' '.join(game)
         game_str = string.capwords(game_str)
         if game_str is None:
@@ -264,6 +266,8 @@ class Games(commands.Cog, name='games'):
             message = await ctx.send(response)
             search_game = await search_web_board_game_data(
                 game_str, message, ctx)
+            if logger.level >= 10:
+                logger.debug('+++ Ending Game Search +++')
             if search_game:
                 responses = self.format_game_embed(search_game)
                 if len(responses) > 1:

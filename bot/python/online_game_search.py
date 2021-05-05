@@ -383,7 +383,7 @@ def get_bga_data(game):
     the webpage of the game on BGA's website.
     '''
     if logger.level >= 10:
-        logger.debug(f'> Board Game Arena: {game.bga_search_url}')
+        logger.debug(f'>>> Board Game Arena: {game.bga_search_url}')
     bga_page = Webpage(game.bga_search_url)
     bga_search_page = bga_page.page_html
     if bga_search_page:

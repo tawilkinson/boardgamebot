@@ -44,7 +44,7 @@ def get_dominant_colour(img_url):
 
     if logger.level >= 10:
         for count, value in enumerate(centroid):
-            logger.debug(value, '{:0.2f}%'.format(percent[count] * 100))
+            logger.debug(f'{value} {percent[count] * 100} %')
     indices = np.argsort(percent)[::-1]
     dominant = centroid[indices[0]]
 
