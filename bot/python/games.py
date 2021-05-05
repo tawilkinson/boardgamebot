@@ -6,6 +6,8 @@ from discord.ext import commands
 from colour import get_discord_colour
 from online_game_search import search_web_board_game_data, get_all_games
 
+logger = logging.getLogger('discord')
+
 
 class Games(commands.Cog, name='games'):
     '''Board game search functions.'''

@@ -10,6 +10,8 @@ import requests_cache
 import string
 from bs4 import BeautifulSoup
 
+logger = logging.getLogger('discord')
+
 requests_cache.install_cache(
     cache_name='cache',
     backend='memory',

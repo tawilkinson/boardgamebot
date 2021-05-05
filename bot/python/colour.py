@@ -4,6 +4,8 @@ from sklearn.cluster import KMeans
 from skimage import io
 from skimage.transform import rescale
 
+logger = logging.getLogger('discord')
+
 
 def get_dominant_colour(img_url, debug=False):
     '''
