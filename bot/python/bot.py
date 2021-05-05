@@ -11,10 +11,16 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
+# Setup intents
+intents = discord.Intents(guilds=True,
+                          messages=True,
+                          reactions=True,
+                          members=True)
+
 # this specifies what extensions to load when the bot starts up
 startup_extensions = ['fun', 'games', 'dice', 'help', 'git']
 # set the bot prefix read by Discord
-bot = commands.Bot(command_prefix='bg ')
+bot = commands.Bot(command_prefix='bg ', intents=intents)
 # We are going to use help.py to add an embed help.
 # Remove basic help command here.
 bot.remove_command('help')
