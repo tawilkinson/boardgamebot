@@ -1,6 +1,7 @@
 import asyncio
 import collections
 import discord
+import logging
 import lxml
 import html
 import requests

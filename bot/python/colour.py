@@ -1,4 +1,5 @@
 import discord
+import logging
 import numpy as np
 from sklearn.cluster import KMeans
 from skimage import io

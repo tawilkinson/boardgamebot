@@ -1,4 +1,5 @@
 import discord
+import logging
 from discord.ext import commands
 
 # This custom help command is a perfect replacement for the default one on any Discord Bot written in Discord.py Rewrite!
