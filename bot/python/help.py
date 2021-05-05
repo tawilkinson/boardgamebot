@@ -7,6 +7,7 @@ from discord.ext import commands
 
 logger = logging.getLogger('discord')
 
+
 class Help(commands.Cog, name='help'):
     '''
     Prints the help message/DM.
@@ -16,7 +17,7 @@ class Help(commands.Cog, name='help'):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user, debug=False):
+    async def on_reaction_add(self, reaction, user):
         emoji = reaction.emoji
         message = reaction.message
         if user.bot:
@@ -26,7 +27,7 @@ class Help(commands.Cog, name='help'):
                 await user.send('', embed=message.embeds[0])
 
     @ commands.command()
-    async def help(self, ctx, *cog, debug=False):
+    async def help(self, ctx, *cog):
         '''
         Gets all cogs and commands of this bot.
         '''
@@ -85,8 +86,8 @@ class Help(commands.Cog, name='help'):
                     if ctx.channel.type is not discord.ChannelType.private:
                         await message.add_reaction(emoji='✉')
         except Exception as e:
-            if debug:
-                print(e)
+            if logger.level >= 10:
+                logger.debug(e)
 
 
 def setup(bot):

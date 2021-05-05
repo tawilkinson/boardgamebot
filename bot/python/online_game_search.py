@@ -125,7 +125,7 @@ class Game:
         )
 
 
-def get_boite_a_jeux_data(game, debug=False):
+def get_boite_a_jeux_data(game):
     '''
     Takes an object of "Game" Class and searches Boîte à Jeux "all games" webpage
     to see if the game's name is listed. Will update the Game Object with url for
@@ -149,7 +149,7 @@ def get_boite_a_jeux_data(game, debug=False):
         game.set_boite_url(boite_page.error)
 
 
-def bgg_data_from_id(game, game_id, debug=False):
+def bgg_data_from_id(game, game_id):
     '''
     Takes an item of Game class and a known BGG id. Sets relevant
     game data from the BGG page referenced by id.
@@ -176,7 +176,7 @@ def bgg_data_from_id(game, game_id, debug=False):
     return False
 
 
-async def get_bgg_data(game, message, ctx, exact=True, debug=False):
+async def get_bgg_data(game, message, ctx, exact=True):
     '''
     Takes an object of "Game" Class and searches Board Game Geeks API for a boardgame
     that exactly matches the Game name. Will update the Game Object with url for
@@ -284,7 +284,7 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
     return False
 
 
-def get_tabletopia_data(game, debug=False):
+def get_tabletopia_data(game):
     '''
     Takes an object of "Game" Class and searches Tabletopia for a boardgame
     that exactly matches the Game name. Will update the Game Object with url for
@@ -312,7 +312,7 @@ def get_tabletopia_data(game, debug=False):
         game.set_tabletopia_url(tabletopia_page.error)
 
 
-def get_tts_data(game, debug=False):
+def get_tts_data(game):
     '''
     Takes an object of "Game" Class and searches Steam for a Tabletop Simulator
     script that exactly matches the Game name.
@@ -364,8 +364,8 @@ def get_tts_data(game, debug=False):
                             logger.debug(
                                 f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
             except AttributeError:
-                if debug:
-                    print(
+                if logger.level >= 10:
+                    logger.debug(
                         f'--> No url_name')
         if workshop:
             if workshop[-1:] == '\n':
@@ -375,7 +375,7 @@ def get_tts_data(game, debug=False):
         game.set_tts_url(tts_dlc_page.error)
 
 
-def get_bga_data(game, debug=False):
+def get_bga_data(game):
     '''
     Takes an object of "Game" Class and searches Board Game Arena for a listing
     that exactly matches the Game name. Will update the Game Object with url for
@@ -418,7 +418,7 @@ def get_bga_data(game, debug=False):
         game.set_bga_url(bga_page.error)
 
 
-def get_yucata_data(game, debug=False):
+def get_yucata_data(game):
     '''
     Takes an object of "Game" Class and searches Yucata for a listing
     that exactly matches the Game name. Will update the Game Object with url for
@@ -447,7 +447,7 @@ def get_yucata_data(game, debug=False):
         game.set_yucata_url(yucata_page.error)
 
 
-async def search_web_board_game_data(game_name, message=None, ctx=None, debug=False, depth=0, max_depth=1):
+async def search_web_board_game_data(game_name, message=None, ctx=None, depth=0, max_depth=1):
     '''
     Willwill search Board Game Geek (BGG) for a board game with that name, or
     else find the next best match. If a match is found on the BGG site the name,
@@ -472,19 +472,19 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
     game = Game(game_name.lower())
     if logger.level >= 10:
         logger.debug(f'SEARCHING WEB FOR GAME DATA: {game.name}')
-    game_on_bgg = await get_bgg_data(game, message, ctx, debug=debug)
+    game_on_bgg = await get_bgg_data(game, message, ctx)
     if not game_on_bgg:
-        possible_game = await get_bgg_data(game, message, ctx, False, debug)
+        possible_game = await get_bgg_data(game, message, ctx, False)
         if possible_game:
             game_on_bgg = True
         else:
             return False
     if game_on_bgg:
-        get_bga_data(game, debug)
-        get_boite_a_jeux_data(game, debug)
-        get_tabletopia_data(game, debug)
-        get_tts_data(game, debug)
-        get_yucata_data(game, debug)
+        get_bga_data(game)
+        get_boite_a_jeux_data(game)
+        get_tabletopia_data(game)
+        get_tts_data(game)
+        get_yucata_data(game)
         game_data = game.return_game_data()
         if logger.level >= 10:
             logger.debug(f'GAME DATA FOUND:\n{game_data}')
@@ -492,7 +492,7 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
     return False
 
 
-def get_all_games(bga, boite, tts, yucata, debug=False):
+def get_all_games(bga, boite, tts, yucata):
     '''
     Simple wrapper to get all games from each service
     '''

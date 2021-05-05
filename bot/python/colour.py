@@ -7,7 +7,7 @@ from skimage.transform import rescale
 logger = logging.getLogger('discord')
 
 
-def get_dominant_colour(img_url, debug=False):
+def get_dominant_colour(img_url):
     '''
     Get an image from a url, rescale it to save resources
     and then use Kmeans clustering to find the dominant colour
@@ -58,12 +58,12 @@ def clamp(x):
     return int(max(0, min(x, 255)))
 
 
-def get_rgb_colour(img_url, debug=False):
+def get_rgb_colour(img_url):
     '''
     Calls get_dominant_colour on an image url and
     returns the r,g,b colour values limited to 0-255
     '''
-    dominant_colour = get_dominant_colour(img_url, debug)
+    dominant_colour = get_dominant_colour(img_url)
     r = dominant_colour[0]
     g = dominant_colour[1]
     b = dominant_colour[2]
@@ -78,11 +78,11 @@ def get_rgb_colour(img_url, debug=False):
     return rgb_colour
 
 
-def get_discord_colour(img_url, debug=False):
+def get_discord_colour(img_url):
     '''
     Calls get_rgb_colour on an image url and converts the output
     to a discord colour object
     '''
-    r, g, b = get_rgb_colour(img_url, debug)
+    r, g, b = get_rgb_colour(img_url)
     colour = discord.Colour.from_rgb(r, g, b)
     return colour
