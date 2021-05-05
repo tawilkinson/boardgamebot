@@ -16,17 +16,17 @@ def get_dominant_colour(img_url, debug=False):
     img = io.imread(img_url)
     shape = np.shape(img)
 
-    if debug:
-        print(f'Original shape: {np.shape(img)}')
+    if logger.level >= 10:
+        logger.debug(f'>>> Original shape: {np.shape(img)}')
     # Reshape to save memory for web
     if shape[0] > 1920 and shape[1] > 1080:
         img = rescale(img, 0.1, multichannel=True)
         img = img * 255
-        if debug:
-            print(f'x0.10 Scaled shape: {np.shape(img)}')
+        if logger.level >= 10:
+            logger.debug(f'>>> x0.10 Scaled shape: {np.shape(img)}')
     img = img.reshape((-1, 3))
-    if debug:
-        print(f'Vectorised shape: {np.shape(img)}')
+    if logger.level >= 10:
+        logger.debug(f'>>> Vectorised shape: {np.shape(img)}')
 
     cluster = KMeans(n_clusters=5, n_init=3, max_iter=10, tol=0.001)
     cluster.fit(img)
@@ -41,9 +41,9 @@ def get_dominant_colour(img_url, debug=False):
         j = j / (len(labels))
         percent.append(j)
 
-    if debug:
+    if logger.level >= 10:
         for count, value in enumerate(centroid):
-            print(value, '{:0.2f}%'.format(percent[count] * 100))
+            logger.debug(value, '{:0.2f}%'.format(percent[count] * 100))
     indices = np.argsort(percent)[::-1]
     dominant = centroid[indices[0]]
 
@@ -68,10 +68,10 @@ def get_rgb_colour(img_url, debug=False):
     g = dominant_colour[1]
     b = dominant_colour[2]
 
-    if debug:
+    if logger.level >= 10:
         # Print the hex string
         hex_str = '#{0:02x}{1:02x}{2:02x}'.format(clamp(r), clamp(g), clamp(b))
-        print(f'{hex_str}')
+        logger.debug(f'{hex_str}')
 
     rgb_colour = (clamp(r), clamp(g), clamp(b))
 
