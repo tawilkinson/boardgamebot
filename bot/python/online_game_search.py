@@ -131,8 +131,8 @@ def get_boite_a_jeux_data(game, debug=False):
     to see if the game's name is listed. Will update the Game Object with url for
     the webpage of the game on Boîte à Jeux's website.
     '''
-    if debug:
-        print(f'> Boîte à Jeux: {game.boite_search_url}')
+    if logger.level >= 10:
+        logger.debug(f'>>> Boîte à Jeux: {game.boite_search_url}')
     boite_page = Webpage(game.boite_search_url)
     boite_directory_page = boite_page.page_html
     if boite_directory_page:
@@ -155,23 +155,23 @@ def bgg_data_from_id(game, game_id, debug=False):
     game data from the BGG page referenced by id.
     '''
     bgg_url = game.get_set_bgg_url(game_id)
-    if debug:
-        print(f'> {game.name} on BGG: {bgg_url}')
+    if logger.level >= 10:
+        logger.debug(f'>>> {game.name} on BGG: {bgg_url}')
     bgg_page = Webpage(bgg_url)
     if bgg_page.page_html.items.description:
         game_description = html.unescape(
             bgg_page.page_html.items.description.text)
         abridged_game_description = f'{game_description[0:300]} ...'
         game.set_description(abridged_game_description)
-        if debug:
-            print(f'--> retrieved {game.name} description')
+        if logger.level >= 10:
+            logger.debug(f'--> retrieved {game.name} description')
         if bgg_page.page_html.items.image:
             game_image = bgg_page.page_html.items.image.text
             game.set_image(game_image)
-            if debug:
-                print(f'--> retrieved {game.name} image')
-        if debug:
-            print(f'--> retrieved {game.name} Board Game Geek data')
+            if logger.level >= 10:
+                logger.debug(f'--> retrieved {game.name} image')
+        if logger.level >= 10:
+            logger.debug(f'--> retrieved {game.name} Board Game Geek data')
         return True
     return False
 
@@ -184,12 +184,13 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
     '''
     game_id = 0
     if exact:
-        if debug:
-            print(f'> Board Game Geek: {game.bgg_search_url}')
+        if logger.level >= 10:
+            logger.debug(f'>>> Board Game Geek: {game.bgg_search_url}')
         bgg_search = Webpage(game.bgg_search_url)
     else:
-        if debug:
-            print(f'> Board Game Geek: {game.bgg_non_exact_search_url}')
+        if logger.level >= 10:
+            logger.debug(
+                f'>>> Board Game Geek: {game.bgg_non_exact_search_url}')
         bgg_search = Webpage(game.bgg_non_exact_search_url)
     if bgg_search.page_html:
         if bgg_search.page_html.items is not None:
@@ -198,9 +199,9 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
             if games_found == '0':
                 game.set_description(
                     'Game not found on Board Game Geek! Is it even a board game?')
-                if debug:
-                    print(
-                        f'> !!! {game.name} not found on Board Game Geek !!!')
+                if logger.level >= 10:
+                    logger.debug(
+                        f'!!! {game.name} not found on Board Game Geek !!!')
             elif int(games_found) > 1:
                 closest_match = None
                 board_game_search = bgg_search.page_html.items.findAll('item')
@@ -229,8 +230,8 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
                 description = f'{len(possible_board_games)} potential matches on Board Game Geek.'
                 description += '\nPlease respond with the number of the game you were looking for...'
                 response.description = description
-                if debug:
-                    print(
+                if logger.level >= 10:
+                    logger.debug(
                         f'--> found {len(possible_board_games)} potential matches on Board Game Geek')
                 difflib_closest = difflib.get_close_matches(
                     game.name, possible_board_games.keys(), 1, 0)[0]
@@ -264,8 +265,8 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
                         game.update_name(difflib_closest)
                         closest_match = difflib_closest
                 if closest_match:
-                    if debug:
-                        print(f'--> {closest_match} is closest match')
+                    if logger.level >= 10:
+                        logger.debug(f'--> {closest_match} is closest match')
                     if key:
                         return bgg_data_from_id(game, key)
                     game.update_name(closest_match)
@@ -278,8 +279,8 @@ async def get_bgg_data(game, message, ctx, exact=True, debug=False):
         else:
             if ctx and exact:
                 await ctx.send('BBG Unreachable. Is BGG online?')
-    if debug:
-        print(f'--> {bgg_search.error}')
+    if logger.level >= 10:
+        logger.debug(f'--> {bgg_search.error}')
     return False
 
 
@@ -289,8 +290,8 @@ def get_tabletopia_data(game, debug=False):
     that exactly matches the Game name. Will update the Game Object with url for
     the webpage of the game on Tabletopia's website.
     '''
-    if debug:
-        print(f'> Tabletopia: {game.tabletopia_search_url}')
+    if logger.level >= 10:
+        logger.debug(f'>>> Tabletopia: {game.tabletopia_search_url}')
     tabletopia_games = []
     tabletopia_page = Webpage(game.tabletopia_search_url)
     tabletopia_directory_page = tabletopia_page.page_html
@@ -305,8 +306,8 @@ def get_tabletopia_data(game, debug=False):
             tabletopia_games.append(formatted_link)
         if tabletopia_games:
             game.set_tabletopia_url('\n'.join(tabletopia_games))
-            if debug:
-                print(f'--> retrieved {game.name} Tabletopia data')
+            if logger.level >= 10:
+                logger.debug(f'--> retrieved {game.name} Tabletopia data')
     else:
         game.set_tabletopia_url(tabletopia_page.error)
 
@@ -317,8 +318,8 @@ def get_tts_data(game, debug=False):
     script that exactly matches the Game name.
     Will update the Game Object with url for the webpage of the game on steam website.
     '''
-    if debug:
-        print(f'> Tabletop Simulator: {game.tts_search_url}')
+    if logger.level >= 10:
+        logger.debug(f'>>> Tabletop Simulator: {game.tts_search_url}')
     tts_dlc_page = Webpage(game.tts_dlc_url)
     tts_dlc_search = tts_dlc_page.page_html
     if tts_dlc_search:
@@ -332,8 +333,8 @@ def get_tts_data(game, debug=False):
                 url = url.split('?snr=')[0]
                 dlc = f'[{this_name}]({url})'
                 dlc = (f'[{game.name} (DLC)]({url})\n')
-                if debug:
-                    print(
+                if logger.level >= 10:
+                    logger.debug(
                         f'--> retrieved {game.name} Tabletop Simulator DLC data')
                 break
         tts_search = Webpage(game.tts_search_url).page_html
@@ -347,8 +348,9 @@ def get_tts_data(game, debug=False):
                     url_name = result.contents[0].contents[0]
                     match_factor = difflib.SequenceMatcher(
                         None, game.name, url_name).ratio()
-                    if debug:
-                        print(f'{game.name} vs. {url_name} ={match_factor}')
+                    if logger.level >= 10:
+                        logger.debug(
+                            f'>>> {game.name} vs. {url_name} ={match_factor}')
                     if (match_factor > 0.5) or (game.name in url_name):
                         url = url.replace(
                             '/url?q=',
@@ -358,8 +360,8 @@ def get_tts_data(game, debug=False):
                             '%3D',
                             '=').split('&')[0]
                         workshop += f'[{url_name}]({url})\n'
-                        if debug:
-                            print(
+                        if logger.level >= 10:
+                            logger.debug(
                                 f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
             except AttributeError:
                 if debug:
@@ -379,19 +381,21 @@ def get_bga_data(game, debug=False):
     that exactly matches the Game name. Will update the Game Object with url for
     the webpage of the game on BGA's website.
     '''
-    if debug:
-        print(f'> Board Game Arena: {game.bga_search_url}')
+    if logger.level >= 10:
+        logger.debug(f'> Board Game Arena: {game.bga_search_url}')
     bga_page = Webpage(game.bga_search_url)
     bga_search_page = bga_page.page_html
     if bga_search_page:
         bga_page_text = bga_search_page.body.text
         if 'Sorry, an unexpected error has occurred...' not in bga_page_text:
             game.set_bga_url(f'[{game.name}]({game.bga_search_url})')
-            if debug:
-                print(f'--> retrieved {game.name} Board Game Arena data')
+            if logger.level >= 10:
+                logger.debug(
+                    f'--> retrieved {game.name} Board Game Arena data')
         else:
-            if debug:
-                print(f'> Board Game Arena: {game.bga_non_exact_search_url}')
+            if logger.level >= 10:
+                logger.debug(
+                    f'>>> Board Game Arena: {game.bga_non_exact_search_url}')
             bga_page = Webpage(game.bga_non_exact_search_url)
             bga_search_page = bga_page.page_html
             if bga_search_page:
@@ -420,8 +424,8 @@ def get_yucata_data(game, debug=False):
     that exactly matches the Game name. Will update the Game Object with url for
     the webpage of the game on Yuctata's website.
     '''
-    if debug:
-        print(f'> Yucata: {game.yucata_search_url}')
+    if logger.level >= 10:
+        logger.debug(f'>>> Yucata: {game.yucata_search_url}')
     yucata_games = []
     yucata_page = Webpage(game.yucata_search_url)
     yucata_directory_page = yucata_page.page_html
@@ -437,8 +441,8 @@ def get_yucata_data(game, debug=False):
                 yucata_games.append(formatted_link)
         if yucata_games:
             game.set_yucata_url('\n'.join(yucata_games))
-            if debug:
-                print(f'--> retrieved {game.name} Yucata data')
+            if logger.level >= 10:
+                logger.debug(f'--> retrieved {game.name} Yucata data')
     else:
         game.set_yucata_url(yucata_page.error)
 
@@ -466,8 +470,8 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
     }
     '''
     game = Game(game_name.lower())
-    if debug:
-        print(f'SEARCHING WEB FOR GAME DATA: {game.name}')
+    if logger.level >= 10:
+        logger.debug(f'SEARCHING WEB FOR GAME DATA: {game.name}')
     game_on_bgg = await get_bgg_data(game, message, ctx, debug=debug)
     if not game_on_bgg:
         possible_game = await get_bgg_data(game, message, ctx, False, debug)
@@ -482,8 +486,8 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, debug=Fa
         get_tts_data(game, debug)
         get_yucata_data(game, debug)
         game_data = game.return_game_data()
-        if debug:
-            print(f'GAME DATA FOUND:\n{game_data}')
+        if logger.level >= 10:
+            logger.debug(f'GAME DATA FOUND:\n{game_data}')
         return game_data
     return False
 
@@ -501,8 +505,8 @@ def get_all_games(bga, boite, tts, yucata, debug=False):
         game_list = 'https://www.yucata.de/en/'
     if tts:
         game_list = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
-    if debug:
-        print(f'> Board Game Arena all games: {game_list}')
+    if logger.level >= 10:
+        logger.debug(f'>>> Board Game Arena all games: {game_list}')
     all_games_page = Webpage(game_list)
     page = all_games_page.page_html
     all_links = {}
@@ -540,6 +544,6 @@ def get_all_games(bga, boite, tts, yucata, debug=False):
                 all_links[f'{name}'] = f'[{name}]({link})'
     else:
         all_links['All Games Error'] = all_games_page.error
-    if debug:
-        print(f'--> all games:\n{all_links}')
+    if logger.level >= 10:
+        logger.debug(f'--> all games:\n{all_links}')
     return all_links
