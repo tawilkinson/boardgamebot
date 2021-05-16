@@ -1,11 +1,9 @@
 import discord
 import DiscordUtils
-import html
 import html2text
 import logging
-from bs4 import BeautifulSoup
 from discord.ext import commands
-from online_game_search import Webpage
+from utils.game import Webpage
 from subprocess import check_output
 
 logger = logging.getLogger('discord')

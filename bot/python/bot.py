@@ -122,7 +122,7 @@ if __name__ == '__main__':
     # Load all the extensions from the list above
     for extension in startup_extensions:
         try:
-            bot.load_extension(extension)
+            bot.load_extension(f'cogs.{extension}')
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))

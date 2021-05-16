@@ -5,8 +5,8 @@ import re
 import string
 import time
 from discord.ext import tasks, commands
-from colour import get_discord_colour
-from online_game_search import search_web_board_game_data, get_all_games
+from utils.colour import get_discord_colour
+from utils.online_game_search import search_web_board_game_data, get_all_games
 
 logger = logging.getLogger('discord')
 
