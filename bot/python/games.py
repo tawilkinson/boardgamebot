@@ -198,8 +198,8 @@ class Games(commands.Cog, name='games'):
         for emb in embeds:
             footer_txt = ''
             if len(embeds) > 1:
-                count += 1
                 footer_txt += f'({count}/{len(embeds)}) '
+                count += 1
             if full_time:
                 footer_txt += f'Fetched in {full_time:0.2f}s'
             emb.set_footer(text=footer_txt)
@@ -263,8 +263,8 @@ class Games(commands.Cog, name='games'):
             count = 1
             footer_txt = ''
             if len(embeds) > 1:
-                count += 1
                 footer_txt += f'({count}/{len(embeds)}) '
+                count += 1
             if start_time:
                 footer_txt += f'Fetched in {full_time:0.2f}s'
             emb.set_footer(text=footer_txt)
