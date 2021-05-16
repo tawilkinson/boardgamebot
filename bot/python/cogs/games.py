@@ -76,8 +76,8 @@ class Games(commands.Cog, name='games'):
         message = await ctx.send(response)
         embedder = GameEmbed()
         all_links = get_all_games(site=1)
-        responses = embedder.format_all_games_embed(all_links,
-                                                    site=1, start_time=start_time)
+        responses = embedder.format_all_games_embed(
+            all_links, site=1, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
@@ -100,8 +100,8 @@ class Games(commands.Cog, name='games'):
         message = await ctx.send(response)
         embedder = GameEmbed()
         all_links = get_all_games(site=2)
-        responses = embedder.format_all_games_embed(all_links,
-                                                    site=2, start_time=start_time)
+        responses = embedder.format_all_games_embed(
+            all_links, site=2, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
@@ -130,8 +130,8 @@ class Games(commands.Cog, name='games'):
         message = await ctx.send(response)
         embedder = GameEmbed()
         all_links = get_all_games(site=4)
-        responses = embedder.format_all_games_embed(all_links,
-                                                    site=4, start_time=start_time)
+        responses = embedder.format_all_games_embed(
+            all_links, site=4, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
@@ -148,8 +148,8 @@ class Games(commands.Cog, name='games'):
         message = await ctx.send(response)
         embedder = GameEmbed()
         all_links = get_all_games(site=3)
-        responses = embedder.format_all_games_embed(all_links,
-                                                    site=3, start_time=start_time)
+        responses = embedder.format_all_games_embed(
+            all_links, site=3, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
