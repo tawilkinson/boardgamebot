@@ -388,7 +388,8 @@ def get_bga_data(game):
             if logger.level >= 10:
                 logger.debug(
                     f'>>> Board Game Arena: {game.bga_non_exact_search_url}')
-
+            all_bga = get_all_games(
+                bga=True, boite=False, tts=False, yucata=False)
             closest_match = difflib.get_close_matches(
                 game.name, all_bga.keys(), 1)
             if len(closest_match) > 0:
@@ -484,14 +485,18 @@ def get_all_games(bga=False, boite=False, tts=False, yucata=False):
     if bga:
         game_list = 'https://boardgamearena.com/gamelist?section=all'
         bga_base_url = 'https://boardgamearena.com'
+        name = 'Board Game Arena'
     if boite:
         game_list = 'http://www.boiteajeux.net/index.php?p=regles'
+        name = 'Boîte à Jeux'
     if yucata:
         game_list = 'https://www.yucata.de/en/'
+        name = 'Yucata.de'
     if tts:
         game_list = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
+        name = 'Tabletop Simulator'
     if logger.level >= 10:
-        logger.debug(f'>>> Board Game Arena all games: {game_list}')
+        logger.debug(f'>>> {name} all games: {game_list}')
     all_games_page = Webpage(game_list)
     page = all_games_page.page_html
     all_links = {}

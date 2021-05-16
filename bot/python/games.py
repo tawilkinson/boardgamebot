@@ -4,7 +4,7 @@ import logging
 import re
 import string
 import time
-from discord.ext import commands
+from discord.ext import tasks, commands
 from colour import get_discord_colour
 from online_game_search import search_web_board_game_data, get_all_games
 
@@ -19,6 +19,20 @@ class Games(commands.Cog, name='games'):
         self.cont = 1
         self.end_regex = r'\s\([0-9]+\)$'
         self.parser = re.compile(self.end_regex)
+        self.game_cacher.start()
+
+    @tasks.loop(hours=24)
+    async def game_cacher(self):
+        # Every 24 hours, refresh the cache
+        get_all_games(bga=True, boite=False, tts=False, yucata=False)
+        get_all_games(bga=False, boite=True, tts=False, yucata=False)
+        get_all_games(bga=False, boite=False, tts=True, yucata=False)
+        get_all_games(bga=False, boite=False, tts=False, yucata=True)
+
+    @game_cacher.before_loop
+    async def before_cache(self):
+        logger.debug(f'Waiting for bot to start before caching...')
+        await self.bot.wait_until_ready()
 
     def base_game_embed(self, game):
         if self.cont > 1:
@@ -217,7 +231,7 @@ class Games(commands.Cog, name='games'):
         embeds = []
         embed = self.base_site_embed(
             bga=bga, boite=boite, tts=tts, yucata=yucata)
-        all_links = get_all_games(bga, boite, tts, yucata)
+        all_links = get_all_games(bga=bga, boite=boite, tts=tts, yucata=yucata)
         if all_links is None:
             return embeds
         count = 1
