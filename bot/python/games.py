@@ -194,15 +194,15 @@ class Games(commands.Cog, name='games'):
 
         embeds.append(embed)
 
-        if full_time:
-            count = 1
-            for emb in embeds:
-                footer_txt = ''
-                if len(embeds) > 1:
-                    count += 1
-                    footer_txt += f'({count}/{len(embeds)}) '
+        count = 1
+        for emb in embeds:
+            footer_txt = ''
+            if len(embeds) > 1:
+                count += 1
+                footer_txt += f'({count}/{len(embeds)}) '
+            if full_time:
                 footer_txt += f'Fetched in {full_time:0.2f}s'
-                emb.set_footer(text=footer_txt)
+            emb.set_footer(text=footer_txt)
 
         return embeds
 
@@ -211,7 +211,8 @@ class Games(commands.Cog, name='games'):
             bga=False,
             boite=False,
             tts=False,
-            yucata=False):
+            yucata=False,
+            start_time=None):
         self.cont = 1
         embeds = []
         embed = self.base_site_embed(
@@ -256,6 +257,17 @@ class Games(commands.Cog, name='games'):
                     else:
                         value = text
         embeds.append(embed)
+        if start_time:
+            full_time = time.time() - start_time
+        for emb in embeds:
+            count = 1
+            footer_txt = ''
+            if len(embeds) > 1:
+                count += 1
+                footer_txt += f'({count}/{len(embeds)}) '
+            if start_time:
+                footer_txt += f'Fetched in {full_time:0.2f}s'
+            emb.set_footer(text=footer_txt)
 
         return embeds
 
@@ -299,13 +311,15 @@ class Games(commands.Cog, name='games'):
     @commands.command(aliases=['board_game_arena', 'boardgamearena'],
                       help='Prints the list of games currently available on Board Game Arena.')
     async def bga(self, ctx):
+        start_time = time.time()
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
-        responses = self.format_all_games_embed(bga=True)
+        responses = self.format_all_games_embed(
+            bga=True, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                ctx, timeout=60, auto_footer=True)
+                ctx, timeout=60)
             await paginator.run(responses)
         else:
             await ctx.send(content='', embed=responses[0])
@@ -319,19 +333,22 @@ class Games(commands.Cog, name='games'):
             'boîteàjeux'],
         help='Prints the list of games currently available on Boîte à Jeux.')
     async def boite(self, ctx):
+        start_time = time.time()
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
-        responses = self.format_all_games_embed(boite=True)
+        responses = self.format_all_games_embed(
+            boite=True, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                ctx, timeout=60, auto_footer=True)
+                ctx, timeout=60)
             await paginator.run(responses)
         else:
             await ctx.send(content='', embed=responses[0])
 
     @commands.command(help='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
     async def tabletopia(self, ctx):
+        start_time = time.time()
         description = 'Tabletopia has over 1600 games. Full list at [Tabletopia: All Games](https://tabletopia.com/games?page=1).'
         embed = discord.Embed(
             title='Tabletopia Games',
@@ -345,13 +362,15 @@ class Games(commands.Cog, name='games'):
     @commands.command(aliases=['tabletop_simulator', 'tabletopsimulator'],
                       help='Prints the list of DLC currently available for Tabletop Simulator.')
     async def tts(self, ctx):
+        start_time = time.time()
         response = 'Getting the list of Tabletop Simulator DLC...'
         message = await ctx.send(response)
-        responses = self.format_all_games_embed(tts=True)
+        responses = self.format_all_games_embed(
+            tts=True, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                ctx, timeout=60, auto_footer=True)
+                ctx, timeout=60)
             await paginator.run(responses)
         else:
             await ctx.send(content='', embed=responses[0])
@@ -359,13 +378,15 @@ class Games(commands.Cog, name='games'):
     @commands.command(aliases=['yucata.de'],
                       help='Prints the list of games currently available on Yucata.de.')
     async def yucata(self, ctx):
+        start_time = time.time()
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
-        responses = self.format_all_games_embed(yucata=True)
+        responses = self.format_all_games_embed(
+            yucata=True, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                ctx, timeout=60, auto_footer=True)
+                ctx, timeout=60)
             await paginator.run(responses)
         else:
             await ctx.send(content='', embed=responses[0])
