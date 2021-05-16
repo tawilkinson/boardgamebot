@@ -24,6 +24,15 @@ class Die():
         self.short_str = ''
         self.exploded = False
         self.total = 0
+        self.parse_dice()
+        # Make the roll
+        try:
+            self.roll()
+        except AttributeError:
+            self.die_str = '**! Incorrect syntax !**\n'
+            self.short_str = self.die_str
+
+    def parse_dice(self):
         # Try to get the various parts of the roll from the regex
         try:
             self.count = int(self.match.group('count'))
@@ -54,11 +63,6 @@ class Die():
             self.mod = int(self.match.group('mod'))
         except TypeError:
             self.mod = False
-        try:
-            self.roll()
-        except AttributeError:
-            self.die_str = '**! Incorrect syntax !**\n'
-            self.short_str = self.die_str
 
     def roll_core(self):
         '''
@@ -96,21 +100,27 @@ class Die():
         dice rolls this function discards the other results and
         generates a sting with stikethrough text to display this.
         '''
-        counter = 0
         if self.keep:
             if 'kl' in self.keep:
                 self.rolls = sorted(self.rolls)
             elif 'k' in self.keep:
                 self.rolls = sorted(self.rolls, reverse=True)
-            for idx, value in enumerate(self.rolls):
-                counter += 1
-                if counter > self.keep_count:
-                    self.rolls[idx][1] = '~~' + value[1] + '~~'
-                else:
-                    self.total += value[0]
+            self.strikethrough_discards()
         else:
             for result in self.rolls:
                 self.total += result[0]
+
+    def strikethrough_discards(self):
+        '''
+        Adds strikethrough formatting to missed rolls
+        '''
+        counter = 0
+        for idx, value in enumerate(self.rolls):
+            counter += 1
+            if counter > self.keep_count:
+                self.rolls[idx][1] = '~~' + value[1] + '~~'
+            else:
+                self.total += value[0]
 
     def generate_die_str(self, short=False):
         '''
@@ -146,8 +156,25 @@ class Die():
         # Discard rolls if needed
         self.discard()
 
+        self.handle_multiple_strs()
+
+        self.handle_mod_strs()
+
+        # Generate the total string
+        self.die_str += f'**{self.total}**'
+        self.short_str += f'**{self.total}**'
+
+        self.handle_keep_strs()
+        self.handle_explode_strs()
+
+        self.die_str += '\n'
+        self.short_str += '\n'
+
+    def handle_multiple_strs(self):
+        '''
+        Multiple rolls need to be displayed nicely
+        '''
         if len(self.rolls) > 1:
-            # Multiple rolls need to be displayed nicely
             self.die_str = '_'
             self.die_str += self.generate_die_str()
             if self.mod:
@@ -157,8 +184,11 @@ class Die():
                 self.die_str += '_ = '
                 self.short_str += '_' + self.generate_die_str(True) + '_ = '
 
+    def handle_mod_strs(self):
+        '''
+        Handle static positive/negative modifiers
+        '''
         if self.mod:
-            # Handle static positive/negative modifiers
             if len(self.rolls) == 1:
                 self.die_str = self.rolls[0][1]
                 self.short_str = self.rolls[0][1]
@@ -170,12 +200,11 @@ class Die():
                 self.die_str += f' - {self.mod}'
             self.die_str += ' = '
 
-        # Generate the total string
-        self.die_str += f'**{self.total}**'
-        self.short_str += f'**{self.total}**'
-
+    def handle_keep_strs(self):
+        '''
+        Add emojis for keep/keep lower
+        '''
         if self.keep:
-            # Add emojis for keep/keep lower
             if 'kl' in self.keep:
                 self.die_str = '👎 ' + self.die_str + ' 👎'
                 self.short_str = '👎 ' + self.short_str + ' 👎'
@@ -183,13 +212,13 @@ class Die():
                 self.die_str = '👍 ' + self.die_str + ' 👍'
                 self.short_str = '👍 ' + self.short_str + ' 👍'
 
+    def handle_explode_strs(self):
+        '''
+        Adds emojis for exploding dice
+        '''
         if self.exploded:
-            # Add emojis for exploding dice
             self.die_str = '💥 ' + self.die_str + ' 💥'
             self.short_str = '💥 ' + self.short_str + ' 💥'
-
-        self.die_str += '\n'
-        self.short_str += '\n'
 
     def reroll(self):
         '''
@@ -233,7 +262,7 @@ class Roller():
 
     def roll(self):
         '''
-        Makes the rolls and setups up multiple respones messages
+        Makes the rolls and setup multiple response messages
         if needed
         '''
         responses = []
