@@ -58,18 +58,15 @@ class Help(commands.Cog, name='help'):
                 if ctx.channel.type is not discord.ChannelType.private:
                     await message.add_reaction(emoji='✉')
             else:
-                found = False
-                for x in self.bot.cogs:
-                    if x in cog[0]:
-                        halp = discord.Embed(
-                            title=cog[0] + ' Command Listing', description=self.bot.cogs[cog[0]].__doc__,
-                            colour=discord.Colour.blurple())
-                        for c in self.bot.get_cog(x).get_commands():
-                            if not c.hidden:
-                                halp.add_field(
-                                    name=c.name, value=c.help, inline=True)
-                        found = True
-                if not found:
+                if cog[0] in self.bot.cogs:
+                    halp = discord.Embed(
+                        title=cog[0] + ' Command Listing', description=self.bot.cogs[cog[0]].__doc__,
+                        colour=discord.Colour.blurple())
+                    for c in self.bot.get_cog(cog[0]).get_commands():
+                        if not c.hidden:
+                            halp.add_field(
+                                name=c.name, value=c.help, inline=True)
+                else:
                     halp = discord.Embed(
                         title='Error!',
                         description='How do you even use "' +

@@ -286,8 +286,7 @@ class Games(commands.Cog, name='games'):
         return embeds
 
     @commands.command(aliases=['g', 'search', 's', 'boardgame', 'bg'],
-                      help='Print detailed info about a board game. \
-                          Fetches game info from [BGG](https://boardgamegeek.com/) \
+                      help='Fetches game info from [BGG](https://boardgamegeek.com/) \
                               then returns online sources, if they exist, to play \
                                   the game.')
     async def game(self, ctx, *game):
