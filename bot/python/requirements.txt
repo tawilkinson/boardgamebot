@@ -9,7 +9,7 @@ DiscordUtils == 1.2.9.2
 beautifulsoup4 == 4.9.3
 
 # python/online_game_search.py: 12
-cachetools == 4.1.1
+cachetools==4.2.2
 
 # python/bot.py: 2,7
 # python/colour.py: 1
