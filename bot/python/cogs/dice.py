@@ -1,6 +1,6 @@
 import logging
 from discord.ext import commands
-from utils.die import Roller
+from utils.roller import Roller
 
 logger = logging.getLogger('discord')
 

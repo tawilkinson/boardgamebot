@@ -1,6 +1,7 @@
 import logging
 import random
 import re
+from utils.helpers import get_int
 
 logger = logging.getLogger('discord')
 
@@ -24,6 +25,9 @@ class Die():
         self.short_str = ''
         self.exploded = False
         self.total = 0
+        self.explode = False
+        self.plus = False
+        self.minus = False
         self.parse_dice()
         # Make the roll
         try:
@@ -33,36 +37,20 @@ class Die():
             self.short_str = self.die_str
 
     def parse_dice(self):
-        # Try to get the various parts of the roll from the regex
-        try:
-            self.count = int(self.match.group('count'))
-        except TypeError:
-            self.count = False
-        try:
-            self.sides = int(self.match.group('sides'))
-        except (TypeError, IndexError):
-            self.sides = False
+        '''
+        Try to get the various parts of the roll from the regex
+        '''
+        self.count = get_int(self.match.group('count'))
+        self.sides = get_int(self.match.group('sides'))
         if self.match.group('explode') == '!':
             self.explode = True
-        else:
-            self.explode = False
         self.keep = self.match.group('keep')
-        try:
-            self.keep_count = int(self.match.group('keepCount'))
-        except TypeError:
-            self.keep_count = False
+        self.keep_count = get_int(self.match.group('keepCount'))
         if self.match.group('plus') == '+':
             self.plus = True
-        else:
-            self.plus = False
         if self.match.group('minus') == '-':
             self.minus = True
-        else:
-            self.minus = False
-        try:
-            self.mod = int(self.match.group('mod'))
-        except TypeError:
-            self.mod = False
+        self.mod = get_int(self.match.group('mod'))
 
     def roll_core(self):
         '''
@@ -157,7 +145,6 @@ class Die():
         self.discard()
 
         self.handle_multiple_strs()
-
         self.handle_mod_strs()
 
         # Generate the total string
@@ -246,39 +233,3 @@ class Die():
         Utility function of get length of die_str
         '''
         return len(self.die_str)
-
-
-class Roller():
-    '''
-    Roller class that splits up multiple rolls and then uses the
-    Die class to roll each individual roll
-    '''
-
-    def __init__(self, roll_text):
-        '''
-        Splits incoming rolls into separate commands
-        '''
-        self.all_rolls = roll_text.split('|')
-
-    def roll(self):
-        '''
-        Makes the rolls and setup multiple response messages
-        if needed
-        '''
-        responses = []
-
-        for roll in self.all_rolls:
-            die = Die(roll)
-            if len(self.all_rolls) > 1:
-                # 1999 - 12 for 'You Rolled:'
-                if (die.get_len() + len(roll)) > 1987:
-                    responses.append(f'`{roll}` = ' + die.get_short_str())
-                else:
-                    responses.append(f'`{roll}` = ' + die.get_str())
-            else:
-                if die.get_len() > 1987:
-                    responses.append(die.get_short_str())
-                else:
-                    responses.append(die.get_str())
-
-        return responses
