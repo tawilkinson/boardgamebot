@@ -1,8 +1,8 @@
 import discord
 import logging
-import re
 import time
 from utils.colour import get_discord_colour
+from utils.helpers import Site
 from utils.online_game_search import get_all_games
 
 logger = logging.getLogger('discord')
@@ -32,9 +32,8 @@ class GameEmbed():
                             value=bgg_text, inline=False)
         return embed
 
-    def base_site_embed(self, bga=None, boite=None, yucata=None, tts=None):
-        title_str = ''
-        if bga:
+    def base_site_embed(self, site=0):
+        if Site(site) == Site.bga:
             title_str = 'Board Game Arena Games'
             description = 'Join the largest boardgame table in the world.\
                 \nNo download necessary - play directly from your web browser.\
@@ -43,7 +42,7 @@ class GameEmbed():
             url = 'https://boardgamearena.com/gamelist'
             colour = 0x9566DD
             thumb_url = 'https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png'
-        if boite:
+        elif Site(site) == Site.boite:
             title_str = 'Boîte à Jeux Games'
             description = 'Boîte à Jeux is a predominantly French online game system. The \
                 interface has been translated to English and more recently, German as well.\
@@ -53,14 +52,14 @@ class GameEmbed():
             url = 'http://www.boiteajeux.net/'
             colour = 0x55774C
             thumb_url = 'http://www.boiteajeux.net/img/banniere_baj_en.png'
-        if yucata:
+        elif Site(site) == Site.yucata:
             title_str = 'Yucata.de Games'
             description = 'Online gaming portal, free and without advertisements \
                 where you may play more than 60 different games.'
             url = 'https://www.yucata.de/en'
             colour = 0x00305E
             thumb_url = 'https://www.yucata.de/bundles/images/Logo.jpg'
-        if tts:
+        elif Site(site) == Site.tts:
             title_str = 'Tabletop Simulator DLC'
             description = 'Tabletop Simulator is the only simulator \
                 where you can let your aggression out by flipping the \
@@ -71,6 +70,9 @@ class GameEmbed():
             url = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
             colour = 0xE86932
             thumb_url = 'https://cdn.akamai.steamstatic.com/steam/apps/286160/header.jpg'
+        else:
+            embed = discord.Embed()
+            return embed
         if self.cont > 1:
             title = f'{title_str} ({self.cont})'
             description = 'More game links below'
@@ -82,14 +84,12 @@ class GameEmbed():
         embed.set_thumbnail(url=thumb_url)
         return embed
 
-    def embed_constrain(self, name, value, embed, embeds, game=None, bga=None,
-                        boite=None, yucata=None, tts=None):
+    def embed_constrain(self, name, value, embed, embeds, site=0, game=None, ):
         embeds.append(embed)
         if game:
             embed = self.base_game_embed(game)
         else:
-            embed = self.base_site_embed(
-                bga=bga, boite=boite, tts=tts, yucata=yucata)
+            embed = self.base_site_embed(site)
         embed.add_field(name=name, value=value)
         return embed, embeds
 
@@ -193,20 +193,10 @@ class GameEmbed():
 
         return embeds
 
-    def format_all_games_embed(
-            self,
-            bga=False,
-            boite=False,
-            tts=False,
-            yucata=False,
-            start_time=None):
+    def format_all_games_embed(self, all_links, site=0, start_time=None):
         self.cont = 1
         embeds = []
-        embed = self.base_site_embed(
-            bga=bga, boite=boite, tts=tts, yucata=yucata)
-        all_links = get_all_games(bga=bga, boite=boite, tts=tts, yucata=yucata)
-        if all_links is None:
-            return embeds
+        embed = self.base_site_embed(site)
         count = 1
         alphabet = None
         value = ''
@@ -221,7 +211,7 @@ class GameEmbed():
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, bga=bga, boite=boite, tts=tts, yucata=yucata)
+                        alphabet, value, embed, embeds, site)
                 else:
                     embed.add_field(name=alphabet, value=value)
                 alphabet = name
@@ -231,7 +221,7 @@ class GameEmbed():
                     count += 1
                     self.cont += 1
                     embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, bga=bga, boite=boite, tts=tts, yucata=yucata)
+                        alphabet, value, embed, embeds, site)
                     alphabet = f'{name} (cont...)'
                     value = text
                 elif field_len > 1022:

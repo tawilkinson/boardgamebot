@@ -3,6 +3,7 @@ import difflib
 import string
 from cachetools import cached, TTLCache
 from utils.bgg import get_bgg_data
+from utils.helpers import Site
 from utils.game import Game, Webpage
 from utils.tts import get_tts_data
 
@@ -17,8 +18,7 @@ def get_boite_a_jeux_data(game):
     '''
     if logger.level >= 10:
         logger.debug(f'>>> Boîte à Jeux: {game.boite_search_url}')
-    all_boite = get_all_games(
-        bga=False, boite=True, tts=False, yucata=False)
+    all_boite = get_all_games(site=2)
     closest_match = difflib.get_close_matches(
         game.name, all_boite.keys(), 1)
     if len(closest_match) > 0:
@@ -64,8 +64,7 @@ def get_bga_data(game):
     '''
     if logger.level >= 10:
         logger.debug(f'>>> Board Game Arena: {game.bga_search_url}')
-    all_bga = get_all_games(
-        bga=True, boite=False, tts=False, yucata=False)
+    all_bga = get_all_games(site=1)
     closest_match = difflib.get_close_matches(
         game.name, all_bga.keys(), 1)
     if len(closest_match) > 0:
@@ -81,8 +80,7 @@ def get_yucata_data(game):
     '''
     if logger.level >= 10:
         logger.debug(f'>>> Yucata: {game.yucata_search_url}')
-    all_yucata_games = get_all_games(
-        bga=False, boite=False, tts=False, yucata=True)
+    all_yucata_games = get_all_games(site=3)
     yucata_games = []
     for result in all_yucata_games:
         if game.name.lower() in result.lower():
@@ -141,57 +139,55 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, depth=0,
 
 
 @cached(cache=TTLCache(maxsize=1024, ttl=86400))
-def get_all_games(bga=False, boite=False, tts=False, yucata=False):
+def get_all_games(site):
     '''
     Simple wrapper to get all games from each service
     '''
-    if not bga and boite and tts and yucata:
-        if logger.level >= 10:
-            logger.debug(f'get_all_games() called with no website set!')
-        return {}
-    if bga:
+    if Site(site) == Site.bga:
         game_list = 'https://boardgamearena.com/gamelist?section=all'
         bga_base_url = 'https://boardgamearena.com'
         name = 'Board Game Arena'
-    if boite:
+    elif Site(site) == Site.boite:
         game_list = 'http://www.boiteajeux.net/index.php?p=regles'
         name = 'Boîte à Jeux'
-    if yucata:
+    elif Site(site) == Site.yucata:
         game_list = 'https://www.yucata.de/en/'
         name = 'Yucata.de'
-    if tts:
+    elif Site(site) == Site.tts:
         game_list = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
         name = 'Tabletop Simulator'
+    else:
+        return {}
     if logger.level >= 10:
         logger.debug(f'>>> {name} all games: {game_list}')
     all_games_page = Webpage(game_list)
     page = all_games_page.page_html
     all_links = {}
     if page:
-        if bga:
+        if Site(site) == Site.bga:
             search_results = page.find_all(
                 'div', class_='gameitem_baseline gamename')
-        if boite:
+        elif Site(site) == Site.boite:
             search_results = page.find_all('div', class_='jeuxRegles')
-        if yucata:
+        elif Site(site) == Site.yucata:
             search_results = page.find_all('a', class_='jGameInfo')
-        if tts:
+        elif Site(site) == Site.tts:
             search_results = page.find_all('div', {'class': 'search_name'})
         for result in search_results:
-            if bga:
+            if Site(site) == Site.bga:
                 name = str(result.contents[0]).lstrip().rstrip()
                 link = bga_base_url + result.parent.get('href')
-            elif boite:
+            elif Site(site) == Site.boite:
                 rules_elem = result.select_one('a', text='Rules')
                 rules_href = rules_elem.get('href')
                 link = f'http://www.boiteajeux.net/{rules_href}'
                 name = string.capwords(
                     str(result.contents[0]).lstrip().rstrip())
-            elif yucata:
+            elif Site(site) == Site.yucata:
                 game_href = result['href']
                 name = result.text
                 link = f'https://www.yucata.de{game_href}'
-            elif tts:
+            elif Site(site) == Site.tts:
                 name = result.text.lstrip('\n').rstrip('\n ')
                 link = result.parent.parent['href']
                 link = link.split('?snr=')[0]
