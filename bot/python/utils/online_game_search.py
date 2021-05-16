@@ -4,6 +4,7 @@ import string
 from cachetools import cached, TTLCache
 from utils.bgg import get_bgg_data
 from utils.game import Game, Webpage
+from utils.tts import get_tts_data
 
 logger = logging.getLogger('discord')
 
@@ -16,20 +17,15 @@ def get_boite_a_jeux_data(game):
     '''
     if logger.level >= 10:
         logger.debug(f'>>> Boîte à Jeux: {game.boite_search_url}')
-    boite_page = Webpage(game.boite_search_url)
-    boite_directory_page = boite_page.page_html
-    if boite_directory_page:
-        search_results = boite_directory_page.find_all(
-            'div', class_='jeuxRegles')
-        for res in search_results:
-            if game.name.lower() in res.text.lower():
-                rules_elem = res.select_one('a', text='Rules')
-                rules_href = rules_elem.get('href')
-                game_boite_url = f'http://www.boiteajeux.net/{rules_href}'
-                game.set_boite_url(
-                    f'[{game.name}]({game_boite_url})')
+    all_boite = get_all_games(
+        bga=False, boite=True, tts=False, yucata=False)
+    closest_match = difflib.get_close_matches(
+        game.name, all_boite.keys(), 1)
+    if len(closest_match) > 0:
+        game.set_boite_url(f'{all_boite[closest_match[0]]}')
     else:
-        game.set_boite_url(boite_page.error)
+        if logger.level >= 10:
+            logger.debug(f'>>> Boîte à Jeux {game.name} not found')
 
 
 def get_tabletopia_data(game):
@@ -60,69 +56,6 @@ def get_tabletopia_data(game):
         game.set_tabletopia_url(tabletopia_page.error)
 
 
-def get_tts_data(game):
-    '''
-    Takes an object of "Game" Class and searches Steam for a Tabletop Simulator
-    script that exactly matches the Game name.
-    Will update the Game Object with url for the webpage of the game on steam website.
-    '''
-    if logger.level >= 10:
-        logger.debug(f'>>> Tabletop Simulator: {game.tts_search_url}')
-    tts_dlc_page = Webpage(game.tts_dlc_url)
-    tts_dlc_search = tts_dlc_page.page_html
-    if tts_dlc_search:
-        dlc_results = tts_dlc_search.find_all(
-            'div', {'class': 'search_name'})
-        dlc = ''
-        for result in dlc_results:
-            this_name = result.text.lstrip('\n').rstrip('\n ')
-            if game.name.lower() in this_name.lower():
-                url = result.parent.parent['href']
-                url = url.split('?snr=')[0]
-                dlc = f'[{this_name}]({url})'
-                dlc = (f'[{game.name} (DLC)]({url})\n')
-                if logger.level >= 10:
-                    logger.debug(
-                        f'--> retrieved {game.name} Tabletop Simulator DLC data')
-                break
-        tts_search = Webpage(game.tts_search_url).page_html
-        search_results = tts_search.body.select('body a')
-        workshop = ''
-        #
-        for result in search_results:
-            url = result['href']
-            try:
-                if 'https://steamcommunity.com/sharedfiles' in url:
-                    url_name = result.contents[0].contents[0]
-                    match_factor = difflib.SequenceMatcher(
-                        None, game.name, url_name).ratio()
-                    if logger.level >= 10:
-                        logger.debug(
-                            f'>>> {game.name} vs. {url_name} ={match_factor}')
-                    if (match_factor > 0.5) or (game.name in url_name):
-                        url = url.replace(
-                            '/url?q=',
-                            '').replace(
-                            '%3F',
-                            '?').replace(
-                            '%3D',
-                            '=').split('&')[0]
-                        workshop += f'[{url_name}]({url})\n'
-                        if logger.level >= 10:
-                            logger.debug(
-                                f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
-            except AttributeError:
-                if logger.level >= 10:
-                    logger.debug(
-                        f'--> No url_name')
-        if workshop:
-            if workshop[-1:] == '\n':
-                workshop = workshop[:-1]
-        game.set_tts_url(f'{dlc}{workshop}')
-    else:
-        game.set_tts_url(tts_dlc_page.error)
-
-
 def get_bga_data(game):
     '''
     Takes an object of "Game" Class and searches Board Game Arena for a listing
@@ -131,27 +64,15 @@ def get_bga_data(game):
     '''
     if logger.level >= 10:
         logger.debug(f'>>> Board Game Arena: {game.bga_search_url}')
-    bga_page = Webpage(game.bga_search_url)
-    bga_search_page = bga_page.page_html
-    if bga_search_page:
-        bga_page_text = bga_search_page.body.text
-        if 'Sorry, an unexpected error has occurred...' not in bga_page_text:
-            game.set_bga_url(f'[{game.name}]({game.bga_search_url})')
-            if logger.level >= 10:
-                logger.debug(
-                    f'--> retrieved {game.name} Board Game Arena data')
-        else:
-            if logger.level >= 10:
-                logger.debug(
-                    f'>>> Board Game Arena: {game.bga_non_exact_search_url}')
-            all_bga = get_all_games(
-                bga=True, boite=False, tts=False, yucata=False)
-            closest_match = difflib.get_close_matches(
-                game.name, all_bga.keys(), 1)
-            if len(closest_match) > 0:
-                game.set_bga_url(f'{all_bga[closest_match[0]]}')
+    all_bga = get_all_games(
+        bga=True, boite=False, tts=False, yucata=False)
+    closest_match = difflib.get_close_matches(
+        game.name, all_bga.keys(), 1)
+    if len(closest_match) > 0:
+        game.set_bga_url(f'{all_bga[closest_match[0]]}')
     else:
-        game.set_bga_url(bga_page.error)
+        if logger.level >= 10:
+            logger.debug(f'>>> Board Game Arena {game.name} not found')
 
 
 def get_yucata_data(game):
@@ -168,10 +89,9 @@ def get_yucata_data(game):
             yucata_games.append(all_yucata_games[result])
     if yucata_games:
         game.set_yucata_url('\n'.join(yucata_games))
-        if logger.level >= 10:
-            logger.debug(f'--> retrieved {game.name} Yucata data')
     else:
-        game.set_yucata_url('No Game Data')
+        if logger.level >= 10:
+            logger.debug(f'>>> Yucata.de {game.name} not found')
 
 
 @cached(cache=TTLCache(maxsize=1024, ttl=86400))
