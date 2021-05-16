@@ -36,56 +36,49 @@ class Help(commands.Cog, name='help'):
             if not cog:
                 halp = discord.Embed(
                     title='Command Listing and Uncategorised Commands',
-                    description='Use `bg help *command*` to find out more about them!\
-                                             \nClick on ✉ to get this info via DM.',
+                    description='Click on ✉ to get this info via DM.',
                     colour=discord.Colour.blurple())
                 cogs_desc = ''
-                for x in self.bot.cogs:
-                    cogs_desc += ('{} - {}'.format(x,
-                                                   self.bot.cogs[x].__doc__) + '\n')
                 halp.add_field(name='Command Categories',
-                               value=cogs_desc[0:len(cogs_desc) - 1],
+                               value='Use `bg help *category*` to find out more about them!',
                                inline=False)
-                cmds_desc = ''
+                for x in self.bot.cogs:
+                    halp.add_field(name=x,
+                                   value=self.bot.cogs[x].__doc__,
+                                   inline=True)
+                halp.add_field(name='Uncategorised Commands',
+                               value='Use `bg help *command*` to find out more about them!',
+                               inline=False)
                 for y in self.bot.walk_commands():
                     if not y.cog_name and not y.hidden:
-                        cmds_desc += ('{} - {}'.format(y.name, y.help) + '\n')
-                halp.add_field(name='Uncategorised Commands',
-                               value=cmds_desc[0:len(cmds_desc) - 1],
-                               inline=False)
+                        halp.add_field(name=y.name,
+                                       value=y.help,
+                                       inline=True)
                 message = await ctx.send('', embed=halp)
                 if ctx.channel.type is not discord.ChannelType.private:
                     await message.add_reaction(emoji='✉')
             else:
-                if len(cog) > 1:
+                found = False
+                for x in self.bot.cogs:
+                    if x in cog[0]:
+                        halp = discord.Embed(
+                            title=cog[0] + ' Command Listing', description=self.bot.cogs[cog[0]].__doc__,
+                            colour=discord.Colour.blurple())
+                        for c in self.bot.get_cog(x).get_commands():
+                            if not c.hidden:
+                                halp.add_field(
+                                    name=c.name, value=c.help, inline=True)
+                        found = True
+                if not found:
                     halp = discord.Embed(
                         title='Error!',
-                        description='That is way too many cogs!',
+                        description='How do you even use "' +
+                        cog[0] + '"?',
                         colour=discord.Colour.red())
-                    await ctx.send('', embed=halp)
-                else:
-                    found = False
-                    for x in self.bot.cogs:
-                        for y in cog:
-                            if x == y:
-                                halp = discord.Embed(
-                                    title=cog[0] + ' Command Listing', description=self.bot.cogs[cog[0]].__doc__,
-                                    colour=discord.Colour.blurple())
-                                for c in self.bot.get_cog(y).get_commands():
-                                    if not c.hidden:
-                                        halp.add_field(
-                                            name=c.name, value=c.help, inline=False)
-                                found = True
-                    if not found:
-                        halp = discord.Embed(
-                            title='Error!',
-                            description='How do you even use "' +
-                            cog[0] + '"?',
-                            colour=discord.Colour.red())
 
-                    message = await ctx.send('', embed=halp)
-                    if ctx.channel.type is not discord.ChannelType.private:
-                        await message.add_reaction(emoji='✉')
+                message = await ctx.send('', embed=halp)
+                if ctx.channel.type is not discord.ChannelType.private:
+                    await message.add_reaction(emoji='✉')
         except Exception as e:
             if logger.level >= 10:
                 logger.debug(e)
