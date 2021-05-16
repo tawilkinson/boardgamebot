@@ -2,10 +2,13 @@ import discord
 import DiscordUtils
 import html
 import html2text
+import logging
 from bs4 import BeautifulSoup
 from discord.ext import commands
 from online_game_search import Webpage
 from subprocess import check_output
+
+logger = logging.getLogger('discord')
 
 
 class Git(commands.Cog, name='git'):
@@ -20,6 +23,8 @@ class Git(commands.Cog, name='git'):
         '''
         Scrape all release info
         '''
+        if logger.level >= 10:
+            logger.debug('Getting Release info from Github')
         h = html2text.HTML2Text()
         release_page = Webpage(
             'https://github.com/tawilkinson/boardgamebot/releases')

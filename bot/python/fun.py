@@ -1,8 +1,11 @@
 import discord
 import json
+import logging
 import os
 import random
 from discord.ext import commands
+
+logger = logging.getLogger('discord')
 
 
 class Fun(commands.Cog, name='fun'):
