@@ -39,16 +39,18 @@ class Help(commands.Cog, name='help'):
                     description='Click on ✉ to get this info via DM.',
                     colour=discord.Colour.blurple())
                 cogs_desc = ''
-                halp.add_field(name='Command Categories',
-                               value='Use `bg help *category*` to find out more about them!',
-                               inline=False)
+                halp.add_field(
+                    name='Command Categories',
+                    value='Use `bg help *category*` to find out more about them!',
+                    inline=False)
                 for x in self.bot.cogs:
                     halp.add_field(name=x,
                                    value=self.bot.cogs[x].__doc__,
                                    inline=True)
-                halp.add_field(name='Uncategorised Commands',
-                               value='Use `bg help *command*` to find out more about them!',
-                               inline=False)
+                halp.add_field(
+                    name='Uncategorised Commands',
+                    value='Use `bg help *command*` to find out more about them!',
+                    inline=False)
                 for y in self.bot.walk_commands():
                     if not y.cog_name and not y.hidden:
                         halp.add_field(name=y.name,
