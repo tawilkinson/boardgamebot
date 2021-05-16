@@ -3,6 +3,7 @@ import DiscordUtils
 import logging
 import re
 import string
+import time
 from discord.ext import commands
 from colour import get_discord_colour
 from online_game_search import search_web_board_game_data, get_all_games
@@ -98,7 +99,7 @@ class Games(commands.Cog, name='games'):
         embed.add_field(name=name, value=value)
         return embed, embeds
 
-    def format_game_embed(self, game):
+    def format_game_embed(self, game, full_time=None):
         self.cont = 1
         embeds = []
         embed = self.base_game_embed(game)
@@ -193,6 +194,16 @@ class Games(commands.Cog, name='games'):
 
         embeds.append(embed)
 
+        if full_time:
+            count = 1
+            for emb in embeds:
+                footer_txt = ''
+                if len(embeds) > 1:
+                    count += 1
+                    footer_txt += f'({count}/{len(embeds)}) '
+                footer_txt += f'Fetched in {full_time:0.2f}s'
+                emb.set_footer(text=footer_txt)
+
         return embeds
 
     def format_all_games_embed(
@@ -254,6 +265,7 @@ class Games(commands.Cog, name='games'):
                               then returns online sources, if they exist, to play \
                                   the game.')
     async def game(self, ctx, *game):
+        start_time = time.time()
         if logger.level >= 10:
             logger.debug('+++ Starting Game Search +++')
         game_str = ' '.join(game)
@@ -269,10 +281,12 @@ class Games(commands.Cog, name='games'):
             if logger.level >= 10:
                 logger.debug('+++ Ending Game Search +++')
             if search_game:
-                responses = self.format_game_embed(search_game)
+                time_diff = time.time() - start_time
+                responses = self.format_game_embed(
+                    search_game, full_time=time_diff)
                 if len(responses) > 1:
                     paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                        ctx, timeout=60, auto_footer=True)
+                        ctx, timeout=60)
                     await paginator.run(responses)
                 else:
                     await ctx.send(content='', embed=responses[0])
