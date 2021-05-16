@@ -7,20 +7,11 @@ import html
 import requests
 import time
 import difflib
-import requests_cache
 import string
 from bs4 import BeautifulSoup
+from cachetools import cached, TTLCache
 
 logger = logging.getLogger('discord')
-
-requests_cache.install_cache(
-    cache_name='cache',
-    backend='memory',
-    expire_after=86400,
-    allowable_codes=(200, ),
-    allowable_methods=('GET', ),
-    old_data_on_error=False,
-)
 
 
 class Webpage(BeautifulSoup):
@@ -397,24 +388,12 @@ def get_bga_data(game):
             if logger.level >= 10:
                 logger.debug(
                     f'>>> Board Game Arena: {game.bga_non_exact_search_url}')
-            bga_page = Webpage(game.bga_non_exact_search_url)
-            bga_search_page = bga_page.page_html
-            if bga_search_page:
-                search_results = bga_search_page.find_all(
-                    'div', class_='gameitem_baseline gamename')
-                games = {}
-                for result in search_results:
-                    name = str(result.contents[0]).lstrip().rstrip()
-                    games[name] = result
-                bga_base_url = f'https://boardgamearena.com'
-                closest_match = difflib.get_close_matches(
-                    game.name, games.keys(), 1)
-                if len(closest_match) > 0:
-                    name = str(
-                        games[closest_match[0]].contents[0]).lstrip().rstrip()
-                    link = bga_base_url + \
-                        games[closest_match[0]].parent.get('href')
-                    game.set_bga_url(f'[{name}]({link})')
+            all_bga = get_all_games(
+                bga=True, boite=False, tts=False, yucata=False)
+            closest_match = difflib.get_close_matches(
+                game.name, all_bga.keys(), 1)
+            if len(closest_match) > 0:
+                game.set_bga_url(f'{all_bga[closest_match[0]]}')
     else:
         game.set_bga_url(bga_page.error)
 
@@ -448,9 +427,10 @@ def get_yucata_data(game):
         game.set_yucata_url(yucata_page.error)
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=86400))
 async def search_web_board_game_data(game_name, message=None, ctx=None, depth=0, max_depth=1):
     '''
-    Willwill search Board Game Geek (BGG) for a board game with that name, or
+    Will search Board Game Geek (BGG) for a board game with that name, or
     else find the next best match. If a match is found on the BGG site the name,
     description, thumbnail image of the game will be saved, and 5 different
     'online-play' sites will be searched to see if that game is available to play
@@ -493,21 +473,30 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, depth=0,
     return False
 
 
-def get_all_games(bga, boite, tts, yucata):
+@cached(cache=TTLCache(maxsize=1024, ttl=86400))
+def get_all_games(bga=False, boite=False, tts=False, yucata=False):
     '''
     Simple wrapper to get all games from each service
     '''
+    if not bga and boite and tts and yucata:
+        if logger.level >= 10:
+            logger.debug(f'get_all_games() called with no website set!')
+        return {}
     if bga:
         game_list = 'https://boardgamearena.com/gamelist?section=all'
         bga_base_url = 'https://boardgamearena.com'
+        name = 'Board Game Arena'
     if boite:
         game_list = 'http://www.boiteajeux.net/index.php?p=regles'
+        name = 'Boîte à Jeux'
     if yucata:
         game_list = 'https://www.yucata.de/en/'
+        name = 'Yucata.de'
     if tts:
         game_list = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
+        name = 'Tabletop Simulator'
     if logger.level >= 10:
-        logger.debug(f'>>> Board Game Arena all games: {game_list}')
+        logger.debug(f'>>> {name} all games: {game_list}')
     all_games_page = Webpage(game_list)
     page = all_games_page.page_html
     all_links = {}

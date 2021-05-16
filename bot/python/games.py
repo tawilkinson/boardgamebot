@@ -4,7 +4,7 @@ import logging
 import re
 import string
 import time
-from discord.ext import commands
+from discord.ext import tasks, commands
 from colour import get_discord_colour
 from online_game_search import search_web_board_game_data, get_all_games
 
@@ -19,6 +19,20 @@ class Games(commands.Cog, name='games'):
         self.cont = 1
         self.end_regex = r'\s\([0-9]+\)$'
         self.parser = re.compile(self.end_regex)
+        self.game_cacher.start()
+
+    @tasks.loop(hours=24)
+    async def game_cacher(self):
+        # Every 24 hours, refresh the cache
+        get_all_games(bga=True, boite=False, tts=False, yucata=False)
+        get_all_games(bga=False, boite=True, tts=False, yucata=False)
+        get_all_games(bga=False, boite=False, tts=True, yucata=False)
+        get_all_games(bga=False, boite=False, tts=False, yucata=True)
+
+    @game_cacher.before_loop
+    async def before_cache(self):
+        logger.debug(f'Waiting for bot to start before caching...')
+        await self.bot.wait_until_ready()
 
     def base_game_embed(self, game):
         if self.cont > 1:
@@ -194,15 +208,15 @@ class Games(commands.Cog, name='games'):
 
         embeds.append(embed)
 
-        if full_time:
-            count = 1
-            for emb in embeds:
-                footer_txt = ''
-                if len(embeds) > 1:
-                    count += 1
-                    footer_txt += f'({count}/{len(embeds)}) '
+        count = 1
+        for emb in embeds:
+            footer_txt = ''
+            if len(embeds) > 1:
+                footer_txt += f'({count}/{len(embeds)}) '
+                count += 1
+            if full_time:
                 footer_txt += f'Fetched in {full_time:0.2f}s'
-                emb.set_footer(text=footer_txt)
+            emb.set_footer(text=footer_txt)
 
         return embeds
 
@@ -211,12 +225,13 @@ class Games(commands.Cog, name='games'):
             bga=False,
             boite=False,
             tts=False,
-            yucata=False):
+            yucata=False,
+            start_time=None):
         self.cont = 1
         embeds = []
         embed = self.base_site_embed(
             bga=bga, boite=boite, tts=tts, yucata=yucata)
-        all_links = get_all_games(bga, boite, tts, yucata)
+        all_links = get_all_games(bga=bga, boite=boite, tts=tts, yucata=yucata)
         if all_links is None:
             return embeds
         count = 1
@@ -256,6 +271,17 @@ class Games(commands.Cog, name='games'):
                     else:
                         value = text
         embeds.append(embed)
+        if start_time:
+            full_time = time.time() - start_time
+        for emb in embeds:
+            count = 1
+            footer_txt = ''
+            if len(embeds) > 1:
+                footer_txt += f'({count}/{len(embeds)}) '
+                count += 1
+            if start_time:
+                footer_txt += f'Fetched in {full_time:0.2f}s'
+            emb.set_footer(text=footer_txt)
 
         return embeds
 
@@ -299,13 +325,15 @@ class Games(commands.Cog, name='games'):
     @commands.command(aliases=['board_game_arena', 'boardgamearena'],
                       help='Prints the list of games currently available on Board Game Arena.')
     async def bga(self, ctx):
+        start_time = time.time()
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
-        responses = self.format_all_games_embed(bga=True)
+        responses = self.format_all_games_embed(
+            bga=True, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                ctx, timeout=60, auto_footer=True)
+                ctx, timeout=60)
             await paginator.run(responses)
         else:
             await ctx.send(content='', embed=responses[0])
@@ -319,19 +347,22 @@ class Games(commands.Cog, name='games'):
             'boîteàjeux'],
         help='Prints the list of games currently available on Boîte à Jeux.')
     async def boite(self, ctx):
+        start_time = time.time()
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
-        responses = self.format_all_games_embed(boite=True)
+        responses = self.format_all_games_embed(
+            boite=True, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                ctx, timeout=60, auto_footer=True)
+                ctx, timeout=60)
             await paginator.run(responses)
         else:
             await ctx.send(content='', embed=responses[0])
 
     @commands.command(help='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
     async def tabletopia(self, ctx):
+        start_time = time.time()
         description = 'Tabletopia has over 1600 games. Full list at [Tabletopia: All Games](https://tabletopia.com/games?page=1).'
         embed = discord.Embed(
             title='Tabletopia Games',
@@ -345,13 +376,15 @@ class Games(commands.Cog, name='games'):
     @commands.command(aliases=['tabletop_simulator', 'tabletopsimulator'],
                       help='Prints the list of DLC currently available for Tabletop Simulator.')
     async def tts(self, ctx):
+        start_time = time.time()
         response = 'Getting the list of Tabletop Simulator DLC...'
         message = await ctx.send(response)
-        responses = self.format_all_games_embed(tts=True)
+        responses = self.format_all_games_embed(
+            tts=True, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                ctx, timeout=60, auto_footer=True)
+                ctx, timeout=60)
             await paginator.run(responses)
         else:
             await ctx.send(content='', embed=responses[0])
@@ -359,13 +392,15 @@ class Games(commands.Cog, name='games'):
     @commands.command(aliases=['yucata.de'],
                       help='Prints the list of games currently available on Yucata.de.')
     async def yucata(self, ctx):
+        start_time = time.time()
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
-        responses = self.format_all_games_embed(yucata=True)
+        responses = self.format_all_games_embed(
+            yucata=True, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-                ctx, timeout=60, auto_footer=True)
+                ctx, timeout=60)
             await paginator.run(responses)
         else:
             await ctx.send(content='', embed=responses[0])
