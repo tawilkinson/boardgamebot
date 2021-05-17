@@ -60,8 +60,13 @@ def get_tts_data(game):
                 logger.debug(
                     f'>>> {game.name} vs. {url_name} = {match_factor:02f}')
             if (match_factor > 0.5) or (game.name in url_name):
-                url = url.replace('/url?q=', '').replace('%3F',
-                                                         '?').replace('%3D', '=').split('&')[0]
+                url = url.replace(
+                    '/url?q=',
+                    '').replace(
+                    '%3F',
+                    '?').replace(
+                    '%3D',
+                    '=').split('&')[0]
                 workshop += f'[{url_name}]({url})\n'
                 if logger.level >= 10:
                     logger.debug(
