@@ -54,7 +54,7 @@ class Games(commands.Cog, name='games'):
             if search_game:
                 embedder = GameEmbed(search_game)
                 embedder.set_start_time(start_time)
-                responses = embedder.format_game_embed(search_game)
+                responses = embedder.format_game_embed()
                 if len(responses) > 1:
                     paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
                         ctx, timeout=60)

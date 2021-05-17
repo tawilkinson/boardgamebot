@@ -92,31 +92,33 @@ class GameEmbed():
             title=title, description=description, colour=colour, url=url)
         self.embed.set_thumbnail(url=thumb_url)
 
-    def embed_constrain(self, name, value):
+    def embed_constrain(self, name, value=None):
         self.embeds.append(self.embed)
         if self.game:
             self.base_game_embed()
         else:
             self.base_site_embed()
-        self.embed.add_field(name=name, value=value)
+        if value:
+            self.embed.add_field(name=name, value=value)
 
     def link_constrain(self, site=''):
-        count = 1
         value = ''
+        name = f'{site}:'
         for text in self.links:
-            name = f'{site} ' + str(count) + ':'
             field_len = len(value) + len(text) + len(name)
             embed_len = field_len + len(self.embed)
-            if (field_len) > 1022 or (embed_len > 5999):
-                count += 1
+            if (field_len) > 1022 or (embed_len > 5998):
                 self.cont += 1
-                if (len(value) + len(self.embed) > 5999):
-                    value = value.replace('\n', '; ')
-                    self.embed_constrain(name, value)
+                value = value.rstrip('\n').replace('\n', '; ')
+                if (embed_len > 5998):
+                    self.embed_constrain(name)
+                self.embed.add_field(name=name, value=value)
+                name = f'{site} (cont ...):'
                 value = ''
             else:
                 value += text
                 value += '\n'
+
         return value, name
 
     def set_simple_field(self, key, name):
@@ -133,7 +135,7 @@ class GameEmbed():
             link = self.game[key]
             if len(link) > 1022:
                 self.links = link.split('\n')
-                self.link_constrain(self, site=name)
+                self.link_constrain(site=name)
             else:
                 link = link.rstrip('\n').replace('\n', '; ')
                 self.embed.add_field(name=name, value=link)
@@ -163,9 +165,9 @@ class GameEmbed():
         # Yucata field
         self.set_simple_field('yucata', 'Yucata')
         # Tabletopia field
-        self.set_simple_field('tabletopia', 'Tabletopia')
+        self.set_field('tabletopia', 'Tabletopia')
         # Tabletop Simulator field
-        self.set_simple_field('tts', 'Tabletop Simulator')
+        self.set_field('tts', 'Tabletop Simulator')
 
         self.embeds.append(self.embed)
 
@@ -188,10 +190,7 @@ class GameEmbed():
             if embed_len > 5998:
                 count += 1
                 self.cont += 1
-                self.embed_constrain(alphabet, value)
-                alphabet = f'{name} (cont...)'
-                value = text
-                continue
+                self.embed_constrain(alphabet)
 
             if name != alphabet[0]:
                 self.embed.add_field(name=alphabet, value=value)
