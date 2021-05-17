@@ -16,6 +16,13 @@ class GameEmbed():
         self.embeds = []
         self.game = game
         self.site = site
+        self.set_start_time()
+
+    def set_start_time(self, start_time=None):
+        if start_time:
+            self.start_time = start_time
+        else:
+            self.start_time = time.time()
 
     def base_game_embed(self):
         if self.cont > 1:
@@ -93,10 +100,10 @@ class GameEmbed():
             self.base_site_embed()
         self.embed.add_field(name=name, value=value)
 
-    def link_constrain(self, all_links, site=''):
+    def link_constrain(self, site=''):
         count = 1
         value = ''
-        for text in all_links:
+        for text in self.links:
             name = f'{site} ' + str(count) + ':'
             field_len = len(value) + len(text) + len(name)
             embed_len = field_len + len(self.embed)
@@ -125,13 +132,27 @@ class GameEmbed():
         else:
             link = self.game[key]
             if len(link) > 1022:
-                all_links = link.split('\n')
-                self.link_constrain(self, all_links, site=name)
+                self.links = link.split('\n')
+                self.link_constrain(self, site=name)
             else:
                 link = link.rstrip('\n').replace('\n', '; ')
                 self.embed.add_field(name=name, value=link)
 
-    def format_game_embed(self, full_time=None):
+    def set_footers(self):
+        if self.start_time:
+            print(time.time(), self.start_time, time.time() - self.start_time)
+            full_time = time.time() - self.start_time
+        count = 1
+        for emb in self.embeds:
+            footer_txt = ''
+            if len(self.embeds) > 1:
+                footer_txt += f'({count}/{len(self.embeds)}) '
+                count += 1
+            if full_time:
+                footer_txt += f'Fetched in {full_time:0.2f}s'
+            emb.set_footer(text=footer_txt)
+
+    def format_game_embed(self):
         self.cont = 1
         self.embeds = []
         self.base_game_embed()
@@ -149,19 +170,12 @@ class GameEmbed():
 
         self.embeds.append(self.embed)
 
-        count = 1
-        for emb in self.embeds:
-            footer_txt = ''
-            if len(self.embeds) > 1:
-                footer_txt += f'({count}/{len(self.embeds)}) '
-                count += 1
-            if full_time:
-                footer_txt += f'Fetched in {full_time:0.2f}s'
-            emb.set_footer(text=footer_txt)
+        self.set_footers()
 
         return self.embeds
 
-    def format_all_games_embed(self, all_links, start_time=None):
+    def format_all_games_embed(self, all_links):
+        self.all_links = all_links
         self.cont = 1
         self.embeds = []
         self.base_site_embed()
@@ -175,6 +189,7 @@ class GameEmbed():
             embed_len = len(alphabet) + len(value) + \
                 len(self.embed) + len(name)
             field_len = len(alphabet) + len(value) + len(text) + len(name)
+
             if name != alphabet[0]:
                 if embed_len > 5998:
                     count += 1
@@ -200,17 +215,9 @@ class GameEmbed():
                         value += f'; {text}'
                     else:
                         value = text
+
         self.embeds.append(self.embed)
-        if start_time:
-            full_time = time.time() - start_time
-        count = 1
-        for emb in self.embeds:
-            footer_txt = ''
-            if len(self.embeds) > 1:
-                footer_txt += f'({count}/{len(self.embeds)}) '
-                count += 1
-            if start_time:
-                footer_txt += f'Fetched in {full_time:0.2f}s'
-            emb.set_footer(text=footer_txt)
+
+        self.set_footers()
 
         return self.embeds
