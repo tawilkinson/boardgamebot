@@ -1,6 +1,7 @@
 import discord
 import logging
 import numpy as np
+from cachetools import cached, TTLCache
 from sklearn.cluster import KMeans
 from skimage import io
 from skimage.transform import rescale
@@ -79,6 +80,7 @@ def get_rgb_colour(img_url):
     return rgb_colour
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=86400))
 def get_discord_colour(img_url):
     '''
     Calls get_rgb_colour on an image url and converts the output
