@@ -140,7 +140,6 @@ class GameEmbed():
 
     def set_footers(self):
         if self.start_time:
-            print(time.time(), self.start_time, time.time() - self.start_time)
             full_time = time.time() - self.start_time
         count = 1
         for emb in self.embeds:
