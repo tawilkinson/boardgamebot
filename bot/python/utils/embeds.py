@@ -185,31 +185,30 @@ class GameEmbed():
                 len(self.embed) + len(name)
             field_len = len(alphabet) + len(value) + len(text) + len(name)
 
+            if embed_len > 5998:
+                count += 1
+                self.cont += 1
+                self.embed_constrain(alphabet, value)
+                alphabet = f'{name} (cont...)'
+                value = text
+                continue
+
             if name != alphabet[0]:
-                if embed_len > 5998:
-                    count += 1
-                    self.cont += 1
-                    self.embed_constrain(alphabet, value)
-                else:
-                    self.embed.add_field(name=alphabet, value=value)
+                self.embed.add_field(name=alphabet, value=value)
                 alphabet = name
                 value = text
+                continue
+
+            if field_len > 1022:
+                self.embed.add_field(name=alphabet, value=value)
+                alphabet = f'{name} (cont...)'
+                value = text
+                continue
+
+            if value:
+                value += f'; {text}'
             else:
-                if embed_len > 5998:
-                    count += 1
-                    self.cont += 1
-                    self.embed_constrain(alphabet, value)
-                    alphabet = f'{name} (cont...)'
-                    value = text
-                elif field_len > 1022:
-                    self.embed.add_field(name=alphabet, value=value)
-                    alphabet = f'{name} (cont...)'
-                    value = text
-                else:
-                    if value:
-                        value += f'; {text}'
-                    else:
-                        value = text
+                value = text
 
     def format_all_games_embed(self, all_links):
         self.all_links = all_links
