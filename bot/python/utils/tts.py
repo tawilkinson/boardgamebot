@@ -5,21 +5,10 @@ from utils.game import Webpage
 logger = logging.getLogger('discord')
 
 
-def get_tts_data(game):
+def get_tts_dlc(game, tts_dlc_search):
     '''
-    Takes an object of "Game" Class and searches Steam for a Tabletop Simulator
-    script that exactly matches the Game name.
-    Will update the Game Object with url for the webpage of the game on steam website.
+    TTS DLC search
     '''
-    if logger.level >= 10:
-        logger.debug(f'>>> Tabletop Simulator: {game.tts_search_url}')
-    tts_dlc_page = Webpage(game.tts_dlc_url)
-    tts_dlc_search = tts_dlc_page.page_html
-    # If this fails return the error
-    if tts_dlc_search is None:
-        game.set_tts_url(tts_dlc_page.error)
-        return
-    # DLC search
     dlc_results = tts_dlc_search.find_all(
         'div', {'class': 'search_name'})
     dlc = ''
@@ -34,12 +23,13 @@ def get_tts_data(game):
                 logger.debug(
                     f'--> retrieved {game.name} Tabletop Simulator DLC data')
             break
-    tts_search = Webpage(game.tts_search_url).page_html
-    # If this fails return what we have so far
-    if tts_search is None:
-        game.set_tts_url(f'{dlc}')
-        return
-    # TTS Scripts search
+    return dlc
+
+
+def get_tts_workshop(game, tts_search):
+    '''
+    TTS Workshop search
+    '''
     search_results = tts_search.body.select('body a')
     workshop = ''
     for result in search_results:
@@ -67,7 +57,33 @@ def get_tts_data(game):
                     logger.debug(
                         f'--> retrieved {url_name} Tabletop Simulator Steam Workshop data')
 
-    if workshop:
-        if workshop[-1:] == '\n':
-            workshop = workshop[:-1]
+    workshop.rstrip('\n')
+
+    return workshop
+
+
+def get_tts_data(game):
+    '''
+    Takes an object of "Game" Class and searches Steam for a Tabletop Simulator
+    script that exactly matches the Game name.
+    Will update the Game Object with url for the webpage of the game on steam website.
+    '''
+    if logger.level >= 10:
+        logger.debug(f'>>> Tabletop Simulator: {game.tts_search_url}')
+    tts_dlc_page = Webpage(game.tts_dlc_url)
+    tts_dlc_search = tts_dlc_page.page_html
+    # If this fails return the error
+    if tts_dlc_search is None:
+        game.set_tts_url(tts_dlc_page.error)
+        return
+    dlc = get_tts_dlc(game, tts_dlc_search)
+
+    tts_search = Webpage(game.tts_search_url).page_html
+    # If this fails return what we have so far
+    if tts_search is None:
+        game.set_tts_url(f'{dlc}')
+        return
+
+    workshop = get_tts_workshop(game, tts_search)
+
     game.set_tts_url(f'{dlc}{workshop}')
