@@ -1,6 +1,7 @@
 import discord
 import logging
 import numpy as np
+from cachetools import cached, TTLCache
 from sklearn.cluster import KMeans
 from skimage import io
 from skimage.transform import rescale
@@ -21,7 +22,7 @@ def get_dominant_colour(img_url):
         logger.debug(f'>>> Original shape: {np.shape(img)}')
     # Reshape to save memory for web
     if shape[0] > 1920 and shape[1] > 1080:
-        img = rescale(img, 0.1, multichannel=True)
+        img = rescale(img, 0.1, multichannel=True, anti_aliasing=False)
         img = img * 255
         if logger.level >= 10:
             logger.debug(f'>>> x0.10 Scaled shape: {np.shape(img)}')
@@ -79,6 +80,7 @@ def get_rgb_colour(img_url):
     return rgb_colour
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=86400))
 def get_discord_colour(img_url):
     '''
     Calls get_rgb_colour on an image url and converts the output
