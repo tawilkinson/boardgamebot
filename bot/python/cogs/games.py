@@ -53,7 +53,7 @@ class Games(commands.Cog, name='games'):
                 logger.debug('+++ Ending Game Search +++')
             if search_game:
                 time_diff = time.time() - start_time
-                embedder = GameEmbed()
+                embedder = GameEmbed(search_game)
                 responses = embedder.format_game_embed(
                     search_game, full_time=time_diff)
                 if len(responses) > 1:
@@ -74,10 +74,10 @@ class Games(commands.Cog, name='games'):
         start_time = time.time()
         response = 'Getting the list of BGA games...'
         message = await ctx.send(response)
-        embedder = GameEmbed()
+        embedder = GameEmbed(site=1)
         all_links = get_all_games(site=1)
         responses = embedder.format_all_games_embed(
-            all_links, site=1, start_time=start_time)
+            all_links, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
@@ -98,10 +98,10 @@ class Games(commands.Cog, name='games'):
         start_time = time.time()
         response = 'Getting the list of Boîte à Jeux games...'
         message = await ctx.send(response)
-        embedder = GameEmbed()
+        embedder = GameEmbed(site=2)
         all_links = get_all_games(site=2)
         responses = embedder.format_all_games_embed(
-            all_links, site=2, start_time=start_time)
+            all_links, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
@@ -128,10 +128,10 @@ class Games(commands.Cog, name='games'):
         start_time = time.time()
         response = 'Getting the list of Tabletop Simulator DLC...'
         message = await ctx.send(response)
-        embedder = GameEmbed()
+        embedder = GameEmbed(site=4)
         all_links = get_all_games(site=4)
         responses = embedder.format_all_games_embed(
-            all_links, site=4, start_time=start_time)
+            all_links, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
@@ -146,10 +146,10 @@ class Games(commands.Cog, name='games'):
         start_time = time.time()
         response = 'Getting the list of Yucata games...'
         message = await ctx.send(response)
-        embedder = GameEmbed()
+        embedder = GameEmbed(site=3)
         all_links = get_all_games(site=3)
         responses = embedder.format_all_games_embed(
-            all_links, site=3, start_time=start_time)
+            all_links, start_time=start_time)
         await message.delete()
         if len(responses) > 1:
             paginator = DiscordUtils.Pagination.AutoEmbedPaginator(

@@ -3,7 +3,6 @@ import logging
 import time
 from utils.colour import get_discord_colour
 from utils.helpers import Site
-from utils.online_game_search import get_all_games
 
 logger = logging.getLogger('discord')
 
@@ -11,29 +10,32 @@ logger = logging.getLogger('discord')
 class GameEmbed():
     '''Board game search functions.'''
 
-    def __init__(self):
+    def __init__(self, game=None, site=0):
         self.cont = 1
+        self.embed = None
+        self.embeds = []
+        self.game = game
+        self.site = site
 
-    def base_game_embed(self, game):
+    def base_game_embed(self):
         if self.cont > 1:
-            title = game['name'] + f' ({self.cont})'
+            title = self.game['name'] + f' ({self.cont})'
             description = 'More game links below'
         else:
-            title = game['name']
-            description = game['description'][:2047]
+            title = self.game['name']
+            description = self.game['description'][:2047]
 
-        colour = get_discord_colour(game['image'])
-        embed = discord.Embed(
+        colour = get_discord_colour(self.game['image'])
+        self.embed = discord.Embed(
             title=title, description=description, colour=colour)
-        embed.set_thumbnail(url=game['image'])
+        self.embed.set_thumbnail(url=self.game['image'])
         if self.cont == 1:
-            bgg_text = '[' + game['name'] + '](' + game['bgg'] + ')'
-            embed.add_field(name='Read more at BGG',
-                            value=bgg_text, inline=False)
-        return embed
+            bgg_text = '[' + self.game['name'] + '](' + self.game['bgg'] + ')'
+            self.embed.add_field(name='Read more at BGG',
+                                 value=bgg_text, inline=False)
 
-    def base_site_embed(self, site=0):
-        if Site(site) == Site.bga:
+    def base_site_embed(self):
+        if Site(self.site) == Site.bga:
             title_str = 'Board Game Arena Games'
             description = 'Join the largest boardgame table in the world.\
                 \nNo download necessary - play directly from your web browser.\
@@ -42,7 +44,7 @@ class GameEmbed():
             url = 'https://boardgamearena.com/gamelist'
             colour = 0x9566DD
             thumb_url = 'https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png'
-        elif Site(site) == Site.boite:
+        elif Site(self.site) == Site.boite:
             title_str = 'Boîte à Jeux Games'
             description = 'Boîte à Jeux is a predominantly French online game system. The \
                 interface has been translated to English and more recently, German as well.\
@@ -52,14 +54,14 @@ class GameEmbed():
             url = 'http://www.boiteajeux.net/'
             colour = 0x55774C
             thumb_url = 'http://www.boiteajeux.net/img/banniere_baj_en.png'
-        elif Site(site) == Site.yucata:
+        elif Site(self.site) == Site.yucata:
             title_str = 'Yucata.de Games'
             description = 'Online gaming portal, free and without advertisements \
                 where you may play more than 60 different games.'
             url = 'https://www.yucata.de/en'
             colour = 0x00305E
             thumb_url = 'https://www.yucata.de/bundles/images/Logo.jpg'
-        elif Site(site) == Site.tts:
+        elif Site(self.site) == Site.tts:
             title_str = 'Tabletop Simulator DLC'
             description = 'Tabletop Simulator is the only simulator \
                 where you can let your aggression out by flipping the \
@@ -71,132 +73,118 @@ class GameEmbed():
             colour = 0xE86932
             thumb_url = 'https://cdn.akamai.steamstatic.com/steam/apps/286160/header.jpg'
         else:
-            embed = discord.Embed()
-            return embed
+            self.embed = discord.Embed()
+            return
         if self.cont > 1:
             title = f'{title_str} ({self.cont})'
             description = 'More game links below'
         else:
             title = f'{title_str}'
 
-        embed = discord.Embed(
+        self.embed = discord.Embed(
             title=title, description=description, colour=colour, url=url)
-        embed.set_thumbnail(url=thumb_url)
-        return embed
+        self.embed.set_thumbnail(url=thumb_url)
 
-    def embed_constrain(self, name, value, embed, embeds, site=0, game=None, ):
-        embeds.append(embed)
-        if game:
-            embed = self.base_game_embed(game)
+    def embed_constrain(self, name, value):
+        self.embeds.append(self.embed)
+        if self.game:
+            self.base_game_embed()
         else:
-            embed = self.base_site_embed(site)
-        embed.add_field(name=name, value=value)
-        return embed, embeds
+            self.base_site_embed()
+        self.embed.add_field(name=name, value=value)
 
-    def format_game_embed(self, game, full_time=None):
+    def link_constrain(self, all_links, site=''):
+        count = 1
+        value = ''
+        for text in all_links:
+            name = f'{site} ' + str(count) + ':'
+            field_len = len(value) + len(text) + len(name)
+            embed_len = field_len + len(self.embed)
+            if (field_len) > 1022 or (embed_len > 5999):
+                count += 1
+                self.cont += 1
+                if (len(value) + len(self.embed) > 5999):
+                    value = value.replace('\n', '; ')
+                    self.embed_constrain(name, value)
+                value = ''
+            else:
+                value += text
+                value += '\n'
+        return value, name
+
+    def format_game_embed(self, full_time=None):
         self.cont = 1
-        embeds = []
-        embed = self.base_game_embed(game)
+        self.embeds = []
+        self.base_game_embed()
 
         # Board Game Arena field
-        if not game['bga']:
-            embed.add_field(name='Board Game Arena', value='❌')
+        if not self.game['bga']:
+            self.embed.add_field(name='Board Game Arena', value='❌')
         else:
-            link = game['bga']
-            embed.add_field(name='Board Game Arena', value=link)
+            link = self.game['bga']
+            self.embed.add_field(name='Board Game Arena', value=link)
 
         # Boîte à Jeux field
-        if not game['boite']:
-            embed.add_field(name='Boîte à Jeux', value='❌')
+        if not self.game['boite']:
+            self.embed.add_field(name='Boîte à Jeux', value='❌')
         else:
-            link = game['boite']
-            embed.add_field(name='Boîte à Jeux', value=link)
+            link = self.game['boite']
+            self.embed.add_field(name='Boîte à Jeux', value=link)
 
         # Yucata field
-        if not game['yucata']:
-            embed.add_field(name='Yucata', value='❌')
+        if not self.game['yucata']:
+            self.embed.add_field(name='Yucata', value='❌')
         else:
-            link = game['yucata']
-            embed.add_field(name='Yucata', value=link)
+            link = self.game['yucata']
+            self.embed.add_field(name='Yucata', value=link)
 
         # Tabletopia field
-        if not game['tabletopia']:
-            embed.add_field(name='Tabletopia', value='❌')
+        if not self.game['tabletopia']:
+            self.embed.add_field(name='Tabletopia', value='❌')
         else:
-            link = game['tabletopia']
+            link = self.game['tabletopia']
             if len(link) > 1022:
                 all_links = link.split('\n')
-                count = 1
-                value = ''
-                for text in all_links:
-                    name = 'Tabletopia ' + str(count) + ':'
-                    field_len = len(value) + len(text) + len(name)
-                    embed_len = field_len + len(embed)
-                    if (field_len) > 1022 or (embed_len > 5999):
-                        count += 1
-                        self.cont += 1
-                        if (len(value) + len(embed) > 5999):
-                            value = value.replace('\n', '; ')
-                            embed, embeds = self.embed_constrain(
-                                name, value, embed, embeds, game=game)
-                        value = ''
-                    else:
-                        value += text
-                        value += '\n'
+                self.link_constrain(self, all_links, site='Tabletopia')
             else:
                 link = link.rstrip('\n').replace('\n', '; ')
-                embed.add_field(name='Tabletopia', value=link)
+                self.embed.add_field(name='Tabletopia', value=link)
 
         # Tabletop Simulator field
-        if not game['tts']:
-            embed.add_field(name='Tabletop Simulator', value='❌')
+        if not self.game['tts']:
+            self.embed.add_field(name='Tabletop Simulator', value='❌')
         else:
-            link = game['tts']
+            link = self.game['tts']
             if len(link) > 1022:
                 all_links = link.split('\n')
-                count = 1
-                value = ''
-                for text in all_links:
-                    name = 'Tabletop Simulator ' + str(count) + ':'
-                    field_len = len(value) + len(text) + len(name)
-                    embed_len = field_len + len(embed)
-                    if (field_len) > 1022 or (embed_len > 5999):
-                        self.cont += 1
-                        value = value.replace('\n', '; ')
-                        embed, embeds = self.embed_constrain(
-                            name, value, embed, embeds, game)
-                        count += 1
-                        value = ''
-                    else:
-                        value += text
-                        value += '\n'
+                value, name = self.link_constrain(
+                    self, all_links, site='Tabletop Simulator')
                 if value:
                     self.cont += 1
                     value = value.replace('\n', '; ')
-                    embed, embeds = self.embed_constrain(name, value,
-                                                         embed, embeds, game)
+                    self.embed_constrain(name, value)
             else:
                 link = link.rstrip('\n').replace('\n', '; ')
-                embed.add_field(name='Tabletop Simulator', value=link)
+                self.embed.add_field(name='Tabletop Simulator', value=link)
 
-        embeds.append(embed)
+        self.embeds.append(self.embed)
 
         count = 1
-        for emb in embeds:
+        for emb in self.embeds:
             footer_txt = ''
-            if len(embeds) > 1:
-                footer_txt += f'({count}/{len(embeds)}) '
+            if len(self.embeds) > 1:
+                footer_txt += f'({count}/{len(self.embeds)}) '
                 count += 1
             if full_time:
                 footer_txt += f'Fetched in {full_time:0.2f}s'
             emb.set_footer(text=footer_txt)
 
-        return embeds
+        return self.embeds
 
-    def format_all_games_embed(self, all_links, site=0, start_time=None):
+    def format_all_games_embed(self, all_links, start_time=None):
         self.cont = 1
-        embeds = []
-        embed = self.base_site_embed(site)
+        self.embeds = []
+        self.base_site_embed()
         count = 1
         alphabet = None
         value = ''
@@ -204,28 +192,27 @@ class GameEmbed():
             name = link[0]
             if alphabet is None:
                 alphabet = name
-            embed_len = len(alphabet) + len(value) + len(embed) + len(name)
+            embed_len = len(alphabet) + len(value) + \
+                len(self.embed) + len(name)
             field_len = len(alphabet) + len(value) + len(text) + len(name)
             if name != alphabet[0]:
                 if embed_len > 5998:
                     count += 1
                     self.cont += 1
-                    embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, site)
+                    self.embed_constrain(alphabet, value)
                 else:
-                    embed.add_field(name=alphabet, value=value)
+                    self.embed.add_field(name=alphabet, value=value)
                 alphabet = name
                 value = text
             else:
                 if embed_len > 5998:
                     count += 1
                     self.cont += 1
-                    embed, embeds = self.embed_constrain(
-                        alphabet, value, embed, embeds, site)
+                    self.embed_constrain(alphabet, value)
                     alphabet = f'{name} (cont...)'
                     value = text
                 elif field_len > 1022:
-                    embed.add_field(name=alphabet, value=value)
+                    self.embed.add_field(name=alphabet, value=value)
                     alphabet = f'{name} (cont...)'
                     value = text
                 else:
@@ -233,17 +220,17 @@ class GameEmbed():
                         value += f'; {text}'
                     else:
                         value = text
-        embeds.append(embed)
+        self.embeds.append(self.embed)
         if start_time:
             full_time = time.time() - start_time
-        for emb in embeds:
+        for emb in self.embeds:
             count = 1
             footer_txt = ''
-            if len(embeds) > 1:
-                footer_txt += f'({count}/{len(embeds)}) '
+            if len(self.embeds) > 1:
+                footer_txt += f'({count}/{len(self.embeds)}) '
                 count += 1
             if start_time:
                 footer_txt += f'Fetched in {full_time:0.2f}s'
             emb.set_footer(text=footer_txt)
 
-        return embeds
+        return self.embeds
