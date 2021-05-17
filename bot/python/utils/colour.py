@@ -22,7 +22,7 @@ def get_dominant_colour(img_url):
         logger.debug(f'>>> Original shape: {np.shape(img)}')
     # Reshape to save memory for web
     if shape[0] > 1920 and shape[1] > 1080:
-        img = rescale(img, 0.1, multichannel=True)
+        img = rescale(img, 0.1, multichannel=True, anti_aliasing=False)
         img = img * 255
         if logger.level >= 10:
             logger.debug(f'>>> x0.10 Scaled shape: {np.shape(img)}')
