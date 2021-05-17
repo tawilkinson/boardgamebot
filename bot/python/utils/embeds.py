@@ -223,8 +223,8 @@ class GameEmbed():
         self.embeds.append(self.embed)
         if start_time:
             full_time = time.time() - start_time
+        count = 1
         for emb in self.embeds:
-            count = 1
             footer_txt = ''
             if len(self.embeds) > 1:
                 footer_txt += f'({count}/{len(self.embeds)}) '
