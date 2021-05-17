@@ -25,7 +25,6 @@ class Roller():
 
         if len(self.all_rolls) == 1:
             die = Die(self.all_rolls[0])
-            print(die.get_len)
             if die.get_len() > 1987:
                 responses.append(die.get_short_str())
             else:
