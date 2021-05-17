@@ -138,65 +138,97 @@ async def search_web_board_game_data(game_name, message=None, ctx=None, depth=0,
     return False
 
 
+def set_site_data(site):
+    '''
+    Sets site info based in site enum
+    '''
+    game_list = None
+    site_name = None
+    if Site(site) == Site.bga:
+        game_list = 'https://boardgamearena.com/gamelist?section=all'
+        site_name = 'Board Game Arena'
+    elif Site(site) == Site.boite:
+        game_list = 'http://www.boiteajeux.net/index.php?p=regles'
+        site_name = 'Boîte à Jeux'
+    elif Site(site) == Site.yucata:
+        game_list = 'https://www.yucata.de/en/'
+        site_name = 'Yucata.de'
+    elif Site(site) == Site.tts:
+        game_list = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
+        site_name = 'Tabletop Simulator'
+    return game_list, site_name
+
+
+def get_site_search_results(site, page):
+    '''
+    Finds all game elements depending on website
+    '''
+    search_results = None
+    if Site(site) == Site.bga:
+        search_results = page.find_all(
+            'div', class_='gameitem_baseline gamename')
+    elif Site(site) == Site.boite:
+        search_results = page.find_all('div', class_='jeuxRegles')
+    elif Site(site) == Site.yucata:
+        search_results = page.find_all('a', class_='jGameInfo')
+    elif Site(site) == Site.tts:
+        search_results = page.find_all('div', {'class': 'search_name'})
+    return search_results
+
+
+def get_name_and_link(site, result):
+    '''
+    Gets name and game links from different websites
+    '''
+    name = None
+    if Site(site) == Site.bga:
+        name = str(result.contents[0]).lstrip().rstrip()
+        link = 'https://boardgamearena.com' + result.parent.get('href')
+    elif Site(site) == Site.boite:
+        rules_elem = result.select_one('a', text='Rules')
+        rules_href = rules_elem.get('href')
+        link = f'http://www.boiteajeux.net/{rules_href}'
+        name = string.capwords(
+            str(result.contents[0]).lstrip().rstrip())
+    elif Site(site) == Site.yucata:
+        game_href = result['href']
+        name = result.text
+        link = f'https://www.yucata.de{game_href}'
+    elif Site(site) == Site.tts:
+        name = result.text.lstrip('\n').rstrip('\n ')
+        link = result.parent.parent['href']
+        link = link.split('?snr=')[0]
+    if 'Tabletop Simulator - ' in name:
+        name = name.replace('Tabletop Simulator - ', '')
+    return name, link
+
+
 @cached(cache=TTLCache(maxsize=1024, ttl=86400))
 def get_all_games(site):
     '''
     Simple wrapper to get all games from each service
     '''
-    if Site(site) == Site.bga:
-        game_list = 'https://boardgamearena.com/gamelist?section=all'
-        bga_base_url = 'https://boardgamearena.com'
-        name = 'Board Game Arena'
-    elif Site(site) == Site.boite:
-        game_list = 'http://www.boiteajeux.net/index.php?p=regles'
-        name = 'Boîte à Jeux'
-    elif Site(site) == Site.yucata:
-        game_list = 'https://www.yucata.de/en/'
-        name = 'Yucata.de'
-    elif Site(site) == Site.tts:
-        game_list = 'https://store.steampowered.com/search/?term=tabletop+simulator&category1=21'
-        name = 'Tabletop Simulator'
-    else:
+    game_list, site_name = set_site_data(site)
+    if site_name is None:
         return {}
+
     if logger.level >= 10:
-        logger.debug(f'>>> {name} all games: {game_list}')
+        logger.debug(f'>>> {site_name} all games: {game_list}')
     all_games_page = Webpage(game_list)
     page = all_games_page.page_html
+
     all_links = {}
-    if page:
-        if Site(site) == Site.bga:
-            search_results = page.find_all(
-                'div', class_='gameitem_baseline gamename')
-        elif Site(site) == Site.boite:
-            search_results = page.find_all('div', class_='jeuxRegles')
-        elif Site(site) == Site.yucata:
-            search_results = page.find_all('a', class_='jGameInfo')
-        elif Site(site) == Site.tts:
-            search_results = page.find_all('div', {'class': 'search_name'})
-        for result in search_results:
-            if Site(site) == Site.bga:
-                name = str(result.contents[0]).lstrip().rstrip()
-                link = bga_base_url + result.parent.get('href')
-            elif Site(site) == Site.boite:
-                rules_elem = result.select_one('a', text='Rules')
-                rules_href = rules_elem.get('href')
-                link = f'http://www.boiteajeux.net/{rules_href}'
-                name = string.capwords(
-                    str(result.contents[0]).lstrip().rstrip())
-            elif Site(site) == Site.yucata:
-                game_href = result['href']
-                name = result.text
-                link = f'https://www.yucata.de{game_href}'
-            elif Site(site) == Site.tts:
-                name = result.text.lstrip('\n').rstrip('\n ')
-                link = result.parent.parent['href']
-                link = link.split('?snr=')[0]
-            if name:
-                if 'Tabletop Simulator - ' in name:
-                    name = name.replace('Tabletop Simulator - ', '')
-                all_links[f'{name}'] = f'[{name}]({link})'
-    else:
+    if page is None:
         all_links['All Games Error'] = all_games_page.error
+        return all_links
+
+    search_results = get_site_search_results(site, page)
+
+    for result in search_results:
+        name, link = get_name_and_link(site, result)
+        if name:
+            all_links[f'{name}'] = f'[{name}]({link})'
+
     if logger.level >= 10:
         logger.debug(f'--> all games:\n{all_links}')
     return all_links
