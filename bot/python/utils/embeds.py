@@ -112,60 +112,40 @@ class GameEmbed():
                 value += '\n'
         return value, name
 
+    def set_simple_field(self, key, name):
+        if not self.game[key]:
+            self.embed.add_field(name=name, value='❌')
+        else:
+            link = self.game[key]
+            self.embed.add_field(name=name, value=link)
+
+    def set_field(self, key, name):
+        if not self.game[key]:
+            self.embed.add_field(name=name, value='❌')
+        else:
+            link = self.game[key]
+            if len(link) > 1022:
+                all_links = link.split('\n')
+                self.link_constrain(self, all_links, site=name)
+            else:
+                link = link.rstrip('\n').replace('\n', '; ')
+                self.embed.add_field(name=name, value=link)
+
     def format_game_embed(self, full_time=None):
         self.cont = 1
         self.embeds = []
         self.base_game_embed()
 
         # Board Game Arena field
-        if not self.game['bga']:
-            self.embed.add_field(name='Board Game Arena', value='❌')
-        else:
-            link = self.game['bga']
-            self.embed.add_field(name='Board Game Arena', value=link)
-
+        self.set_simple_field('bga', 'Board Game Arena')
         # Boîte à Jeux field
-        if not self.game['boite']:
-            self.embed.add_field(name='Boîte à Jeux', value='❌')
-        else:
-            link = self.game['boite']
-            self.embed.add_field(name='Boîte à Jeux', value=link)
-
+        self.set_simple_field('boite', 'Boîte à Jeux')
         # Yucata field
-        if not self.game['yucata']:
-            self.embed.add_field(name='Yucata', value='❌')
-        else:
-            link = self.game['yucata']
-            self.embed.add_field(name='Yucata', value=link)
-
+        self.set_simple_field('yucata', 'Yucata')
         # Tabletopia field
-        if not self.game['tabletopia']:
-            self.embed.add_field(name='Tabletopia', value='❌')
-        else:
-            link = self.game['tabletopia']
-            if len(link) > 1022:
-                all_links = link.split('\n')
-                self.link_constrain(self, all_links, site='Tabletopia')
-            else:
-                link = link.rstrip('\n').replace('\n', '; ')
-                self.embed.add_field(name='Tabletopia', value=link)
-
+        self.set_simple_field('tabletopia', 'Tabletopia')
         # Tabletop Simulator field
-        if not self.game['tts']:
-            self.embed.add_field(name='Tabletop Simulator', value='❌')
-        else:
-            link = self.game['tts']
-            if len(link) > 1022:
-                all_links = link.split('\n')
-                value, name = self.link_constrain(
-                    self, all_links, site='Tabletop Simulator')
-                if value:
-                    self.cont += 1
-                    value = value.replace('\n', '; ')
-                    self.embed_constrain(name, value)
-            else:
-                link = link.rstrip('\n').replace('\n', '; ')
-                self.embed.add_field(name='Tabletop Simulator', value=link)
+        self.set_simple_field('tts', 'Tabletop Simulator')
 
         self.embeds.append(self.embed)
 
