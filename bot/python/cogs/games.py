@@ -1,7 +1,6 @@
 import discord
 import DiscordUtils
 import logging
-import re
 import string
 import time
 from discord.ext import tasks, commands
@@ -20,11 +19,13 @@ class Games(commands.Cog, name='games'):
 
     @tasks.loop(hours=24)
     async def game_cacher(self):
+        print("Game cache started")
         # Every 24 hours, refresh the cache
         get_all_games(site=1)
         get_all_games(site=2)
         get_all_games(site=3)
         get_all_games(site=4)
+        print("Game cache ended")
 
     @game_cacher.before_loop
     async def before_cache(self):
