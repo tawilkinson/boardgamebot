@@ -173,15 +173,11 @@ class GameEmbed():
 
         return self.embeds
 
-    def format_all_games_embed(self, all_links):
-        self.all_links = all_links
-        self.cont = 1
-        self.embeds = []
-        self.base_site_embed()
+    def set_all_games(self):
         count = 1
         alphabet = None
         value = ''
-        for link, text in sorted(all_links.items()):
+        for link, text in sorted(self.all_links.items()):
             name = link[0]
             if alphabet is None:
                 alphabet = name
@@ -214,6 +210,14 @@ class GameEmbed():
                         value += f'; {text}'
                     else:
                         value = text
+
+    def format_all_games_embed(self, all_links):
+        self.all_links = all_links
+        self.cont = 1
+        self.embeds = []
+        self.base_site_embed()
+
+        self.set_all_games()
 
         self.embeds.append(self.embed)
 
