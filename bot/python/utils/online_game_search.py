@@ -5,7 +5,7 @@ from cachetools import cached, TTLCache
 from utils.bgg import get_bgg_data
 from utils.helpers import Site
 from utils.game import Game, Webpage
-from utils.tts import get_tts_data 
+from utils.tts import get_tts_data
 
 logger = logging.getLogger('discord')
 
