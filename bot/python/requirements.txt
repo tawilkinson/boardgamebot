@@ -38,7 +38,7 @@ python_dotenv==0.18.0
 requests == 2.25.1
 
 # python/utils/colour.py: 6,7
-scikit_image == 0.18.1
+scikit_image==0.18.2
 
 # python/utils/colour.py: 5
 scikit-learn == 0.24.2
