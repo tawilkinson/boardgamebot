@@ -26,6 +26,11 @@ All commands are called using `bg <command>` in a Discord channel. `bg help` wil
   - `theme`: generates a random board game theme.
 - Games:
   - `game <game name>`: Prints detailed info about a board game. Uses BGG/local database to find the game and if that game exists gets information on places to play the game virtually.
+  - `bga`: Lists all games currently avaialable on [Board Game Arena](https://boardgamearena.com/gamelist) (cache updates every 24 hours).
+  - `boite`: Lists all games currently avaialable on [Boîte a Jeux](http://www.boiteajeux.net/) (cache updates every 24 hours).
+  - `tabletopia`: Gives a link to [Tabletopia](https://tabletopia.com/) as it has too many gmaes to list.
+  - `tts`: Lists all official DLC currently avaialable for [Tabletop Simulator](https://store.steampowered.com/dlc/286160/Tabletop_Simulator/#browse) (cache updates every 24 hours).
+  - `yucata`: Lists all games currently avaialable on [Yucata.de](https://www.yucata.de/en) (cache updates every 24 hours).
 - No Category:
   - `help`: Shows the help message.
   - `load`: Loads a cog.
