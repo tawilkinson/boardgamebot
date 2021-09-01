@@ -1,0 +1,10 @@
+version: "0.9.9"
+
+services:
+  boardgamebot:
+    build:
+      context: .
+      target: development
+    env_file: .env
+    volumes: 
+      - ./:/opt/app
