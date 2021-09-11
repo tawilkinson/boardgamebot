@@ -5,12 +5,23 @@
 		"rootDir": ".",
 		"baseUrl": ".",
 		"paths": {
-			"@utils/*": ["src/lib/util/*"],
-			"@lib/*": ["src/lib/*"],
-			"@root/*": ["*"]
+			"@utils/*": [
+				"src/lib/util/*"
+			],
+			"@lib/*": [
+				"src/lib/*"
+			],
+			"@root/*": [
+				"*"
+			]
 		},
 		"skipLibCheck": true
 	},
-	"include": ["."],
-	"exclude": ["dist", "node_modules"]
+	"include": [
+		"."
+	],
+	"exclude": [
+		"dist",
+		"node_modules"
+	]
 }
