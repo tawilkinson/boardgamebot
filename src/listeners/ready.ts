@@ -1,5 +1,4 @@
-import type { ListenerOptions, PieceContext } from '@sapphire/framework';
-import { Listener, Store } from '@sapphire/framework';
+import { ListenerOptions, PieceContext, Listener, Store } from '@sapphire/framework';
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette';
 
 const dev = process.env.NODE_ENV !== 'production';

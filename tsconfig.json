@@ -1,13 +1,12 @@
 {
 	"extends": "@sapphire/ts-config",
 	"compilerOptions": {
-		"outDir": "./dist",
-		"rootDir": ".",
+		"rootDir": "src",
+		"outDir": "dist",
 		"baseUrl": ".",
+		"tsBuildInfoFile": "dist/.tsbuildinfo",
+		"experimentalDecorators": true,
 		"paths": {
-			"@utils/*": [
-				"src/lib/util/*"
-			],
 			"@lib/*": [
 				"src/lib/*"
 			],
@@ -15,13 +14,13 @@
 				"*"
 			]
 		},
-		"skipLibCheck": true
+		"target": "ES2021",
+		"types": [
+			"node",
+			"discord.js",
+		],
 	},
 	"include": [
-		"."
-	],
-	"exclude": [
-		"dist",
-		"node_modules"
+		"src"
 	]
 }

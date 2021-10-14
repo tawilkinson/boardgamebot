@@ -1,29 +1,9 @@
 {
-	"name": "boardgamebot",
-	"version": "0.9.9",
-	"description": "A Discord bot to fetch board game data and a list of places you can play them online.",
-	"main": "dist/src/bot.js",
-	"scripts": {
-		"start": "node --harmony dist/src/BoardGameBot.js",
-		"build": "tsc -p .",
-		"build-clear": "rm -rf dist && tsc -p .",
-		"dev": "tsc -p . && node --harmony dist/src/BoardGameBot.js",
-		"dev-clear": "rm -rf dist && tsc -p . && node --harmony dist/src/BoardGameBot.js",
-		"test": "jest",
-		"lint": "eslint src --ext .ts",
-		"lint-fix": "eslint src --ext .ts --fix",
-		"contrib:add": "all-contributors add"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/tawilkinson/boardgamebot.git"
-	},
-	"author": "T A Wilkinson",
-	"license": "GPL-3.0",
-	"bugs": {
-		"url": "https://github.com/tawilkinson/boardgamebot/issues"
-	},
-	"homepage": "https://github.com/tawilkinson/boardgamebot#readme",
+	"name": "mri-bot-docker",
+	"version": "1.0.0",
+	"description": "A simple MRI calculator bot",
+	"main": "dist/index.js",
+	"author": "@ta_wilkinson",
 	"dependencies": {
 		"@discordjs/collection": "^0.2.1",
 		"@sapphire/decorators": "next",
@@ -31,53 +11,44 @@
 		"@sapphire/discord.js-utilities": "next",
 		"@sapphire/fetch": "next",
 		"@sapphire/framework": "next",
-		"@sapphire/pieces": "^1.2.5",
 		"@sapphire/plugin-api": "next",
-		"@sapphire/plugin-editable-commands": "next",
-		"@sapphire/plugin-i18next": "next",
+		"@sapphire/plugin-editable-commands": "^0.1.0-next.23809.0",
 		"@sapphire/plugin-logger": "next",
 		"@sapphire/plugin-subcommands": "next",
-		"@sapphire/time-utilities": "^1.3.8",
+		"@sapphire/time-utilities": "next",
 		"@sapphire/type": "^2.1.0",
-		"@sapphire/utilities": "^2.0.1",
-		"@skyra/editable-commands": "^2.1.0",
+		"@sapphire/utilities": "^3.0.0",
+		"@skyra/editable-commands": "^2.0.0",
+		"ansi-regex": "^5.0.1",
 		"discord.js": "^13.1.0",
-		"dotenv-cra": "^3.0.1",
-		"module-alias": "^2.2.2",
-		"reflect-metadata": "^0.1.13"
-	},
-	"_moduleAliases": {
-		"@root": "dist",
-		"@lib": "dist/src/lib",
-		"@utils": "dist/src/lib/util"
+		"string-width": "^5.0.1",
+		"strip-ansi": "^6.0.1"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.15.0",
-		"@babel/preset-env": "^7.15.0",
-		"@sapphire/eslint-config": "^3.2.3",
+		"@babel/eslint-parser": "^7.15.8",
+		"@sapphire/eslint-config": "^3.3.1",
+		"@sapphire/prettier-config": "^1.1.6",
 		"@sapphire/ts-config": "^3.0.0",
-		"@types/backoff": "^2.5.2",
-		"@types/common-tags": "^1.8.0",
-		"@types/convert-units": "^2.3.3",
-		"@types/jest": "^27.0.1",
-		"@types/node": "^16.7.2",
-		"@types/node-fetch": "^2.5.12",
+		"@types/node": "^16.7.10",
 		"@types/ws": "^7.4.7",
-		"@typescript-eslint/eslint-plugin": "^4.29.3",
-		"@typescript-eslint/parser": "^4.29.3",
-		"all-contributors-cli": "^6.19.0",
+		"@typescript-eslint/eslint-plugin": "^3.10.1",
+		"@typescript-eslint/parser": "^3.10.1",
 		"eslint": "^7.32.0",
-		"jest": "^27.0.6",
-		"jest-circus": "^27.0.6",
 		"npm-run-all": "^4.1.5",
 		"prettier": "^2.3.2",
-		"ts-jest": "^27.0.5",
-		"ts-node": "^10.2.1",
 		"tsc-watch": "^4.5.0",
 		"typescript": "^4.4.2"
 	},
-	"engines": {
-		"node": "^16",
-		"npm": "^7"
-	}
+	"scripts": {
+		"build": "tsc",
+		"watch": "tsc -w",
+		"start": "node dist/index.js",
+		"dev": "run-s build start",
+		"lint": "eslint src --ext .ts",
+		"lint-fix": "eslint src --ext .ts --fix",
+		"format": "prettier --write \"src/**/*.ts\"",
+		"predocker:watch": "npm install",
+		"docker:watch": "tsc-watch --onSuccess \"node ./dist/index.js\""
+	},
+	"prettier": "@sapphire/prettier-config"
 }

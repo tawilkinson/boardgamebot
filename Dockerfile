@@ -1,5 +1,5 @@
 # Base required for most things
-FROM node:16-buster-slim as base
+FROM node:16.10 as base
 
 WORKDIR /opt/app
 
@@ -19,6 +19,8 @@ CMD [ "npm", "run", "docker:watch"]
 FROM base as build
 
 COPY ./package.json package-lock.json /opt/app/
+
+RUN npm install -g npm@7.24.2
 
 RUN npm install
 

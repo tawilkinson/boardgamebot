@@ -1,4 +1,3 @@
-
 import { Command, CommandOptions, PieceContext } from '@sapphire/framework';
 import type { Message } from 'discord.js';
 
