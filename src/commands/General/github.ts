@@ -13,11 +13,10 @@ export class UserCommand extends Command {
 	public async run(message: Message) {
 		// Make a snazzy embed
 		const title = 'boardgamebot GitHub Repo';
-		const description = 'The GitHub repo for this bot is \
-            [tawilkinson/boardgamebot](https://github.com/tawilkinson/boardgamebot).\
-            \nIf you find a bug or want to suggest a feature \
-            [create a new issue](https://github.com/tawilkinson/boardgamebot/issues).\
-            \n\nDocumentation is coming soon...';
+		const description = `The GitHub repo for this bot is [tawilkinson/boardgamebot](https://github.com/tawilkinson/boardgamebot).
+		\nIf you find a bug or want to suggest a feature 
+		[create a new issue](https://github.com/tawilkinson/boardgamebot/issues).
+		\n\nDocumentation is coming soon...`;
 		const url = 'https://github.com/tawilkinson/boardgamebot';
 		const embed = new MessageEmbed()
 			.setTitle(title)
