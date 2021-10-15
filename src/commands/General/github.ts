@@ -6,7 +6,8 @@ export class UserCommand extends Command {
 	public constructor(context: PieceContext, options: CommandOptions) {
 		super(context, {
 			...options,
-			description: 'Prints an embed that contains info on the Github repo'
+			description: 'Prints info on the Github repo',
+			aliases: ['contribute', 'repo']
 		});
 	}
 
@@ -14,9 +15,9 @@ export class UserCommand extends Command {
 		// Make a snazzy embed
 		const title = 'boardgamebot GitHub Repo';
 		const description = `The GitHub repo for this bot is [tawilkinson/boardgamebot](https://github.com/tawilkinson/boardgamebot).
-		\nIf you find a bug or want to suggest a feature 
+		If you find a bug or want to suggest a feature 
 		[create a new issue](https://github.com/tawilkinson/boardgamebot/issues).
-		\n\nDocumentation is coming soon...`;
+		Documentation is coming soon...`;
 		const url = 'https://github.com/tawilkinson/boardgamebot';
 		const embed = new MessageEmbed()
 			.setTitle(title)
