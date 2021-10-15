@@ -1,7 +1,7 @@
 {
-	"name": "mri-bot-docker",
+	"name": "bgbot-docker",
 	"version": "1.0.0",
-	"description": "A simple MRI calculator bot",
+	"description": "A Discord bot with useful board game tools",
 	"main": "dist/index.js",
 	"author": "@ta_wilkinson",
 	"dependencies": {
