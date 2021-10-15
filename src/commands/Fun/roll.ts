@@ -84,7 +84,12 @@ export class UserCommand extends Command {
 	public constructor(context: PieceContext, options: CommandOptions) {
 		super(context, {
 			...options,
-			description: 'Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.',
+			description: `Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.
+			Examples:\n- \`bg roll<x>d20\`: rolls <x> twenty sided die.\n- \`bg roll 2d20kl1\`: rolls 2 d20 and keeps
+            the lowest result, i.e. disadvantage.\n- \`bg roll 2d20k1\`: rolls 2 d20 and keeps the highest result, i.e. advantage.
+			- \`bg roll 10d6!\`: rolls 10 d6 and explodes when a 6 is rolled.
+            - \`bg roll d6 + 5\`: rolls a d6 and adds 5.\n- \`bg roll d6 - 4\`: rolls a d6 and subtracts 4.
+            - \`bg roll d6 | d8 | d20\`: rolls a d, a d8 and a d20. All above functionality is supported.`,
 			aliases: ['dieroll', 'r']
 		});
 	}
