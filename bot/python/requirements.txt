@@ -26,7 +26,7 @@ discord.py==1.7.3
 html2text == 2020.1.16
 
 # python/utils/bgg.py: 5
-lxml==4.6.4
+lxml==4.7.1
 
 # python/utils/colour.py: 3
 numpy==1.21.4
