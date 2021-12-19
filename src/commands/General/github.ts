@@ -11,7 +11,7 @@ export class UserCommand extends Command {
 		});
 	}
 
-	public async run(message: Message) {
+	public async messageRun(message: Message) {
 		// Make a snazzy embed
 		const title = 'boardgamebot GitHub Repo';
 		const description = `The GitHub repo for this bot is [tawilkinson/boardgamebot](https://github.com/tawilkinson/boardgamebot).

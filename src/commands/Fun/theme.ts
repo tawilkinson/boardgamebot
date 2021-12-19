@@ -11,7 +11,7 @@ export class UserCommand extends Command {
 		});
 	}
 
-	public async run(message: Message) {
+	public async messageRun(message: Message) {
 		const style = Styles[Math.floor(Math.random() * Styles.length)];
 		const component = Components[Math.floor(Math.random() * Components.length)];
 		const setting = Settings[Math.floor(Math.random() * Settings.length)];

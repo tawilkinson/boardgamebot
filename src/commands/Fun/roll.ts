@@ -94,7 +94,7 @@ export class UserCommand extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
+	public async messageRun(msg: Message) {
 		const results: DiceResult[] = [];
 		const args = msg.content.trim().split(/ +/g);
 		args.splice(0, 2);
