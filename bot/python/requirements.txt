@@ -29,7 +29,7 @@ html2text == 2020.1.16
 lxml==4.7.1
 
 # python/utils/colour.py: 3
-numpy==1.21.5
+numpy==1.22.0
 
 # python/bot.py: 8
 python_dotenv==0.19.2
