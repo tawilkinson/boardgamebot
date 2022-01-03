@@ -1,0 +1,8 @@
+// Add your thoughts on each line
+// Rename this file to thought_data.ts
+
+export const Thoughts: string[] = [
+	'Replace',
+	'With',
+	'Thoughts',
+];
