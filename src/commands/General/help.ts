@@ -15,7 +15,7 @@ export class UserCommand extends Command {
 		const commands = container.stores.get('commands');
 		// Make a snazzy embed
 		const title = 'Board Game Bot Help';
-		const description = `Command prefix is \`${process.env.DEFAULT_PREFIX}\`\n Usage: \`${process.env.DEFAULT_PREFIX}command\``;
+		const description = `Command prefix is \`${process.env.DEFAULT_PREFIX}\`\n Usage: \`${process.env.DEFAULT_PREFIX} command\``;
 		const embed = new MessageEmbed().setTitle(title).setDescription(description).setTimestamp(message.createdTimestamp).setColor('RANDOM');
 
 		const map = new Map();

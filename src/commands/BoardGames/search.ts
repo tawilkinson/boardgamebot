@@ -7,7 +7,7 @@ export class UserCommand extends Command {
     public constructor(context: PieceContext, options: CommandOptions) {
         super(context, {
             ...options,
-            description: ``,
+            description: `Fetches game info from [BGG](https://boardgamegeek.com/) then returns online sources, if they exist, to play the game.`,
             aliases: ['s']
         });
     }
