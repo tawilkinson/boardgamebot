@@ -14,6 +14,7 @@ docker run --rm -dit \
   --cpus=".5" \
   --name="$name" \
   --env DISCORD_TOKEN \
+  --network=host \
   "$repo":latest \
   $@
 
