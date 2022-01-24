@@ -72,22 +72,25 @@ async def wait_for_answer(ctx, word, word_len, word_set, emoji_letters, alphabet
                         common_response_text = f'{past_guesses_string} - {fail_count}/{word_len+1}'
                     # Respond
                     if correct:
-                        wordle_success = {player_title: f'{common_response_text}',
-                                          'Correct!': f'The word was {emoji_correct_word}'}
+                        wordle_success = {
+                            player_title: f'{common_response_text}',
+                            'Correct!': f'The word was {emoji_correct_word}'}
                         await ctx.send(content=tag_user, embed=embed_wordle(wordle_success))
                         return
                     elif wrong_len:
                         wordle_bad_word = {
                             player_title: f'Your guesses must be {word_len} letters long! Try again!'}
                         await ctx.send(content=tag_user, embed=embed_wordle(wordle_bad_word))
-                    elif (fail_count == word_len+1):
-                        wordle_fail = {player_title: f'{common_response_text}',
-                                       'Incorrect!': f'The correct word was {emoji_correct_word}'}
+                    elif (fail_count == word_len + 1):
+                        wordle_fail = {
+                            player_title: f'{common_response_text}',
+                            'Incorrect!': f'The correct word was {emoji_correct_word}'}
                         await ctx.send(content=tag_user, embed=embed_wordle(wordle_fail))
                         break
                     else:
-                        wordle_guess_again = {player_title: f'{common_response_text}',
-                                              'Unused Letters': emoji_alphabet}
+                        wordle_guess_again = {
+                            player_title: f'{common_response_text}',
+                            'Unused Letters': emoji_alphabet}
                         await ctx.send(content=tag_user, embed=embed_wordle(wordle_guess_again))
     except asyncio.TimeoutError:
         wordle_timeout_error = {
@@ -114,7 +117,7 @@ class Wordle(commands.Cog, name='wordle'):
                 return
             try:
                 word_len = int(message[0])
-            except:
+            except BaseException:
                 word_len = 5
         else:
             word_len = 5
