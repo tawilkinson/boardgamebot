@@ -1,11 +1,14 @@
 import re
 import random
 
+
 def britishify(string, british_to_american, word_len):
     for british_spelling, american_spelling in british_to_american.items():
         if string == american_spelling:
             string = re.sub(
-                f'(?<![a-zA-Z]){american_spelling}(?![a-z-Z])', british_spelling, string)
+                f'(?<![a-zA-Z]){american_spelling}(?![a-z-Z])',
+                british_spelling,
+                string)
     if len(string) == word_len:
         return string
     else:
@@ -38,14 +41,17 @@ def check_answer(answer, word, leftover_alphabet):
 
 
 def get_emoji_word(word, regional_indicator_letters):
-    emojied_word = [regional_indicator_letters.get(char.lower()) if regional_indicator_letters.get(char.lower()) else char for char in word]
+    emojied_word = [
+        regional_indicator_letters.get(
+            char.lower()) if regional_indicator_letters.get(
+            char.lower()) else char for char in word]
     return ' '.join(emojied_word)
 
 
 def get_word(british_to_american, word_set, word_len=5):
     wordle_words = [word for word in word_set if len(word) == word_len]
     chosen_word = None
-    while chosen_word == None:
+    while chosen_word is None:
         random_word = random.choice(wordle_words)
         if not random_word[0].isupper():
             chosen_word = random_word
@@ -72,6 +78,7 @@ def valid_word(word, word_set):
         return True
     else:
         return False
+
 
 def wordle_exception(error, debug):
     if debug >= 10:
