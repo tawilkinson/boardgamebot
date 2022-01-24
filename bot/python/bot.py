@@ -34,7 +34,7 @@ intents = discord.Intents(guilds=True,
                           members=True)
 
 # this specifies what extensions to load when the bot starts up
-startup_extensions = ['fun', 'games', 'dice', 'help', 'git']
+startup_extensions = ['fun', 'games', 'dice', 'help', 'git', 'wordle']
 # set the bot prefix read by Discord
 bot = commands.Bot(command_prefix='bg ', intents=intents)
 # We are going to use help.py to add an embed help.
