@@ -20,7 +20,7 @@ FROM base as build
 
 COPY ./package.json package-lock.json /opt/app/
 
-RUN npm install -g npm@7.24.2
+RUN npm install -g npm@8.7.0
 
 RUN npm install
 

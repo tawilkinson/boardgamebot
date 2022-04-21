@@ -1,25 +1,30 @@
-import { Command, CommandOptions, PieceContext } from '@sapphire/framework';
-import type { Message } from 'discord.js';
+import { ApplicationCommandRegistry, Command, CommandOptions } from '@sapphire/framework';
+import type { CommandInteraction } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
 import cheerio from 'cheerio';
 import axios from 'axios';
+import { ApplyOptions } from '@sapphire/decorators';
 
-export class UserCommand extends Command {
-    public constructor(context: PieceContext, options: CommandOptions) {
-        super(context, {
-            ...options,
-            description: `Fetches game info from [BGG](https://boardgamegeek.com/) then returns online sources, if they exist, to play the game.`,
-            aliases: ['s']
-        });
+@ApplyOptions<CommandOptions>({
+    description: `Fetches game info from [BGG](https://boardgamegeek.com) and returns online places to play the game.`
+})
+export class SearchCommand extends Command {
+    public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addStringOption((option) => option.setName('game').setDescription('The game you are searching for').setRequired(true))
+        registry.registerChatInputCommand(builder);
     }
 
-    public async messageRun(msg: Message) {
+    public async chatInputRun(interaction: CommandInteraction) {
         //let message = "Searching for board games...";
-        const args = msg.content.trim().split(/ +/g);
-        let search_game = args.splice(0, 2).toString().toLowerCase();
+        const args = interaction.options.getString('game');
+        let search_game = args!.toLowerCase();
         const { data } = await axios.get(`http://www.boardgamegeek.com/xmlapi2/search?query=${search_game}&exact=1&type=boardgame`);
         var bgg_page = cheerio.load(data);
 
         console.log(bgg_page.html());
-        return msg.channel.send("Test");
+        return interaction.reply("Test");
     }
 }

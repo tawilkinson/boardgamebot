@@ -1,17 +1,19 @@
-import { Command, CommandOptions, PieceContext } from '@sapphire/framework';
-import { send } from '@sapphire/plugin-editable-commands';
-import { Message, MessageEmbed } from 'discord.js';
+import { RegisterBehavior, Command, CommandOptions, PieceContext } from '@sapphire/framework';
+import { CommandInteraction, MessageEmbed } from 'discord.js';
 
 export class UserCommand extends Command {
 	public constructor(context: PieceContext, options: CommandOptions) {
 		super(context, {
 			...options,
 			description: 'Prints info on the Github repo',
-			aliases: ['contribute', 'repo']
+			chatInputCommand: {
+				register: true,
+				behaviorWhenNotIdentical: RegisterBehavior.Overwrite
+			}
 		});
 	}
 
-	public async messageRun(message: Message) {
+	public chatInputRun(interaction: CommandInteraction) {
 		// Make a snazzy embed
 		const title = 'boardgamebot GitHub Repo';
 		const description = `The GitHub repo for this bot is [tawilkinson/boardgamebot](https://github.com/tawilkinson/boardgamebot).
@@ -22,11 +24,11 @@ export class UserCommand extends Command {
 		const embed = new MessageEmbed()
 			.setTitle(title)
 			.setDescription(description)
-			.setTimestamp(message.createdTimestamp)
+			.setTimestamp(interaction.createdTimestamp)
 			.setColor('LIGHT_GREY')
 			.setURL(url)
 			.setThumbnail('attachment://GitHub.png');
 
-		return send(message, { embeds: [embed], files: [{ attachment: './assets/images/GitHub.png', name: 'GitHub.png' }] });
+		return interaction.reply( { embeds: [embed], files: [{ attachment: './assets/images/GitHub.png', name: 'GitHub.png' }] });
 	}
 }

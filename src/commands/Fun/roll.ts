@@ -1,5 +1,8 @@
-import { Command, CommandOptions, PieceContext } from '@sapphire/framework';
-import type { Message } from 'discord.js';
+import { ApplicationCommandRegistry, Command, CommandOptions } from '@sapphire/framework';
+import type { CommandInteraction } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { ApplyOptions } from '@sapphire/decorators';
+
 
 const DICE_REGEX = /(?<count>\d{1,2})?d(?<sides>\d{1,4})(?<explode>!)?(?<keep>kl?(?<keepCount>\d{1,2}))?((?<plus>\+)?(?<minus>-)?(?<mod>\d{1,4})|$)/;
 
@@ -80,24 +83,27 @@ function processRoll(str: string) {
 	return { input: match!.input, count, sides, operator, mod, explodes, keep, keepCount };
 }
 
-export class UserCommand extends Command {
-	public constructor(context: PieceContext, options: CommandOptions) {
-		super(context, {
-			...options,
-			description: `Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.
-			Examples:\n- \`bg roll<x>d20\`: rolls <x> twenty sided die.\n- \`bg roll 2d20kl1\`: rolls 2 d20 and keeps
-            the lowest result, i.e. disadvantage.\n- \`bg roll 2d20k1\`: rolls 2 d20 and keeps the highest result, i.e. advantage.
-			- \`bg roll 10d6!\`: rolls 10 d6 and explodes when a 6 is rolled.
-            - \`bg roll d6 + 5\`: rolls a d6 and adds 5.\n- \`bg roll d6 - 4\`: rolls a d6 and subtracts 4.
-            - \`bg roll d6 | d8 | d20\`: rolls a d, a d8 and a d20. All above functionality is supported.`,
-			aliases: ['dieroll', 'r']
-		});
+@ApplyOptions<CommandOptions>({
+	description: `Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.`,
+	detailedDescription: `Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.
+			Examples: \n - \`/roll<x>d20\`: rolls <x> twenty sided die.\n- \`/roll 2d20kl1\`: rolls 2 d20 and keeps
+			the lowest result, i.e. disadvantage.\n- \`bg roll 2d20k1\`: rolls 2 d20 and keeps the highest result, i.e. advantage.
+			- \`/roll 10d6!\`: rolls 10 d6 and explodes when a 6 is rolled.
+			- \`/roll d6 + 5\`: rolls a d6 and adds 5.\n- \`bg roll d6 - 4\`: rolls a d6 and subtracts 4.
+			- \`/roll d6 | d8 | d20\`: rolls a d, a d8 and a d20. All above functionality is supported.`
+})
+export class RollCommand extends Command {
+	public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
+		const builder = new SlashCommandBuilder()
+			.setName(this.name)
+			.setDescription(this.description)
+			.addStringOption((option) => option.setName('roll').setDescription('The roll command in standard dice notation').setRequired(true))
+		registry.registerChatInputCommand(builder);
 	}
 
-	public async messageRun(msg: Message) {
+	public chatInputRun(interaction: CommandInteraction) {
 		const results: DiceResult[] = [];
-		const args = msg.content.trim().split(/ +/g);
-		args.splice(0, 2);
+		const args = interaction.options.getString('roll');
 
 		const rollStrs = String(args).split('|');
 
@@ -232,7 +238,7 @@ export class UserCommand extends Command {
 			const result = results[0];
 			const emoji = getEmoji(result.spec);
 			// just display the message when a single roll is made
-			return msg.channel.send(`${emoji} You rolled: ${result.message} ${emoji}`);
+			return interaction.reply(`${emoji} You rolled: ${result.message} ${emoji}`);
 		}
 		let message = `You rolled:`;
 		for (const result of results) {
@@ -241,7 +247,7 @@ export class UserCommand extends Command {
 			// backticks so it doesn't distract from results
 			message += `\n${emoji} \`${result.spec.input}\` = ${result.message}`;
 		}
-		return msg.channel.send(message);
+		return interaction.reply(message);
 	}
 
 	private rollOnce(sides: number): number {

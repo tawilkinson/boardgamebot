@@ -20,6 +20,7 @@
 			"node",
 			"discord.js",
 		],
+		"moduleResolution": "node",
 	},
 	"include": [
 		"src"
