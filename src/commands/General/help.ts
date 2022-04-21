@@ -21,10 +21,8 @@ export class HelpCommand extends Command {
 		const embed = new MessageEmbed().setTitle(title).setDescription(description).setTimestamp(interaction.createdTimestamp).setColor('RANDOM');
 
 		const map = new Map();
-		commands.map((cmd: any) => console.log(cmd));
 		commands.map((cmd: any) => map.set(cmd.name, cmd.description));
 		const sorted = new Map([...map.entries()].sort());
-		console.log(sorted);
 		for (const [key, value] of sorted) {
 			embed.addField(key, value, true);
 		}
