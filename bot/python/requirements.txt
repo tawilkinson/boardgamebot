@@ -41,4 +41,4 @@ requests==2.27.1
 scikit_image==0.19.1
 
 # python/utils/colour.py: 5
-scikit-learn==1.0.2
+scikit-learn==1.1.1
