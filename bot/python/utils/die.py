@@ -18,7 +18,7 @@ class Die():
         self.dice_regex += r'(?P<keep>kl?(?P<keepCount>\d{1,2}))?((?P<plus>\+)?'
         self.dice_regex += r'(?P<minus>-)?(?P<mod>\d{1,2})|$)'
         self.parser = re.compile(self.dice_regex)
-        self.match = self.parser.search(die_text)
+        self.match = self.parser.search(die_text.lower())
         # Setup variables used across Die commands
         self.rolls = []
         self.die_str = ''

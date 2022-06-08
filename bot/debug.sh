@@ -16,6 +16,7 @@ docker run -it \
   --name="$debug_name" \
   --entrypoint='' \
   --env DISCORD_TOKEN \
+  --network=host \
   "$repo":latest \
   bash
 

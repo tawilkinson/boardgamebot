@@ -5,4 +5,5 @@
 docker build \
   --tag="$repo:latest" \
   --tag="$repo:$tag" \
+  --network=host \
   .
