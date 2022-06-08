@@ -16,7 +16,7 @@ class Webpage(BeautifulSoup):
         try:
             self.response = requests.get(url)
             self.page_response = self.response
-            self.page_html = BeautifulSoup(self.response.text, 'lxml')
+            self.page_html = BeautifulSoup(self.response.text, 'lxml', features='xml')
             self.error = None
         except requests.exceptions.SSLError:
             self.page_response = None
