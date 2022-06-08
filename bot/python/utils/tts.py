@@ -33,12 +33,12 @@ def get_tts_workshop(game, tts_search):
     search_results = tts_search.body.select('body a')
     workshop = ''
     for result in search_results:
-        url = result['href']
-        url_name = None
         try:
+            url = result['href']
+            url_name = None
             if 'https://steamcommunity.com/sharedfiles' in url:
                 url_name = result.contents[0].contents[0]
-        except AttributeError:
+        except (AttributeError, KeyError):
             if logger.level >= 10:
                 logger.debug(
                     f'--> No url_name')
