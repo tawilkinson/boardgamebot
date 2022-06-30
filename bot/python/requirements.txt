@@ -35,7 +35,7 @@ numpy==1.23.0
 python_dotenv==0.20.0
 
 # python/utils/game.py: 2
-requests==2.28.0
+requests==2.28.1
 
 # python/utils/colour.py: 6,7
 scikit_image==0.19.3
