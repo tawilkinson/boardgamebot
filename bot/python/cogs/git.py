@@ -29,18 +29,17 @@ class Git(commands.Cog, name='git'):
         page = release_page.page_html
         versions = {}
         if page:
-            search_results = page.find_all('div', class_='release-entry')
+            search_results = page.find_all('div', class_='Box-body')
             for result in search_results:
-                title = result.find(
-                    'div', class_='release-header').find('a').text
-                url = 'https://github.com' + \
-                    result.find(
-                        'div', class_='release-header').find('a').get('href')
-                release_md = str(result.find('div', class_='markdown-body'))
-                description = h.handle(release_md)
-                description = description.replace('* ', '')
-                description = description[:2000]
-                versions[title] = (description, url)
+                if result is not None:
+                    title = result.select_one('a', class_='Link--primary').text
+                    url = 'https://github.com' + \
+                        result.select_one('a', class_='Link--primary').get('href')
+                    release_md = str(result.find_all('div', class_='markdown-body')[0])
+                    description = h.handle(release_md)
+                    description = description.replace('* ', '')
+                    description = description[:2000]
+                    versions[title] = (description, url)
         else:
             title = 'Release page not found'
             description = 'There is an issue getting data from GitHub at the moment...'
@@ -71,6 +70,7 @@ class Git(commands.Cog, name='git'):
         Prints an embed that contains info on the current GitHub release
         '''
         responses = self.generate_versions_embeds()
+        print(responses)
         paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
             ctx, timeout=60, auto_footer=True)
         await paginator.run(responses)
@@ -103,5 +103,5 @@ class Git(commands.Cog, name='git'):
         await ctx.invoke(self.bot.get_command('help'), 'git')
 
 
-def setup(bot):
-    bot.add_cog(Git(bot))
+async def setup(bot):
+    await bot.add_cog(Git(bot))

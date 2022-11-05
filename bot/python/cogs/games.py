@@ -164,5 +164,5 @@ class Games(commands.Cog, name='games'):
         await ctx.invoke(self.bot.get_command('help'), 'games')
 
 
-def setup(bot):
-    bot.add_cog(Games(bot))
+async def setup(bot):
+    await bot.add_cog(Games(bot))

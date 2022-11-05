@@ -41,5 +41,5 @@ class Dice(commands.Cog, name='dice'):
         await ctx.invoke(self.bot.get_command('help'), 'dice')
 
 
-def setup(bot):
-    bot.add_cog(Dice(bot))
+async def setup(bot):
+    await bot.add_cog(Dice(bot))

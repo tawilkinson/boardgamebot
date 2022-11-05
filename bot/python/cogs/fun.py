@@ -41,5 +41,5 @@ class Fun(commands.Cog, name='fun'):
         await ctx.invoke(self.bot.get_command('help'), 'fun')
 
 
-def setup(bot):
-    bot.add_cog(Fun(bot))
+async def setup(bot):
+    await bot.add_cog(Fun(bot))

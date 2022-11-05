@@ -1,9 +1,10 @@
 # bot.py
-import discord
+import asyncio
 import logging
 import os
 import sys
 import traceback
+import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -28,10 +29,11 @@ if debug:
     logger.setLevel(logging.DEBUG)
 
 # Setup intents
-intents = discord.Intents(guilds=True,
-                          messages=True,
-                          reactions=True,
-                          members=True)
+intents = discord.Intents.default()
+intents.guilds = True
+intents.message_content=True
+intents.reactions=True
+intents.members=True
 
 # this specifies what extensions to load when the bot starts up
 startup_extensions = ['fun', 'games', 'dice', 'help', 'git', 'wordle']
@@ -40,7 +42,6 @@ bot = commands.Bot(command_prefix='bg ', intents=intents)
 # We are going to use help.py to add an embed help.
 # Remove basic help command here.
 bot.remove_command('help')
-
 
 @bot.event
 async def on_ready():
@@ -86,7 +87,7 @@ async def load(ctx, cog_name: str):
     Loads a cog.
     '''
     try:
-        bot.load_extension(cog_name)
+        await bot.load_extension(f'cogs.{cog_name}')
     except (AttributeError, ImportError) as e:
         await ctx.send('```py\n{}: {}\n```'.format(type(e).__name__, str(e)))
         return
@@ -103,7 +104,7 @@ async def unload(ctx, cog_name: str):
     Unloads a cog.
     '''
     try:
-        bot.unload_extension(cog_name)
+        await bot.unload_extension(f'cogs.{cog_name}')
         await ctx.send('{} unloaded.'.format(cog_name))
     except discord.ext.commands.ExtensionNotLoaded:
         await ctx.send('{} not loaded.'.format(cog_name))
@@ -118,14 +119,22 @@ async def reload(ctx, cog_name: str):
     await unload(ctx, cog_name)
     await load(ctx, cog_name)
 
-if __name__ == '__main__':
+
+async def setup_bot():
     # Load all the extensions from the list above
     for extension in startup_extensions:
         try:
-            bot.load_extension(f'cogs.{extension}')
+            await bot.load_extension(f'cogs.{extension}')
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
 
-    # Start the bot!
-    bot.run(TOKEN)
+async def main():
+    async with bot:
+        await setup_bot()
+        # Start the bot!
+        await bot.start(TOKEN)
+
+
+if __name__ == '__main__':
+    asyncio.run(main())

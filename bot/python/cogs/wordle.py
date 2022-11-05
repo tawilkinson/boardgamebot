@@ -136,5 +136,5 @@ class Wordle(commands.Cog, name='wordle'):
             await ctx.send(embed=response)
 
 
-def setup(bot):
-    bot.add_cog(Wordle(bot))
+async def setup(bot):
+    await bot.add_cog(Wordle(bot))
