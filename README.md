@@ -1,4 +1,4 @@
-## [Add it to your server!](https://discord.com/api/oauth2/authorize?client_id=812455891692552202&permissions=117760&scope=bot)
+## [Add it to your server!](https://discord.com/api/oauth2/authorize?client_id=812455891692552202&permissions=117760&scope=bot&scope=applications.commands)
 
 # Board Game Bot
 [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-) [![Python 3](https://pyup.io/repos/github/tawilkinson/boardgamebot/python-3-shield.svg)](https://pyup.io/repos/github/tawilkinson/boardgamebot/) [![CodeFactor](https://www.codefactor.io/repository/github/tawilkinson/boardgamebot/badge)](https://www.codefactor.io/repository/github/tawilkinson/boardgamebot) [![Maintainability](https://api.codeclimate.com/v1/badges/54d6c7104004d9e94c5a/maintainability)](https://codeclimate.com/github/tawilkinson/boardgamebot/maintainability) [![Updates](https://pyup.io/repos/github/tawilkinson/boardgamebot/shield.svg)](https://pyup.io/repos/github/tawilkinson/boardgamebot/) 
