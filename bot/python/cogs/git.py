@@ -35,7 +35,9 @@ class Git(commands.Cog, name='git'):
                     title = result.select_one('a', class_='Link--primary').text
                     url = 'https://github.com' + \
                         result.select_one('a', class_='Link--primary').get('href')
-                    release_md = str(result.find_all('div', class_='markdown-body')[0])
+                    release_md = str(
+                        result.find_all(
+                            'div', class_='markdown-body')[0])
                     description = h.handle(release_md)
                     description = description.replace('* ', '')
                     description = description[:2000]

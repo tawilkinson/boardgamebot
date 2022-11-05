@@ -31,9 +31,9 @@ if debug:
 # Setup intents
 intents = discord.Intents.default()
 intents.guilds = True
-intents.message_content=True
-intents.reactions=True
-intents.members=True
+intents.message_content = True
+intents.reactions = True
+intents.members = True
 
 # this specifies what extensions to load when the bot starts up
 startup_extensions = ['fun', 'games', 'dice', 'help', 'git', 'wordle']
@@ -42,6 +42,7 @@ bot = commands.Bot(command_prefix='bg ', intents=intents)
 # We are going to use help.py to add an embed help.
 # Remove basic help command here.
 bot.remove_command('help')
+
 
 @bot.event
 async def on_ready():
@@ -128,6 +129,7 @@ async def setup_bot():
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
+
 
 async def main():
     async with bot:
