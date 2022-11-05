@@ -58,7 +58,7 @@ class Help(commands.Cog, name='help'):
                                        inline=True)
                 message = await ctx.send('', embed=halp)
                 if ctx.channel.type is not discord.ChannelType.private:
-                    await message.add_reaction(emoji='✉')
+                    await message.add_reaction('✉')
             else:
                 if cog[0] in self.bot.cogs:
                     halp = discord.Embed(
@@ -77,11 +77,11 @@ class Help(commands.Cog, name='help'):
 
                 message = await ctx.send('', embed=halp)
                 if ctx.channel.type is not discord.ChannelType.private:
-                    await message.add_reaction(emoji='✉')
+                    await message.add_reaction('✉')
         except Exception as e:
             if logger.level >= 10:
                 logger.debug(e)
 
 
-def setup(bot):
-    bot.add_cog(Help(bot))
+async def setup(bot):
+    await bot.add_cog(Help(bot))
