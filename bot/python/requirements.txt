@@ -32,7 +32,7 @@ lxml==4.9.2
 numpy==1.23.5
 
 # python/bot.py: 8
-python_dotenv==0.21.0
+python_dotenv==0.21.1
 
 # python/utils/game.py: 2
 requests==2.28.1
