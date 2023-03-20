@@ -5,7 +5,7 @@
 DiscordUtils==1.3.4
 
 # python/utils/game.py: 5
-beautifulsoup4==4.11.2
+beautifulsoup4==4.12.0
 
 # python/utils/colour.py: 4
 # python/utils/online_game_search.py: 4
