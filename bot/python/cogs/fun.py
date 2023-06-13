@@ -2,6 +2,8 @@ import json
 import logging
 import os
 import random
+import discord
+from discord import app_commands
 from discord.ext import commands
 
 logger = logging.getLogger('discord')
@@ -23,9 +25,16 @@ class Fun(commands.Cog, name='fun'):
             print(
                 'theme_data.json is empty. Can''t generate random themes.')
 
-    @commands.command(aliases=['t'],
-                      help='Generates a random board game theme.')
-    async def theme(self, ctx):
+    @app_commands.command(name='gameboard')
+    async def gameboard(self, interaction: discord.Interaction) -> None:
+        '''
+        It's a fun gif
+        '''
+        response = await interaction.response.send_message('https://gfycat.com/thismixeddonkey')
+
+
+    @app_commands.command(name='theme', description='Generates a random board game theme.')
+    async def theme(self, interaction: discord.Interaction) -> None:
         '''
         Makes a random board game concept from a style, a component and
          a setting. Taken from the JSON file, theme_data.json.
@@ -33,7 +42,7 @@ class Fun(commands.Cog, name='fun'):
         response = random.choice(self.theme_data['styles']) + ' using ' +\
             random.choice(self.theme_data['components']) + ' set in ' +\
             random.choice(self.theme_data['settings'])
-        await ctx.send(response)
+        response = await interaction.response.send_message(response)
 
     @commands.command(help='Lists the help for command category `fun`.',
                       pass_context=True)
