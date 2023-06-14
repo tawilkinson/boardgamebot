@@ -1,13 +1,26 @@
 import discord
-import DiscordUtils
 import html2text
 import logging
+from discord import app_commands
 from discord.ext import commands
+from discord.ext import menus
 from utils.game import Webpage
+from utils.menus import DiscordPages
 from subprocess import check_output
 
 logger = logging.getLogger('discord')
 
+class VersionsEmbeds(menus.ListPageSource):
+    '''
+    Makes an embed for every version
+    '''
+    async def format_page(self, menu, version):
+        embed = discord.Embed(
+            title=version["title"],
+            description=version["description"],
+            url=version["url"],
+            colour=discord.Colour.lighter_grey())
+        return embed
 
 class Git(commands.Cog, name='git'):
     '''
@@ -27,7 +40,7 @@ class Git(commands.Cog, name='git'):
         release_page = Webpage(
             'https://github.com/tawilkinson/boardgamebot/releases')
         page = release_page.page_html
-        versions = {}
+        versions = []
         if page:
             search_results = page.find_all('div', class_='Box-body')
             for result in search_results:
@@ -41,45 +54,27 @@ class Git(commands.Cog, name='git'):
                     description = h.handle(release_md)
                     description = description.replace('* ', '')
                     description = description[:2000]
-                    versions[title] = (description, url)
+                    versions.append({"title":title, "description":description, "url":url})
         else:
             title = 'Release page not found'
             description = 'There is an issue getting data from GitHub at the moment...'
             url = 'https://github.com/tawilkinson/boardgamebot/releases/latest'
-            versions[title] = (description, url)
+            versions.append({"title":title, "description":description, "url":url})
 
         return versions
 
-    def generate_versions_embeds(self):
-        '''
-        Makes an embed for every version
-        '''
-        embeds = []
-        versions = self.get_release_text()
-        for version, info in versions.items():
-            embed = discord.Embed(
-                title=version,
-                description=info[0],
-                url=info[1],
-                colour=discord.Colour.lighter_grey())
-            embeds.append(embed)
-        return embeds
-
-    @commands.command(aliases=['changelog'],
-                      help='Prints info on the current release')
-    async def releases(self, ctx):
+    @app_commands.command(name='releases', description='Prints info on the current release')
+    async def releases(self, interaction: discord.Interaction) -> None:
         '''
         Prints an embed that contains info on the current GitHub release
         '''
-        responses = self.generate_versions_embeds()
-        print(responses)
-        paginator = DiscordUtils.Pagination.AutoEmbedPaginator(
-            ctx, timeout=60, auto_footer=True)
-        await paginator.run(responses)
+        versions = self.get_release_text()
+        formatter = VersionsEmbeds(versions, per_page=1)
+        paginator = DiscordPages(formatter, timeout=60, auto_footer=True)
+        await paginator.start(interaction)
 
-    @commands.command(aliases=['contribute', 'repo'],
-                      help='Prints info on the Github repo')
-    async def github(self, ctx):
+    @app_commands.command(name='github', description='Prints info on the Github repo')
+    async def github(self, interaction: discord.Interaction) -> None:
         '''
         Prints an embed that contains info on the Github repo
         '''
@@ -97,7 +92,7 @@ class Git(commands.Cog, name='git'):
             url=url,
             colour=discord.Colour.lighter_grey())
         response.set_thumbnail(url='attachment://GitHub.png')
-        await ctx.send('', embed=response, file=file)
+        await interaction.response.send_message('', embed=response, file=file)
 
     @commands.command(help='Lists the help for command category `git`.',
                       pass_context=True)
