@@ -2,11 +2,9 @@ import discord
 import html2text
 import logging
 from discord import app_commands
-from discord.ext import commands
-from discord.ext import menus
+from discord.ext import commands, menus
 from utils.game import Webpage
 from utils.menus import DiscordPages
-from subprocess import check_output
 
 logger = logging.getLogger('discord')
 

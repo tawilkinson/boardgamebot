@@ -12,6 +12,8 @@ logger = logging.getLogger('discord')
 class Fun(commands.Cog, name='fun'):
     '''
     Fun commands that aren't part of the bot proper.
+
+    Intentionally not grouped
     '''
 
     def __init__(self, bot):

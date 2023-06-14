@@ -3,6 +3,14 @@ from discord import ui
 from discord.ext import menus
 
 class DiscordPages(ui.View, menus.MenuPages):
+    '''
+    Extends the menus extension to make a useful paginator
+    for our multi-page embeds.
+    
+    Rapptz has not updated the extension library in sometime
+    so may need to incorporate more code from that lib in
+    future to support this
+    '''
     def __init__(self, source, timeout=60, auto_footer=False):
         super().__init__(timeout=timeout)
         self._source = source
