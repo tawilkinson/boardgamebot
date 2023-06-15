@@ -9,11 +9,10 @@ from discord.ext import commands
 logger = logging.getLogger('discord')
 
 
+# Intentionally not grouped
 class Fun(commands.Cog, name='fun'):
     '''
     Fun commands that aren't part of the bot proper.
-
-    Intentionally not grouped
     '''
 
     def __init__(self, bot):
