@@ -2,23 +2,12 @@ import discord
 import html2text
 import logging
 from discord import app_commands
-from discord.ext import commands, menus
+from discord.ext import commands
+from utils.embeds import VersionsEmbeds
 from utils.game import Webpage
 from utils.menus import DiscordPages
 
 logger = logging.getLogger('discord')
-
-class VersionsEmbeds(menus.ListPageSource):
-    '''
-    Makes an embed for every version
-    '''
-    async def format_page(self, menu, version):
-        embed = discord.Embed(
-            title=version["title"],
-            description=version["description"],
-            url=version["url"],
-            colour=discord.Colour.lighter_grey())
-        return embed
 
 class Git(commands.Cog, name='git'):
     '''

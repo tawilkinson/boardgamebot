@@ -1,6 +1,7 @@
 import discord
 import logging
 import time
+from discord.ext import menus
 from utils.colour import get_discord_colour
 from utils.helpers import Site
 
@@ -64,7 +65,7 @@ class GameEmbed():
         elif Site(self.site) == Site.yucata:
             title_str = 'Yucata.de Games'
             description = 'Online gaming portal, free and without advertisements \
-                where you may play more than 60 different games.'
+                where you may play more than 180 different games.'
             url = 'https://www.yucata.de/en'
             colour = 0x00305E
             thumb_url = 'https://www.yucata.de/bundles/images/Logo.jpg'
@@ -222,6 +223,27 @@ class GameEmbed():
         self.set_footers()
 
         return self.embeds
+
+
+class GameEmbeds(menus.ListPageSource):
+    '''
+    Returns a GameEmbed per page
+    '''
+    async def format_page(self, menu, embed):
+        return embed
+
+
+class VersionsEmbeds(menus.ListPageSource):
+    '''
+    Makes an embed for every version
+    '''
+    async def format_page(self, menu, version):
+        embed = discord.Embed(
+            title=version["title"],
+            description=version["description"],
+            url=version["url"],
+            colour=discord.Colour.lighter_grey())
+        return embed
 
 
 def embed_wordle(response_dict):
