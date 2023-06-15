@@ -222,3 +222,15 @@ class GameEmbed():
         self.set_footers()
 
         return self.embeds
+
+
+def embed_wordle(response_dict):
+    '''
+    A simple embed for the wordle game
+    '''
+    robot_response = discord.Embed()
+    for item, value in response_dict.items():
+        robot_response.add_field(name=item,
+                                 value=value,
+                                 inline=False)
+    return robot_response

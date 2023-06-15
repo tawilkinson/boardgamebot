@@ -1,3 +1,4 @@
+import emoji
 import re
 import random
 
@@ -59,17 +60,13 @@ def get_word(british_to_american, word_set, word_len=5):
     return random_word
 
 
-def get_wordle_stats(message, word_set):
+def get_wordle_stats(word_set, word_len):
     stats_msg = (
         f'Play Wordle on Discord with a selection of {len(word_set)} English words!'
     )
-    if len(message) > 1:
-        try:
-            word_len = int(message[1])
-            wordle_words = [word for word in word_set if len(word) == word_len]
-            stats_msg = f'There are {len(wordle_words)} English words with {word_len} letters in the Wordle dictionary.'
-        except ValueError:
-            pass
+    wordle_words = [word for word in word_set if len(word) == word_len]
+    stats_msg += f'\nThere are {len(wordle_words)} English words with {word_len} letters in the Wordle dictionary.'
+
     return stats_msg
 
 
@@ -87,3 +84,15 @@ def wordle_exception(error, debug):
     else:
         response_text = ' Sorry your current game is lost forever, please start a new one!'
     return response_text
+
+
+def count_wordle_field_length(past_guesses, emoji_guess_word, squares_response, fail_count, word_len):
+    count = 7
+    for item in past_guesses:
+        count += len(emoji.demojize(item))
+        
+    count += len(emoji.demojize(emoji_guess_word))
+    count += len(emoji.demojize(squares_response))
+    count += len(str(fail_count))
+    count += len(str(word_len))
+    return count
