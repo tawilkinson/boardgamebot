@@ -1,5 +1,6 @@
 import logging
 import difflib
+import json
 import string
 from cachetools import cached, TTLCache
 from utils.bgg import get_bgg_data
@@ -65,6 +66,8 @@ def get_bga_data(game):
     if logger.level >= 10:
         logger.debug(f'>>> Board Game Arena: {game.bga_search_url}')
     all_bga = get_all_games(site=1)
+    if logger.level >= 10:
+        logger.debug(f'>>> Board Game Arena Games: {all_bga.keys()}')
     closest_match = difflib.get_close_matches(
         game.name, all_bga.keys(), 1)
     if len(closest_match) > 0:
@@ -145,7 +148,7 @@ def set_site_data(site):
     game_list = None
     site_name = None
     if Site(site) == Site.bga:
-        game_list = 'https://boardgamearena.com/gamelist?section=all'
+        game_list = 'https://en.boardgamearena.com/gamelist?section=all'
         site_name = 'Board Game Arena'
     elif Site(site) == Site.boite:
         game_list = 'http://www.boiteajeux.net/index.php?p=regles'
@@ -165,8 +168,22 @@ def get_site_search_results(site, page):
     '''
     search_results = None
     if Site(site) == Site.bga:
-        search_results = page.find_all(
-            'div', class_='gameitem_baseline gamename')
+        script_result = page.find_all('script', type='text/javascript')
+        search_results = None
+        for item in script_result:
+            for line in item.string.split('\n'):
+                if 'globalUserInfos' in line:
+                    try:
+                        clean_line = line.rstrip().split("=", 1)[1]
+                        clean_line = clean_line[:-1]
+                        search_results = json.loads(clean_line)
+                        if logger.level >= 10:
+                            logger.debug('>>> BGA JSON succesful load')
+                    except Exception as e:
+                        # Should only work for the line we _want_
+                        if logger.level >= 10:
+                            logger.debug(f'!!! BGA JSON error: {e}')
+        search_results = search_results['game_list']
     elif Site(site) == Site.boite:
         search_results = page.find_all('div', class_='jeuxRegles')
     elif Site(site) == Site.yucata:
@@ -182,8 +199,9 @@ def get_name_and_link(site, result):
     '''
     name = None
     if Site(site) == Site.bga:
-        name = str(result.contents[0]).lstrip().rstrip()
-        link = 'https://boardgamearena.com' + result.parent.get('href')
+        game_href = result['name']
+        name = result['display_name_en']
+        link = f'https://boardgamearena.com/gamepanel?game={game_href}'
     elif Site(site) == Site.boite:
         rules_elem = result.select_one('a', text='Rules')
         rules_href = rules_elem.get('href')

@@ -12,11 +12,14 @@ class Webpage(BeautifulSoup):
     Creates a BeautifulSoup object of a webpages's HTML.
     '''
 
-    def __init__(self, url):
+    def __init__(self, url, xml=False):
         try:
             self.response = requests.get(url)
             self.page_response = self.response
-            self.page_html = BeautifulSoup(self.response.text, 'lxml')
+            if xml:
+                self.page_html = BeautifulSoup(self.response.text, features="xml")
+            else:
+                self.page_html = BeautifulSoup(self.response.text, "html.parser")
             self.error = None
         except requests.exceptions.SSLError:
             self.page_response = None
@@ -26,7 +29,7 @@ class Webpage(BeautifulSoup):
             self.page_response = None
             self.page_html = None
             self.error = 'HTTP Error'
-        except requests.exceptions.HTTPError:
+        except requests.exceptions.ConnectionError:
             self.page_response = None
             self.page_html = None
             self.error = 'Timed Out'
@@ -47,8 +50,8 @@ class Game:
             [x for x in self.name.lower() if x.isalpha()])
         self.app = ''
         self.bga = False
-        self.bga_search_url = f'https://boardgamearena.com/gamepanel?game={self.search_name_alpha_num}'
-        self.bga_non_exact_search_url = f'https://boardgamearena.com/gamelist?section=all'
+        self.bga_search_url = f'https://en.boardgamearena.com/gamepanel?game={self.search_name_alpha_num}'
+        self.bga_non_exact_search_url = f'https://en.boardgamearena.com/gamelist?section=all'
         self.bgg = ''
         self.bgg_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&exact=1&type=boardgame'
         self.bgg_non_exact_search_url = f'http://www.boardgamegeek.com/xmlapi2/search?query={self.search_name}&type=boardgame'

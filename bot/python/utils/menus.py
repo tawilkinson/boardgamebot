@@ -11,13 +11,17 @@ class DiscordPages(ui.View, menus.MenuPages):
     so may need to incorporate more code from that lib in
     future to support this
     '''
-    def __init__(self, source, timeout=60, auto_footer=False):
+    def __init__(self, source, timeout=60, auto_footer=False, message=None):
         super().__init__(timeout=timeout)
         self._source = source
         self.auto_footer = auto_footer
         self.current_page = 0
         self.ctx = None
-        self.message = None
+        self.message = message
+        if self.message:
+            self.followup = True
+        else:
+            self.followup = False
 
     async def start(self, ctx, *, channel=None, wait=False):
         await self._source._prepare_once()
@@ -28,7 +32,8 @@ class DiscordPages(ui.View, menus.MenuPages):
         page = await self._source.get_page(page_number)
         self.current_page = page_number
         kwargs = await self._get_kwargs_from_page(page)
-        self.message = await self.ctx.original_response()
+        if not self.followup:
+            self.message = await self.ctx.original_response()
         await self.message.edit(**kwargs)
 
     async def send_initial_message(self, ctx, channel):
@@ -42,7 +47,10 @@ class DiscordPages(ui.View, menus.MenuPages):
         self.ctx = ctx
         page = await self._source.get_page(0)
         kwargs = await self._get_kwargs_from_page(page)
-        return await self.ctx.response.send_message(**kwargs)
+        if self.followup:
+            return await self.ctx.followup.send(**kwargs, wait=True)
+        else:
+            return await self.ctx.response.send_message(**kwargs)
 
     async def _get_kwargs_from_page(self, page):
         """This method calls ListPageSource.format_page class"""

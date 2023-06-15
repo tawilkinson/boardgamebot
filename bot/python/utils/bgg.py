@@ -18,7 +18,7 @@ def bgg_data_from_id(game, game_id):
     bgg_url = game.get_set_bgg_url(game_id)
     if logger.level >= 10:
         logger.debug(f'>>> {game.name} on BGG: {bgg_url}')
-    bgg_page = Webpage(bgg_url)
+    bgg_page = Webpage(bgg_url, xml=True)
     if bgg_page.page_html.items.description:
         game_description = html.unescape(
             bgg_page.page_html.items.description.text)
@@ -60,7 +60,7 @@ async def select_game(game, possible_board_games, ctx):
         game.name, possible_board_games.keys(), 1, 0)[0]
 
     try:
-        msg = await ctx.bot.wait_for('message', timeout=30, check=check)
+        msg = await ctx.client.wait_for('message', timeout=30, check=check)
         if msg:
             idx = int(msg.content) - 1
             key = list(possible_board_games.keys())[idx]
@@ -87,12 +87,12 @@ async def get_bgg_data(game, message, ctx, exact=True):
     if exact:
         if logger.level >= 10:
             logger.debug(f'>>> Board Game Geek: {game.bgg_search_url}')
-        bgg_search = Webpage(game.bgg_search_url)
+        bgg_search = Webpage(game.bgg_search_url, xml=True)
     else:
         if logger.level >= 10:
             logger.debug(
                 f'>>> Board Game Geek: {game.bgg_non_exact_search_url}')
-        bgg_search = Webpage(game.bgg_non_exact_search_url)
+        bgg_search = Webpage(game.bgg_non_exact_search_url, xml=True)
     if bgg_search.page_html is None:
         return False
     if bgg_search.page_html.items is not None:
@@ -107,6 +107,7 @@ async def get_bgg_data(game, message, ctx, exact=True):
         elif int(games_found) > 1:
             closest_match = None
             board_game_search = bgg_search.page_html.items.findAll('item')
+            print(board_game_search)
             possible_board_games = collections.OrderedDict()
             count = 0
             title = 'Ambiguous Game Name'
