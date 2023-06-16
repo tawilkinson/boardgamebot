@@ -124,6 +124,9 @@ async def setup_bot():
 @commands.is_owner()
 async def sync(
   ctx: Context, guilds: Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
+    '''
+    Sync command for updating slash commands with Discord. **Use sparingly!**
+    '''
     if not guilds:
         if spec == "~":
             synced = await ctx.bot.tree.sync(guild=ctx.guild)

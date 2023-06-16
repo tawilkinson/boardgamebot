@@ -105,6 +105,7 @@ class Wordle(commands.GroupCog, name='wordle'):
         self.bot = bot
 
     @app_commands.command(name='play', description='Play wordle in Discord')
+    @app_commands.describe(word_length='Optional: length of the word for you wordle game. [Default: 5]')
     async def wordle_play(self, interaction: discord.Interaction, word_length: int=5) -> None:
         try:
             word = get_word(BRITISH_WORDS, WORD_SET, word_length).upper()
@@ -121,6 +122,7 @@ class Wordle(commands.GroupCog, name='wordle'):
             await interaction.response.send_message(embed=response)
 
     @app_commands.command(name='stats', description='Get information on the wordle dictionary')
+    @app_commands.describe(word_length='Optional: get a count of the number of words of word_length [Default: 5]')
     async def wordle_stats(self, interaction: discord.Interaction, word_length: int=5) -> None:
         response = embed_wordle(
             {"Wordle Stats": get_wordle_stats(WORD_SET, word_length)}

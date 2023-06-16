@@ -34,7 +34,8 @@ class Games(commands.GroupCog, name='games'):
         await self.bot.wait_until_ready()
 
     @app_commands.command(name='search', description='Fetches game info from \
-                          BGG then returns online sources to play the game.')
+                          BGG then returns online sources to play the game')
+    @app_commands.describe(game='The name of the game to search for')
     async def game_search(self, interaction: discord.Interaction, game: str) -> None:
         start_time = time.time()
         if logger.level >= 10:
@@ -64,7 +65,7 @@ class Games(commands.GroupCog, name='games'):
             await message.edit(content=response)
 
     @app_commands.command(name='boardgamearena',
-                      description='Prints the list of games currently available on Board Game Arena.')
+                      description='Prints the list of games currently available on Board Game Arena')
     async def game_bga(self, interaction: discord.Interaction) -> None:
         start_time = time.time()
         response = 'Getting the list of BGA games...'
@@ -83,7 +84,7 @@ class Games(commands.GroupCog, name='games'):
             await interaction.followup.send(content='', embed=responses[0])
 
     @app_commands.command(name='boîte_à_jeux',
-        description='Prints the list of games currently available on Boîte à Jeux.')
+        description='Prints the list of games currently available on Boîte à Jeux')
     async def game_boite(self, interaction: discord.Interaction) -> None:
         start_time = time.time()
         response = 'Getting the list of Boîte à Jeux games...'
@@ -101,7 +102,7 @@ class Games(commands.GroupCog, name='games'):
         else:
             await interaction.followup.send(content='', embed=responses[0])
 
-    @app_commands.command(name='tabletopia', description='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia.')
+    @app_commands.command(name='tabletopia', description='Tabletopia has over 1600 games, so prints a link to the all games page on Tabletopia')
     async def game_tabletopia(self, interaction: discord.Interaction) -> None:
         description = 'Tabletopia has over 1600 games. Full list at [Tabletopia: All Games](https://tabletopia.com/games?page=1).'
         embed = discord.Embed(
@@ -114,7 +115,7 @@ class Games(commands.GroupCog, name='games'):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name='tabletop_simulator',
-                      description='Prints the list of DLC currently available for Tabletop Simulator.')
+                      description='Prints the list of DLC currently available for Tabletop Simulator')
     async def game_tts(self, interaction: discord.Interaction) -> None:
         start_time = time.time()
         response = 'Getting the list of Tabletop Simulator DLC...'
@@ -133,7 +134,7 @@ class Games(commands.GroupCog, name='games'):
             await interaction.followup.send(content='', embed=responses[0])
 
     @app_commands.command(name='yucata_de',
-                      description='Prints the list of games currently available on Yucata.de.')
+                      description='Prints the list of games currently available on Yucata.de')
     async def game_yucata(self, interaction: discord.Interaction) -> None:
         start_time = time.time()
         response = 'Getting the list of Yucata games...'
@@ -151,7 +152,7 @@ class Games(commands.GroupCog, name='games'):
         else:
             await interaction.followup.send(content='', embed=responses[0])
 
-    @commands.command(help='Lists the help for command category `games`.',
+    @commands.command(help='Lists the help for command category `games`',
                       pass_context=True)
     async def games(self, ctx):
         await ctx.invoke(self.bot.get_command('help'), 'games')

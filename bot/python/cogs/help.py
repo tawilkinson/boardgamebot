@@ -29,6 +29,7 @@ class Help(commands.Cog, name='help'):
                 await user.send('', embed=message.embeds[0])
 
     @app_commands.command()
+    @app_commands.describe(cog='Optional: name of a command to get help on')
     async def help(self, interaction: discord.Interaction, cog: str='all') -> None:
         '''
         Gets all cogs and commands of this bot.
@@ -37,12 +38,12 @@ class Help(commands.Cog, name='help'):
             if cog == 'all':
                 halp = discord.Embed(
                     title='Command Listing and Uncategorised Commands',
-                    description='Click on ✉ to get this info via DM.',
+                    description='Click on ✉ to get this info via DM',
                     colour=discord.Colour.blurple())
                 cogs_desc = ''
                 halp.add_field(
                     name='Command Categories',
-                    value='Use `bg help *category*` to find out more about them!',
+                    value='Use `/help cog:*category*` to find out more about them!',
                     inline=False)
                 for x in self.bot.cogs:
                     halp.add_field(name=x,
@@ -50,7 +51,7 @@ class Help(commands.Cog, name='help'):
                                    inline=True)
                 halp.add_field(
                     name='Uncategorised Commands',
-                    value='Use `bg help *command*` to find out more about them!',
+                    value='',
                     inline=False)
                 for y in self.bot.walk_commands():
                     if not y.cog_name and not y.hidden:

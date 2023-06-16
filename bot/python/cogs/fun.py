@@ -34,7 +34,7 @@ class Fun(commands.Cog, name='fun'):
         response = await interaction.response.send_message('https://gfycat.com/thismixeddonkey')
 
 
-    @app_commands.command(name='theme', description='Generates a random board game theme.')
+    @app_commands.command(name='theme', description='Generates a random board game theme')
     async def theme(self, interaction: discord.Interaction) -> None:
         '''
         Makes a random board game concept from a style, a component and
@@ -45,7 +45,7 @@ class Fun(commands.Cog, name='fun'):
             random.choice(self.theme_data['settings'])
         response = await interaction.response.send_message(response)
 
-    @commands.command(help='Lists the help for command category `fun`.',
+    @commands.command(help='Lists the help for command category `fun`',
                       pass_context=True)
     async def fun(self, ctx):
         await ctx.invoke(self.bot.get_command('help'), 'fun')

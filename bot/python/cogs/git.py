@@ -81,7 +81,7 @@ class Git(commands.Cog, name='git'):
         response.set_thumbnail(url='attachment://GitHub.png')
         await interaction.response.send_message('', embed=response, file=file)
 
-    @commands.command(help='Lists the help for command category `git`.',
+    @commands.command(help='Lists the help for command category `git`',
                       pass_context=True)
     async def git(self, ctx):
         await ctx.invoke(self.bot.get_command('help'), 'git')

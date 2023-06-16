@@ -14,6 +14,7 @@ class Dice(commands.Cog, name='dice'):
         self.bot = bot
 
     @app_commands.command(name='roll', description='Roll up to 9,999 dice with up to 9,999 sides each')
+    @app_commands.describe(roll_text='standard dic notation string. e.g. 2d20kl1|5d6+1')
     async def roll(self, interaction: discord.Interaction, roll_text: str) -> None:
         '''
         Using standard dice notation: You can roll up to 9,999 dice with up to 9,999 sides each.\n\
@@ -34,7 +35,7 @@ class Dice(commands.Cog, name='dice'):
             final_response += response
         await interaction.channel.send(final_response)
 
-    @commands.command(help='Lists the help for command category `dice`.',
+    @commands.command(help='Lists the help for command category `dice`',
                       pass_context=True)
     async def dice(self, ctx):
         await ctx.invoke(self.bot.get_command('help'), 'dice')
