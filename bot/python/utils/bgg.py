@@ -20,7 +20,8 @@ def bgg_data_from_id(game, game_id):
         logger.debug(f">>> {game.name} on BGG: {bgg_url}")
     bgg_page = Webpage(bgg_url, xml=True)
     if bgg_page.page_html.items.description:
-        game_description = html.unescape(bgg_page.page_html.items.description.text)
+        game_description = html.unescape(
+            bgg_page.page_html.items.description.text)
         abridged_game_description = f"{game_description[0:300]} ..."
         game.set_description(abridged_game_description)
         if logger.level >= 10:
@@ -91,7 +92,8 @@ async def get_bgg_data(game, message, ctx, exact=True):
         bgg_search = Webpage(game.bgg_search_url, xml=True)
     else:
         if logger.level >= 10:
-            logger.debug(f">>> Board Game Geek: {game.bgg_non_exact_search_url}")
+            logger.debug(
+                f">>> Board Game Geek: {game.bgg_non_exact_search_url}")
         bgg_search = Webpage(game.bgg_non_exact_search_url, xml=True)
     if bgg_search.page_html is None:
         return False
@@ -103,7 +105,8 @@ async def get_bgg_data(game, message, ctx, exact=True):
                 "Game not found on Board Game Geek! Is it even a board game?"
             )
             if logger.level >= 10:
-                logger.debug(f"!!! {game.name} not found on Board Game Geek !!!")
+                logger.debug(
+                    f"!!! {game.name} not found on Board Game Geek !!!")
         elif int(games_found) > 1:
             closest_match = None
             board_game_search = bgg_search.page_html.items.findAll("item")

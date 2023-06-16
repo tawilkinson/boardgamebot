@@ -19,7 +19,8 @@ def get_tts_dlc(game, tts_dlc_search):
             dlc = f"[{this_name}]({url})"
             dlc = f"[{game.name} (DLC)]({url})\n"
             if logger.level >= 10:
-                logger.debug(f"--> retrieved {game.name} Tabletop Simulator DLC data")
+                logger.debug(
+                    f"--> retrieved {game.name} Tabletop Simulator DLC data")
             break
     return dlc
 
@@ -41,9 +42,11 @@ def get_tts_workshop(game, tts_search):
                 logger.debug(f"--> No url_name")
 
         if url_name:
-            match_factor = difflib.SequenceMatcher(None, game.name, url_name).ratio()
+            match_factor = difflib.SequenceMatcher(
+                None, game.name, url_name).ratio()
             if logger.level >= 10:
-                logger.debug(f">>> {game.name} vs. {url_name} = {match_factor:02f}")
+                logger.debug(
+                    f">>> {game.name} vs. {url_name} = {match_factor:02f}")
             if (match_factor > 0.5) or (game.name in url_name):
                 url = (
                     url.replace("/url?q=", "")

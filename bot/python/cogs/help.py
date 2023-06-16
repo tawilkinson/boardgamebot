@@ -48,7 +48,8 @@ class Help(commands.Cog, name="help"):
                     inline=False,
                 )
                 for x in self.bot.cogs:
-                    halp.add_field(name=x, value=self.bot.cogs[x].__doc__, inline=True)
+                    halp.add_field(
+                        name=x, value=self.bot.cogs[x].__doc__, inline=True)
                 if (
                     hasattr(interaction.user, "guild_permissions")
                     and interaction.user.guild_permissions.manage_guild
@@ -59,7 +60,8 @@ class Help(commands.Cog, name="help"):
                     )
                     for y in self.bot.walk_commands():
                         if not y.cog_name and not y.hidden:
-                            halp.add_field(name=y.name, value=y.help, inline=True)
+                            halp.add_field(
+                                name=y.name, value=y.help, inline=True)
                 await interaction.response.send_message("", embed=halp)
                 if interaction.channel.type is not discord.ChannelType.private:
                     message = await interaction.original_response()
@@ -78,9 +80,11 @@ class Help(commands.Cog, name="help"):
                                 name = f"help `cog:`{cog}"
                             else:
                                 name = c.name
-                            halp.add_field(name=name, value=c.help, inline=True)
+                            halp.add_field(
+                                name=name, value=c.help, inline=True)
                     for c in self.bot.get_cog(cog).walk_app_commands():
-                        halp.add_field(name=c.name, value=c.description, inline=True)
+                        halp.add_field(
+                            name=c.name, value=c.description, inline=True)
                 else:
                     halp = discord.Embed(
                         title="Error!",
