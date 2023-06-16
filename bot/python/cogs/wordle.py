@@ -56,15 +56,15 @@ async def wait_for_answer(
             player = f"{msg.author}"
             player_title = f'{player.split("#")[0]}\'s Wordle!'
             guess = msg.content.lower()
-            emoji_guess_word = get_emoji_word(msg.content.lower(), emoji_letters)
+            emoji_guess_word = get_emoji_word(
+                msg.content.lower(), emoji_letters)
             if msg:
                 if guess.split(" ")[0] == "bg":
                     # Skip bot commands
                     pass
                 elif not valid_word(guess, word_set):
                     wordle_invalid_word = {
-                        player_title: f"{emoji_guess_word} is not in the dictionary. Please guess again."
-                    }
+                        player_title: f"{emoji_guess_word} is not in the dictionary. Please guess again."}
                     await interaction.followup.send(
                         content=tag_user, embed=embed_wordle(wordle_invalid_word)
                     )
@@ -111,8 +111,7 @@ async def wait_for_answer(
                         return
                     elif wrong_len:
                         wordle_bad_word = {
-                            player_title: f"Your guesses must be {word_len} letters long! Try again!"
-                        }
+                            player_title: f"Your guesses must be {word_len} letters long! Try again!"}
                         await interaction.followup.send(
                             content=tag_user, embed=embed_wordle(wordle_bad_word)
                         )
@@ -135,8 +134,7 @@ async def wait_for_answer(
                         )
     except asyncio.TimeoutError:
         wordle_timeout_error = {
-            "A wordley timeout": f"Guess quicker next time!\nThe word was {emoji_correct_word}"
-        }
+            "A wordley timeout": f"Guess quicker next time!\nThe word was {emoji_correct_word}"}
         await interaction.followup.send(
             content=tag_user, embed=embed_wordle(wordle_timeout_error)
         )
@@ -152,8 +150,7 @@ class Wordle(commands.GroupCog, name="wordle"):
 
     @app_commands.command(name="play", description="Play wordle in Discord")
     @app_commands.describe(
-        word_length="Optional: length of the word for you wordle game. [Default: 5]"
-    )
+        word_length="Optional: length of the word for you wordle game. [Default: 5]")
     async def wordle_play(
         self, interaction: discord.Interaction, word_length: int = 5
     ) -> None:
@@ -175,7 +172,8 @@ class Wordle(commands.GroupCog, name="wordle"):
             )
         except Exception as error:
             if logger.level >= 10:
-                response_text = " Debug mode error details:\n```" + str(error) + "```"
+                response_text = " Debug mode error details:\n```" + \
+                    str(error) + "```"
             response_text = wordle_exception(error, logger.level)
             response = embed_wordle({"A wordley error!": response_text})
             await interaction.response.send_message(embed=response)
@@ -184,8 +182,7 @@ class Wordle(commands.GroupCog, name="wordle"):
         name="stats", description="Get information on the wordle dictionary"
     )
     @app_commands.describe(
-        word_length="Optional: get a count of the number of words of word_length [Default: 5]"
-    )
+        word_length="Optional: get a count of the number of words of word_length [Default: 5]")
     async def wordle_stats(
         self, interaction: discord.Interaction, word_length: int = 5
     ) -> None:

@@ -13,9 +13,8 @@ class Dice(commands.Cog, name="dice"):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(
-        name="roll", description="Roll up to 9,999 dice with up to 9,999 sides each"
-    )
+    @app_commands.command(name="roll",
+                          description="Roll up to 9,999 dice with up to 9,999 sides each")
     @app_commands.describe(roll_text="standard dic notation string. e.g. 2d20kl1|5d6+1")
     async def roll(self, interaction: discord.Interaction, roll_text: str) -> None:
         """

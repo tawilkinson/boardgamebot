@@ -17,9 +17,11 @@ class Webpage(BeautifulSoup):
             self.response = requests.get(url)
             self.page_response = self.response
             if xml:
-                self.page_html = BeautifulSoup(self.response.text, features="xml")
+                self.page_html = BeautifulSoup(
+                    self.response.text, features="xml")
             else:
-                self.page_html = BeautifulSoup(self.response.text, "html.parser")
+                self.page_html = BeautifulSoup(
+                    self.response.text, "html.parser")
             self.error = None
         except requests.exceptions.SSLError:
             self.page_response = None

@@ -126,7 +126,8 @@ class Games(commands.GroupCog, name="games"):
             colour=0xFD9705,
             url="https://tabletopia.com/games?page=1",
         )
-        embed.set_thumbnail(url="https://tabletopia.com/Content/Images/logo.png")
+        embed.set_thumbnail(
+            url="https://tabletopia.com/Content/Images/logo.png")
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(
@@ -152,10 +153,9 @@ class Games(commands.GroupCog, name="games"):
         else:
             await interaction.followup.send(content="", embed=responses[0])
 
-    @app_commands.command(
-        name="yucata_de",
-        description="Prints the list of games currently available on Yucata.de",
-    )
+    @app_commands.command(name="yucata_de",
+                          description="Prints the list of games currently available on Yucata.de",
+                          )
     async def game_yucata(self, interaction: discord.Interaction) -> None:
         start_time = time.time()
         response = "Getting the list of Yucata games..."

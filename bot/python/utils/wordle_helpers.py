@@ -7,8 +7,9 @@ def britishify(string, british_to_american, word_len):
     for british_spelling, american_spelling in british_to_american.items():
         if string == american_spelling:
             string = re.sub(
-                f"(?<![a-zA-Z]){american_spelling}(?![a-z-Z])", british_spelling, string
-            )
+                f"(?<![a-zA-Z]){american_spelling}(?![a-z-Z])",
+                british_spelling,
+                string)
     if len(string) == word_len:
         return string
     else:
@@ -22,7 +23,8 @@ def check_answer(answer, word, leftover_alphabet):
         correct = True
         wrong_len = False
         idx = 0
-        leftover_alphabet = [x for x in leftover_alphabet if x not in characters]
+        leftover_alphabet = [
+            x for x in leftover_alphabet if x not in characters]
         for letter in characters:
             if letter == word[idx]:
                 squares_response += "🟩"

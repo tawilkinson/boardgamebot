@@ -34,11 +34,17 @@ class GameEmbed:
             description = self.game["description"][:2047]
 
         colour = get_discord_colour(self.game["image"])
-        self.embed = discord.Embed(title=title, description=description, colour=colour)
+        self.embed = discord.Embed(
+            title=title,
+            description=description,
+            colour=colour)
         self.embed.set_thumbnail(url=self.game["image"])
         if self.cont == 1:
             bgg_text = "[" + self.game["name"] + "](" + self.game["bgg"] + ")"
-            self.embed.add_field(name="Read more at BGG", value=bgg_text, inline=False)
+            self.embed.add_field(
+                name="Read more at BGG",
+                value=bgg_text,
+                inline=False)
 
     def base_site_embed(self):
         if Site(self.site) == Site.bga:
@@ -185,7 +191,8 @@ class GameEmbed:
             name = link[0]
             if alphabet is None:
                 alphabet = name
-            embed_len = len(alphabet) + len(value) + len(self.embed) + len(name)
+            embed_len = len(alphabet) + len(value) + \
+                len(self.embed) + len(name)
             field_len = len(alphabet) + len(value) + len(text) + len(name)
 
             if embed_len > 5998:

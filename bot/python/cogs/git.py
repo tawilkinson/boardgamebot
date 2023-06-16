@@ -25,7 +25,8 @@ class Git(commands.Cog, name="git"):
         if logger.level >= 10:
             logger.debug("Getting Release info from Github")
         h = html2text.HTML2Text()
-        release_page = Webpage("https://github.com/tawilkinson/boardgamebot/releases")
+        release_page = Webpage(
+            "https://github.com/tawilkinson/boardgamebot/releases")
         page = release_page.page_html
         versions = []
         if page:
@@ -36,7 +37,9 @@ class Git(commands.Cog, name="git"):
                     url = "https://github.com" + result.select_one(
                         "a", class_="Link--primary"
                     ).get("href")
-                    release_md = str(result.find_all("div", class_="markdown-body")[0])
+                    release_md = str(
+                        result.find_all(
+                            "div", class_="markdown-body")[0])
                     description = h.handle(release_md)
                     description = description.replace("* ", "")
                     description = description[:2000]
@@ -47,7 +50,8 @@ class Git(commands.Cog, name="git"):
             title = "Release page not found"
             description = "There is an issue getting data from GitHub at the moment..."
             url = "https://github.com/tawilkinson/boardgamebot/releases/latest"
-            versions.append({"title": title, "description": description, "url": url})
+            versions.append(
+                {"title": title, "description": description, "url": url})
 
         return versions
 
@@ -63,7 +67,8 @@ class Git(commands.Cog, name="git"):
         paginator = DiscordPages(formatter, timeout=60, auto_footer=True)
         await paginator.start(interaction)
 
-    @app_commands.command(name="github", description="Prints info on the Github repo")
+    @app_commands.command(name="github",
+                          description="Prints info on the Github repo")
     async def github(self, interaction: discord.Interaction) -> None:
         """
         Prints an embed that contains info on the Github repo
