@@ -49,15 +49,17 @@ class Help(commands.Cog, name='help'):
                     halp.add_field(name=x,
                                    value=self.bot.cogs[x].__doc__,
                                    inline=True)
-                halp.add_field(
-                    name='Uncategorised Commands',
-                    value='',
-                    inline=False)
-                for y in self.bot.walk_commands():
-                    if not y.cog_name and not y.hidden:
-                        halp.add_field(name=y.name,
-                                       value=y.help,
-                                       inline=True)
+                if hasattr(interaction.user, 'guild_permissions') and interaction.user.guild_permissions.manage_guild:
+                    # These are all bot admin commands
+                    halp.add_field(
+                        name='Uncategorised Commands',
+                        value='',
+                        inline=False)
+                    for y in self.bot.walk_commands():
+                        if not y.cog_name and not y.hidden:
+                            halp.add_field(name=y.name,
+                                        value=y.help,
+                                        inline=True)
                 await interaction.response.send_message('', embed=halp)
                 if interaction.channel.type is not discord.ChannelType.private:
                     message = await interaction.original_response()
