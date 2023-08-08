@@ -23,7 +23,13 @@ class Fun(commands.Cog, name="fun"):
                 self.theme_data = json.load(json_file)
         except FileNotFoundError:
             self.theme_data = {}
-            print("theme_data.json is empty. Can" "t generate random themes.")
+            print("theme_data.json is empty. Can\'t generate random themes.")
+        try:
+            with open(os.path.join(dir_path, "../data/thoughts.json")) as json_file:
+                self.thoughts = json.load(json_file)
+        except FileNotFoundError:
+            self.thoughts = {}
+            print("thoughts.json is empty. Can\'t generate random thoughts.")
 
     @app_commands.command(name="gameboard")
     async def gameboard(self, interaction: discord.Interaction) -> None:
@@ -48,6 +54,21 @@ class Fun(commands.Cog, name="fun"):
             + random.choice(self.theme_data["components"])
             + " set in "
             + random.choice(self.theme_data["settings"])
+        )
+        response = await interaction.response.send_message(response)
+
+    @app_commands.command(
+        name="thought", description="The Emperor Protects"
+    )
+    async def thought_for_the_day(self, interaction: discord.Interaction) -> None:
+        """
+        Prints a porribly recongisable Though for the Day.
+        Taken from the JSON file, thoughts.json.
+        """
+        response = (
+            "```+++ BEGIN THOUGHT FOR THE DAY +++\n\n"
+            + random.choice(self.thoughts["thoughts"])
+		    + "\n\n+++  END THOUGHT FOR THE DAY  +++```"
         )
         response = await interaction.response.send_message(response)
 
