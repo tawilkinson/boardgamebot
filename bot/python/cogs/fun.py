@@ -68,7 +68,7 @@ class Fun(commands.Cog, name="fun"):
         response = (
             "```+++ BEGIN THOUGHT FOR THE DAY +++\n\n"
             + random.choice(self.thoughts["thoughts"])
-		    + "\n\n+++  END THOUGHT FOR THE DAY  +++```"
+            + "\n\n+++  END THOUGHT FOR THE DAY  +++```"
         )
         response = await interaction.response.send_message(response)
 
