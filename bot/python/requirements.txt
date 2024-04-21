@@ -10,5 +10,5 @@ lxml==5.1.0
 numpy==1.26.4
 python_dotenv==0.21.1
 requests==2.31.0
-scikit_image==0.22.0
+scikit_image==0.23.2
 scikit-learn==1.4.1.post1
