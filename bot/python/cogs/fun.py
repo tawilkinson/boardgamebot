@@ -37,7 +37,7 @@ class Fun(commands.Cog, name="fun"):
         It's a fun gif
         """
         response = await interaction.response.send_message(
-            "https://gfycat.com/thismixeddonkey"
+            "https://i.makeagif.com/media/9-18-2016/njIWtB.gif"
         )
 
     @app_commands.command(
