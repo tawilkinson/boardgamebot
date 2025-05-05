@@ -7,7 +7,7 @@ discord-ext-menus==1.1
 emoji==2.14.1
 html2text==2025.4.15
 lxml==5.4.0
-numpy==2.2.4
+numpy==2.2.5
 python_dotenv==1.1.0
 requests==2.32.3
 scikit_image==0.25.1
