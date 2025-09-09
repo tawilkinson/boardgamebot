@@ -11,4 +11,4 @@ numpy==2.3.2
 python_dotenv==1.1.1
 requests==2.32.5
 scikit_image==0.25.1
-scikit-learn==1.7.1
+scikit-learn==1.7.2
