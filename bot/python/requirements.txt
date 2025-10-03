@@ -4,7 +4,7 @@ beautifulsoup4==4.13.5
 cachetools==6.2.0
 discord.py==2.6.3
 discord-ext-menus==1.1
-emoji==2.14.1
+emoji==2.15.0
 html2text==2025.4.15
 lxml==6.0.1
 numpy==2.3.3
