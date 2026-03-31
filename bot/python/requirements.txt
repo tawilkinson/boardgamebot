@@ -9,6 +9,6 @@ html2text==2025.4.15
 lxml==6.0.2
 numpy==2.4.2
 python_dotenv==1.2.1
-requests==2.32.5
+requests==2.33.1
 scikit_image==0.26.0
 scikit-learn==1.8.0
