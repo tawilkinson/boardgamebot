@@ -6,7 +6,7 @@ discord.py==2.7.0
 discord-ext-menus==1.1
 emoji==2.15.0
 html2text==2025.4.15
-lxml==6.0.2
+lxml==6.0.3
 numpy==2.4.2
 python_dotenv==1.2.1
 requests==2.32.5
