@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  bgbot:
+    image: ghcr.io/tawilkinson/boardgamebot:latest
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+    env_file: bot/python/.env
+    network_mode: host
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
