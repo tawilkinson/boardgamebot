@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items>
+  <item type="boardgame" id="822">
+    <image>https://cf.geekdo-images.com/carcassonne.jpg</image>
+    <name type="primary" sortindex="1" value="Carcassonne"/>
+    <description>Carcassonne is a tile-laying game in which players draw and place tiles to build the area around the city of Carcassonne.</description>
+    <yearpublished value="2000"/>
+  </item>
+</items>
