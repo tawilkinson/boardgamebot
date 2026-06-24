@@ -6,6 +6,7 @@ Layout of the suite:
   commands/  - every command callback exercised with a mocked discord.Interaction
   live/      - @pytest.mark.live, hits real external services (deselected by default)
 """
+import discord
 import os
 import sys
 from pathlib import Path
@@ -23,7 +24,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 os.chdir(ROOT)
 
-import discord
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 

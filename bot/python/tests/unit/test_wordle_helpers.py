@@ -14,7 +14,8 @@ ALPHABET = [c for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
 
 
 def test_check_answer_all_correct():
-    correct, wrong_len, _, squares = check_answer("crane", "CRANE", list(ALPHABET))
+    correct, wrong_len, _, squares = check_answer(
+        "crane", "CRANE", list(ALPHABET))
     assert correct is True
     assert wrong_len is False
     assert squares == "🟩🟩🟩🟩🟩"

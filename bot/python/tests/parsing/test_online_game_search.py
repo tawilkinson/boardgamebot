@@ -108,18 +108,15 @@ def test_get_bga_data_no_match_leaves_url_false(mock_get, load_fixture):
 # --- full search pipeline (all sources mocked) ------------------------------
 
 async def test_search_web_board_game_data_end_to_end(mock_get, load_fixture):
-    mock_get(
-        {
-            "xmlapi2/search": load_fixture("bgg_search_single.xml"),
-            "xmlapi2/thing": load_fixture("bgg_thing.xml"),
-            "boardgamearena.com/gamelist": load_fixture("bga_gamelist.html"),
-            "boiteajeux.net": load_fixture("boite_regles.html"),
-            "yucata.de/en": load_fixture("yucata.html"),
-            "tabletopia.com/playground": load_fixture("tabletopia_search.html"),
-            "store.steampowered.com/search": load_fixture("tts_dlc.html"),
-            "steamcommunity.com/workshop": load_fixture("tts_workshop.html"),
-        }
-    )
+    mock_get({"xmlapi2/search": load_fixture("bgg_search_single.xml"),
+              "xmlapi2/thing": load_fixture("bgg_thing.xml"),
+              "boardgamearena.com/gamelist": load_fixture("bga_gamelist.html"),
+              "boiteajeux.net": load_fixture("boite_regles.html"),
+              "yucata.de/en": load_fixture("yucata.html"),
+              "tabletopia.com/playground": load_fixture("tabletopia_search.html"),
+              "store.steampowered.com/search": load_fixture("tts_dlc.html"),
+              "steamcommunity.com/workshop": load_fixture("tts_workshop.html"),
+              })
     data = await search_web_board_game_data("Carcassonne")
     assert data is not False
     assert data["name"] == "Carcassonne"

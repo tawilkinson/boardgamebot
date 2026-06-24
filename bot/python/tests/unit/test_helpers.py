@@ -14,7 +14,8 @@ from utils.helpers import (
     "value,expected",
     # NB: get_int does int(str(value)), so a float string like "3.9" is NOT
     # truncated -- it raises and returns None.
-    [(5, 5), ("5", 5), ("-3", -3), (3.9, None), ("abc", None), (None, None), ("", None)],
+    [(5, 5), ("5", 5), ("-3", -3), (3.9, None),
+     ("abc", None), (None, None), ("", None)],
 )
 def test_get_int(value, expected):
     assert get_int(value) == expected
