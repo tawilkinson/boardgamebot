@@ -43,7 +43,7 @@ async def test_get_bgg_data_zero_matches(mock_get, load_fixture):
 
 
 async def test_get_bgg_data_multiple_matches_resolves_user_choice(
-    mock_get, load_fixture
+    mock_get, load_fixture, capsys
 ):
     mock_get(
         {
@@ -66,6 +66,8 @@ async def test_get_bgg_data_multiple_matches_resolves_user_choice(
     assert await get_bgg_data(game, message, ctx, exact=True) is True
     message.edit.assert_awaited()  # ambiguous-choice embed was shown
     assert game.description  # resolved choice fetched the thing endpoint
+    # No stray debug print of the raw parsed XML (was bgg.py:113).
+    assert capsys.readouterr().out == ""
 
 
 async def test_get_bgg_data_unreachable_returns_false(raise_get):
