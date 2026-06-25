@@ -266,3 +266,5 @@ dist
 
 # bot config
 config.ts
+
+bot/python/tests/FINDINGS.md
