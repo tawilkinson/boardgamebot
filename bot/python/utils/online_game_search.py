@@ -1,7 +1,9 @@
 import logging
 import difflib
 import json
-import string
+import os
+import requests
+from bs4 import BeautifulSoup
 from cachetools import cached, TTLCache
 from utils.bgg import get_bgg_data
 from utils.helpers import Site
@@ -10,22 +12,15 @@ from utils.tts import get_tts_data
 
 logger = logging.getLogger("discord")
 
-
-def get_boite_a_jeux_data(game):
-    """
-    Takes an object of "Game" Class and searches Boîte à Jeux "all games" webpage
-    to see if the game's name is listed. Will update the Game Object with url for
-    the webpage of the game on Boîte à Jeux's website.
-    """
-    if logger.level >= 10:
-        logger.debug(f">>> Boîte à Jeux: {game.boite_search_url}")
-    all_boite = get_all_games(site=2)
-    closest_match = difflib.get_close_matches(game.name, all_boite.keys(), 1)
-    if len(closest_match) > 0:
-        game.set_boite_url(f"{all_boite[closest_match[0]]}")
-    else:
-        if logger.level >= 10:
-            logger.debug(f">>> Boîte à Jeux {game.name} not found")
+YUCATA_BASE = "https://www.yucata.de"
+YUCATA_LOGIN_URL = f"{YUCATA_BASE}/Services/YucataService.svc/AuthenticateViaAjax"
+YUCATA_GAMES_URL = f"{YUCATA_BASE}/en/Games"
+# Yucata serves its anonymous pages to a generic UA, but send a browser-like
+# one to be safe.
+YUCATA_USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+)
 
 
 def get_tabletopia_data(game):
@@ -94,6 +89,71 @@ def get_yucata_data(game):
             logger.debug(f">>> Yucata.de {game.name} not found")
 
 
+def _yucata_login(session):
+    """Authenticate ``session`` against Yucata using YUCATA_USER / YUCATA_PASS.
+
+    Yucata's full game catalogue is only listed for logged-in users. Returns
+    True on success. Returns False (and logs a clear message) when the
+    credentials are not configured or the login is rejected, so callers can
+    degrade gracefully instead of crashing.
+    """
+    user = os.getenv("YUCATA_USER")
+    password = os.getenv("YUCATA_PASS")
+    if not user or not password:
+        logger.warning(
+            "YUCATA_USER / YUCATA_PASS not set; Yucata games cannot be listed. "
+            "Set both in your .env (or as CI secrets) to enable Yucata."
+        )
+        return False
+    try:
+        response = session.post(
+            YUCATA_LOGIN_URL,
+            json={"login": user, "password": password, "remember": False},
+            timeout=30,
+        )
+    except requests.exceptions.RequestException as error:
+        logger.warning(f"Yucata login request failed: {error}")
+        return False
+    try:
+        # The WCF AJAX endpoint wraps its result as {"d": <bool>}.
+        success = bool(response.json().get("d"))
+    except ValueError:
+        success = False
+    if not success:
+        logger.warning(
+            "Yucata login was rejected; check YUCATA_USER / YUCATA_PASS.")
+    return success
+
+
+def get_yucata_games():
+    """All games visible to a logged-in Yucata account, as a name -> MD-link dict.
+
+    Logs in with a fresh session and scrapes the game links from the
+    authenticated games page. Returns an empty dict (logging why) if the
+    credentials are missing, login fails, or the fetch fails.
+    """
+    session = requests.Session()
+    session.headers.update({"User-Agent": YUCATA_USER_AGENT})
+    if not _yucata_login(session):
+        return {}
+    try:
+        response = session.get(YUCATA_GAMES_URL, timeout=30)
+    except requests.exceptions.RequestException as error:
+        logger.warning(f"Yucata games page could not be fetched: {error}")
+        return {}
+    page = BeautifulSoup(response.text, "html.parser")
+    all_links = {}
+    for anchor in page.select('a[href^="/en/GameInfo/"]'):
+        name = anchor.get_text(strip=True)
+        if not name:
+            continue
+        link = f"{YUCATA_BASE}{anchor['href']}"
+        all_links[name] = f"[{name}]({link})"
+    if not all_links and logger.level >= 10:
+        logger.debug(">>> Yucata: logged in but found no games on the games page")
+    return all_links
+
+
 _search_cache = TTLCache(maxsize=1024, ttl=86400)
 
 
@@ -140,7 +200,6 @@ async def _fetch_board_game_data(
         "tts": "[<name>](<tts_url>)",
         "bga": "[<name>](<bga_url>)",
         "yucata": "[<name>](<yucata_url>)",
-        "boite": "[<name>](<boite_url>)",
     }
     """
     game = Game(game_name.lower())
@@ -155,7 +214,6 @@ async def _fetch_board_game_data(
             return False
     if game_on_bgg:
         get_bga_data(game)
-        get_boite_a_jeux_data(game)
         get_tabletopia_data(game)
         get_tts_data(game)
         get_yucata_data(game)
@@ -179,9 +237,6 @@ def set_site_data(site):
     if site_enum == Site.bga:
         game_list = "https://en.boardgamearena.com/gamelist?section=all"
         site_name = "Board Game Arena"
-    elif site_enum == Site.boite:
-        game_list = "http://www.boiteajeux.net/index.php?p=regles"
-        site_name = "Boîte à Jeux"
     elif site_enum == Site.yucata:
         game_list = "https://www.yucata.de/en/"
         site_name = "Yucata.de"
@@ -217,12 +272,9 @@ def get_site_search_results(site, page):
                         if logger.level >= 10:
                             logger.debug(f"!!! BGA JSON error: {e}")
         search_results = search_results["game_list"]
-    elif site_enum == Site.boite:
-        search_results = page.find_all("div", class_="jeuxRegles")
-    elif site_enum == Site.yucata:
-        search_results = page.find_all("a", class_="jGameInfo")
     elif site_enum == Site.tts:
         search_results = page.find_all("div", {"class": "search_name"})
+    # Yucata is handled separately
     return search_results
 
 
@@ -239,15 +291,6 @@ def get_name_and_link(site, result):
         game_href = result["name"]
         name = result["display_name_en"]
         link = f"https://boardgamearena.com/gamepanel?game={game_href}"
-    elif site_enum == Site.boite:
-        rules_elem = result.select_one("a", text="Rules")
-        rules_href = rules_elem.get("href")
-        link = f"http://www.boiteajeux.net/{rules_href}"
-        name = string.capwords(str(result.contents[0]).lstrip().rstrip())
-    elif site_enum == Site.yucata:
-        game_href = result["href"]
-        name = result.text
-        link = f"https://www.yucata.de{game_href}"
     elif site_enum == Site.tts:
         name = result.text.lstrip("\n").rstrip("\n ")
         link = result.parent.parent["href"]
@@ -265,6 +308,9 @@ def get_all_games(site):
     game_list, site_name = set_site_data(site)
     if site_name is None:
         return {}
+
+    if Site(site) == Site.yucata:
+        return get_yucata_games()
 
     if logger.level >= 10:
         logger.debug(f">>> {site_name} all games: {game_list}")

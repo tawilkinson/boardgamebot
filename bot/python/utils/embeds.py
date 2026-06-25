@@ -56,16 +56,6 @@ class GameEmbed:
             url = "https://boardgamearena.com/gamelist"
             colour = 0x9566DD
             thumb_url = "https://x.boardgamearena.net/data/themereleases/200316-1631/img/logo/logo.png"
-        elif Site(self.site) == Site.boite:
-            title_str = "Boîte à Jeux Games"
-            description = "Boîte à Jeux is a predominantly French online game system. The \
-                interface has been translated to English and more recently, German as well.\
-                \nGames are played in a web browser one turn at a time, which could take hours \
-                or weeks, depending on the game and how often the players take their turns. \
-                    Live games are possible if players are both logged in at the same time."
-            url = "http://www.boiteajeux.net/"
-            colour = 0x55774C
-            thumb_url = "http://www.boiteajeux.net/img/banniere_baj_en.png"
         elif Site(self.site) == Site.yucata:
             title_str = "Yucata.de Games"
             description = "Online gaming portal, free and without advertisements \
@@ -168,8 +158,6 @@ class GameEmbed:
 
         # Board Game Arena field
         self.set_simple_field("bga", "Board Game Arena")
-        # Boîte à Jeux field
-        self.set_simple_field("boite", "Boîte à Jeux")
         # Yucata field
         self.set_simple_field("yucata", "Yucata")
         # Tabletopia field

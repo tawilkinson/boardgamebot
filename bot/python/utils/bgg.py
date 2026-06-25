@@ -4,10 +4,24 @@ import discord
 import logging
 import lxml
 import html
+import os
 import difflib
 from utils.game import Webpage
 
 logger = logging.getLogger("discord")
+
+
+def bgg_headers():
+    """
+    BGG's XML API requires an Authorization: Bearer <token> header. Register an
+    application at https://boardgamegeek.com/applications to obtain a token and
+    expose it as the BGG_TOKEN environment variable. Returns None when unset so
+    the request is made without auth (and BGG responds 401).
+    """
+    token = os.getenv("BGG_TOKEN")
+    if token:
+        return {"Authorization": f"Bearer {token}"}
+    return None
 
 
 def bgg_data_from_id(game, game_id):
@@ -18,7 +32,7 @@ def bgg_data_from_id(game, game_id):
     bgg_url = game.get_set_bgg_url(game_id)
     if logger.level >= 10:
         logger.debug(f">>> {game.name} on BGG: {bgg_url}")
-    bgg_page = Webpage(bgg_url, xml=True)
+    bgg_page = Webpage(bgg_url, xml=True, headers=bgg_headers())
     if bgg_page.page_html.items.description:
         game_description = html.unescape(
             bgg_page.page_html.items.description.text)
@@ -89,12 +103,14 @@ async def get_bgg_data(game, message, ctx, exact=True):
     if exact:
         if logger.level >= 10:
             logger.debug(f">>> Board Game Geek: {game.bgg_search_url}")
-        bgg_search = Webpage(game.bgg_search_url, xml=True)
+        bgg_search = Webpage(
+            game.bgg_search_url, xml=True, headers=bgg_headers())
     else:
         if logger.level >= 10:
             logger.debug(
                 f">>> Board Game Geek: {game.bgg_non_exact_search_url}")
-        bgg_search = Webpage(game.bgg_non_exact_search_url, xml=True)
+        bgg_search = Webpage(
+            game.bgg_non_exact_search_url, xml=True, headers=bgg_headers())
     if bgg_search.page_html is None:
         return False
     if bgg_search.page_html.items is not None:
