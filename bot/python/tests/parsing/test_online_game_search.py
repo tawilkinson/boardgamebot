@@ -149,18 +149,15 @@ async def test_search_web_board_game_data_not_on_bgg(mock_get, load_fixture):
 async def test_search_results_are_cached_and_reusable(mock_get, load_fixture):
     # A repeat search for the same game must return the cached result, not a
     # spent coroutine (regression: @cached used to cache the awaitable itself).
-    mock_get(
-        {
-            "xmlapi2/search": load_fixture("bgg_search_single.xml"),
-            "xmlapi2/thing": load_fixture("bgg_thing.xml"),
-            "boardgamearena.com/gamelist": load_fixture("bga_gamelist.html"),
-            "boiteajeux.net": load_fixture("boite_regles.html"),
-            "yucata.de/en": load_fixture("yucata.html"),
-            "tabletopia.com/playground": load_fixture("tabletopia_search.html"),
-            "store.steampowered.com/search": load_fixture("tts_dlc.html"),
-            "steamcommunity.com/workshop": load_fixture("tts_workshop.html"),
-        }
-    )
+    mock_get({"xmlapi2/search": load_fixture("bgg_search_single.xml"),
+              "xmlapi2/thing": load_fixture("bgg_thing.xml"),
+              "boardgamearena.com/gamelist": load_fixture("bga_gamelist.html"),
+              "boiteajeux.net": load_fixture("boite_regles.html"),
+              "yucata.de/en": load_fixture("yucata.html"),
+              "tabletopia.com/playground": load_fixture("tabletopia_search.html"),
+              "store.steampowered.com/search": load_fixture("tts_dlc.html"),
+              "steamcommunity.com/workshop": load_fixture("tts_workshop.html"),
+              })
     first = await search_web_board_game_data("Carcassonne")
     second = await search_web_board_game_data("Carcassonne")
     assert first == second
