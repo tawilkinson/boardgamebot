@@ -28,6 +28,11 @@ class Die:
         self.explode = False
         self.plus = False
         self.minus = False
+        # If the input doesn't match the dice regex there's nothing to parse
+        if self.match is None:
+            self.die_str = "**! Incorrect syntax !**\n"
+            self.short_str = self.die_str
+            return
         self.parse_dice()
         # Make the roll
         try:

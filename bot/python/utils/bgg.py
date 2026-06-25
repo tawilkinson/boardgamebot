@@ -110,7 +110,6 @@ async def get_bgg_data(game, message, ctx, exact=True):
         elif int(games_found) > 1:
             closest_match = None
             board_game_search = bgg_search.page_html.items.findAll("item")
-            print(board_game_search)
             possible_board_games = collections.OrderedDict()
             count = 0
             title = "Ambiguous Game Name"

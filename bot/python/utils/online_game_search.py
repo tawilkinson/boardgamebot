@@ -94,8 +94,32 @@ def get_yucata_data(game):
             logger.debug(f">>> Yucata.de {game.name} not found")
 
 
-@cached(cache=TTLCache(maxsize=1024, ttl=86400))
+_search_cache = TTLCache(maxsize=1024, ttl=86400)
+
+
 async def search_web_board_game_data(
+    game_name, message=None, ctx=None, depth=0, max_depth=1
+):
+    """Result-caching wrapper around :func:`_fetch_board_game_data`.
+
+    Caches the awaited result keyed on the game name only.
+    """
+    cache_key = game_name.lower()
+    if cache_key in _search_cache:
+        return _search_cache[cache_key]
+    game_data = await _fetch_board_game_data(
+        game_name, message, ctx, depth, max_depth
+    )
+    if game_data:
+        _search_cache[cache_key] = game_data
+    return game_data
+
+
+# Exposed so callers/tests can clear the result cache.
+search_web_board_game_data.cache = _search_cache
+
+
+async def _fetch_board_game_data(
     game_name, message=None, ctx=None, depth=0, max_depth=1
 ):
     """
@@ -148,16 +172,20 @@ def set_site_data(site):
     """
     game_list = None
     site_name = None
-    if Site(site) == Site.bga:
+    try:
+        site_enum = Site(site)
+    except ValueError:
+        return game_list, site_name
+    if site_enum == Site.bga:
         game_list = "https://en.boardgamearena.com/gamelist?section=all"
         site_name = "Board Game Arena"
-    elif Site(site) == Site.boite:
+    elif site_enum == Site.boite:
         game_list = "http://www.boiteajeux.net/index.php?p=regles"
         site_name = "Boîte à Jeux"
-    elif Site(site) == Site.yucata:
+    elif site_enum == Site.yucata:
         game_list = "https://www.yucata.de/en/"
         site_name = "Yucata.de"
-    elif Site(site) == Site.tts:
+    elif site_enum == Site.tts:
         game_list = "https://store.steampowered.com/search/?term=tabletop+simulator&category1=21"
         site_name = "Tabletop Simulator"
     return game_list, site_name
@@ -168,7 +196,11 @@ def get_site_search_results(site, page):
     Finds all game elements depending on website
     """
     search_results = None
-    if Site(site) == Site.bga:
+    try:
+        site_enum = Site(site)
+    except ValueError:
+        return search_results
+    if site_enum == Site.bga:
         script_result = page.find_all("script", type="text/javascript")
         search_results = None
         for item in script_result:
@@ -185,11 +217,11 @@ def get_site_search_results(site, page):
                         if logger.level >= 10:
                             logger.debug(f"!!! BGA JSON error: {e}")
         search_results = search_results["game_list"]
-    elif Site(site) == Site.boite:
+    elif site_enum == Site.boite:
         search_results = page.find_all("div", class_="jeuxRegles")
-    elif Site(site) == Site.yucata:
+    elif site_enum == Site.yucata:
         search_results = page.find_all("a", class_="jGameInfo")
-    elif Site(site) == Site.tts:
+    elif site_enum == Site.tts:
         search_results = page.find_all("div", {"class": "search_name"})
     return search_results
 
@@ -199,20 +231,24 @@ def get_name_and_link(site, result):
     Gets name and game links from different websites
     """
     name = None
-    if Site(site) == Site.bga:
+    try:
+        site_enum = Site(site)
+    except ValueError:
+        return name, ""
+    if site_enum == Site.bga:
         game_href = result["name"]
         name = result["display_name_en"]
         link = f"https://boardgamearena.com/gamepanel?game={game_href}"
-    elif Site(site) == Site.boite:
+    elif site_enum == Site.boite:
         rules_elem = result.select_one("a", text="Rules")
         rules_href = rules_elem.get("href")
         link = f"http://www.boiteajeux.net/{rules_href}"
         name = string.capwords(str(result.contents[0]).lstrip().rstrip())
-    elif Site(site) == Site.yucata:
+    elif site_enum == Site.yucata:
         game_href = result["href"]
         name = result.text
         link = f"https://www.yucata.de{game_href}"
-    elif Site(site) == Site.tts:
+    elif site_enum == Site.tts:
         name = result.text.lstrip("\n").rstrip("\n ")
         link = result.parent.parent["href"]
         link = link.split("?snr=")[0]

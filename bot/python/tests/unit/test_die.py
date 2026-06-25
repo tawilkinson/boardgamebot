@@ -78,13 +78,10 @@ def test_get_len_matches_str():
     assert d.get_len() == len(d.get_str())
 
 
-@pytest.mark.xfail(
-    reason="Invalid dice notation raises AttributeError because parse_dice() "
-    "runs outside the try/except in Die.__init__ (only roll() is guarded). "
-    "Should instead return the '! Incorrect syntax !' message.",
-    strict=True,
-    raises=AttributeError,
-)
-def test_invalid_notation_is_handled_gracefully():
-    d = Die("notdice")
+@pytest.mark.parametrize("bad_input", ["notdice", "d", "", "hello", "12345"])
+def test_invalid_notation_is_handled_gracefully(bad_input):
+    # Input the dice regex cannot match must yield the syntax-error message,
+    # not raise (the /roll command would otherwise crash).
+    d = Die(bad_input)
     assert "Incorrect syntax" in d.get_str()
+    assert d.get_short_str() == d.get_str()
