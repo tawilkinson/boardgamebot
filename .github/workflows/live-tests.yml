@@ -26,4 +26,9 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
 
       - name: Run live drift tests
+        env:
+          # Add these as repo secrets to exercise the auth-gated live tests.
+          BGG_TOKEN: ${{ secrets.BGG_TOKEN }}
+          YUCATA_USER: ${{ secrets.YUCATA_USER }}
+          YUCATA_PASS: ${{ secrets.YUCATA_PASS }}
         run: pytest -m live

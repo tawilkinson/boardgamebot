@@ -4,6 +4,7 @@ These verify our parser logic is correct for the structure the BGG XML API is
 expected to return. The matching live test (tests/live/test_bgg_live.py) checks
 that the real API still emits that structure.
 """
+import types
 from unittest.mock import AsyncMock, MagicMock
 
 import discord
@@ -11,6 +12,21 @@ import requests
 
 from utils.bgg import bgg_data_from_id, get_bgg_data
 from utils.game import Game
+
+
+def _capture_request_headers(monkeypatch, body="<items total='0'></items>"):
+    """Patch requests.get to record the headers of every request and return a
+    minimal response carrying ``body``."""
+    import utils.game as game_mod
+
+    captured = []
+
+    def fake_get(url, *args, **kwargs):
+        captured.append(kwargs.get("headers"))
+        return types.SimpleNamespace(text=body)
+
+    monkeypatch.setattr(game_mod.requests, "get", fake_get)
+    return captured
 
 
 def test_bgg_data_from_id_sets_description_and_image(mock_get, load_fixture):
@@ -74,3 +90,20 @@ async def test_get_bgg_data_unreachable_returns_false(raise_get):
     raise_get(requests.exceptions.ConnectionError())
     game = Game("carcassonne")
     assert await get_bgg_data(game, message=None, ctx=None, exact=True) is False
+
+
+async def test_bgg_requests_include_bearer_token_when_set(monkeypatch):
+    # BGG's XML API now requires `Authorization: Bearer <token>`.
+    monkeypatch.setenv("BGG_TOKEN", "tok-123")
+    headers = _capture_request_headers(monkeypatch)
+    await get_bgg_data(Game("carcassonne"), message=None, ctx=None, exact=True)
+    assert headers, "no BGG request was made"
+    assert headers[0] == {"Authorization": "Bearer tok-123"}
+
+
+async def test_bgg_requests_have_no_auth_header_without_token(monkeypatch):
+    monkeypatch.delenv("BGG_TOKEN", raising=False)
+    headers = _capture_request_headers(monkeypatch)
+    await get_bgg_data(Game("carcassonne"), message=None, ctx=None, exact=True)
+    assert headers
+    assert headers[0] is None

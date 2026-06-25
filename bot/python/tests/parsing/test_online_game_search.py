@@ -4,11 +4,13 @@ Each test feeds the real BeautifulSoup parser a fixture that encodes the page
 structure the scraper expects. A failure here means our parser logic is wrong;
 the live suite checks whether the real sites still match these structures.
 """
+from unittest.mock import MagicMock
+
+import utils.online_game_search as ogs
 from utils.game import Game
 from utils.online_game_search import (
     get_all_games,
     get_bga_data,
-    get_boite_a_jeux_data,
     get_tabletopia_data,
     get_yucata_data,
     search_web_board_game_data,
@@ -16,10 +18,24 @@ from utils.online_game_search import (
 )
 
 
+def fake_yucata_session(monkeypatch, games_html="", login_ok=True):
+    """Patch requests.Session so Yucata's login + games fetch are simulated."""
+    session = MagicMock()
+    login_resp = MagicMock()
+    login_resp.json.return_value = {"d": login_ok}
+    session.post.return_value = login_resp
+    games_resp = MagicMock()
+    games_resp.text = games_html
+    session.get.return_value = games_resp
+    monkeypatch.setattr(ogs.requests, "Session", lambda: session)
+    return session
+
+
 # --- set_site_data ----------------------------------------------------------
 
 def test_set_site_data_known_sites():
-    for site in (1, 2, 3, 4):
+    # Site 2 (Boîte à Jeux) is retired; the live sites are BGA(1), Yucata(3), TTS(4).
+    for site in (1, 3, 4):
         url, name = set_site_data(site)
         assert url and name
 
@@ -43,18 +59,28 @@ def test_get_all_games_bga(mock_get, load_fixture):
     assert "Azul" in games
 
 
-def test_get_all_games_boite(mock_get, load_fixture):
-    mock_get({"boiteajeux.net": load_fixture("boite_regles.html")})
-    games = get_all_games(site=2)
-    assert "Carcassonne" in games
-    assert "boiteajeux.net" in games["Carcassonne"]
+def test_get_all_games_yucata_requires_credentials(monkeypatch):
+    # Yucata's catalogue needs login; without credentials we degrade to {}.
+    monkeypatch.delenv("YUCATA_USER", raising=False)
+    monkeypatch.delenv("YUCATA_PASS", raising=False)
+    assert get_all_games(site=3) == {}
 
 
-def test_get_all_games_yucata(mock_get, load_fixture):
-    mock_get({"yucata.de/en": load_fixture("yucata.html")})
+def test_get_all_games_yucata_logged_in(monkeypatch, load_fixture):
+    monkeypatch.setenv("YUCATA_USER", "u")
+    monkeypatch.setenv("YUCATA_PASS", "p")
+    fake_yucata_session(monkeypatch, games_html=load_fixture("yucata.html"))
     games = get_all_games(site=3)
     assert "Carcassonne" in games
-    assert "yucata.de/en/Game/Carcassonne" in games["Carcassonne"]
+    assert "yucata.de/en/GameInfo/Carcassonne" in games["Carcassonne"]
+    assert "Port Royal" in games
+
+
+def test_get_all_games_yucata_login_failure(monkeypatch):
+    monkeypatch.setenv("YUCATA_USER", "u")
+    monkeypatch.setenv("YUCATA_PASS", "p")
+    fake_yucata_session(monkeypatch, login_ok=False)
+    assert get_all_games(site=3) == {}
 
 
 def test_get_all_games_tts(mock_get, load_fixture):
@@ -83,16 +109,10 @@ def test_get_bga_data_matches(mock_get, load_fixture):
     assert "gamepanel?game=carcassonne" in game.bga
 
 
-def test_get_boite_data_matches(mock_get, load_fixture):
-    mock_get({"boiteajeux.net": load_fixture("boite_regles.html")})
-    game = Game("carcassonne")
-    get_boite_a_jeux_data(game)
-    assert game.boite
-    assert "boiteajeux.net" in game.boite
-
-
-def test_get_yucata_data_matches(mock_get, load_fixture):
-    mock_get({"yucata.de/en": load_fixture("yucata.html")})
+def test_get_yucata_data_matches(monkeypatch, load_fixture):
+    monkeypatch.setenv("YUCATA_USER", "u")
+    monkeypatch.setenv("YUCATA_PASS", "p")
+    fake_yucata_session(monkeypatch, games_html=load_fixture("yucata.html"))
     game = Game("carcassonne")
     get_yucata_data(game)
     assert game.yucata
@@ -120,8 +140,6 @@ async def test_search_web_board_game_data_end_to_end(mock_get, load_fixture):
     mock_get({"xmlapi2/search": load_fixture("bgg_search_single.xml"),
               "xmlapi2/thing": load_fixture("bgg_thing.xml"),
               "boardgamearena.com/gamelist": load_fixture("bga_gamelist.html"),
-              "boiteajeux.net": load_fixture("boite_regles.html"),
-              "yucata.de/en": load_fixture("yucata.html"),
               "tabletopia.com/playground": load_fixture("tabletopia_search.html"),
               "store.steampowered.com/search": load_fixture("tts_dlc.html"),
               "steamcommunity.com/workshop": load_fixture("tts_workshop.html"),
@@ -131,10 +149,9 @@ async def test_search_web_board_game_data_end_to_end(mock_get, load_fixture):
     assert data["name"] == "Carcassonne"
     assert data["bgg"] == "https://boardgamegeek.com/boardgame/822/"
     assert "tile-laying" in data["description"]
-    # Every online source should have resolved a link for Carcassonne.
+    # Every credential-free source should have resolved a link for Carcassonne.
+    # (Yucata needs login, so it's covered by its own tests, not here.)
     assert data["bga"]
-    assert data["boite"]
-    assert data["yucata"]
     assert data["tabletopia"]
     assert data["tts"]
 
@@ -152,8 +169,6 @@ async def test_search_results_are_cached_and_reusable(mock_get, load_fixture):
     mock_get({"xmlapi2/search": load_fixture("bgg_search_single.xml"),
               "xmlapi2/thing": load_fixture("bgg_thing.xml"),
               "boardgamearena.com/gamelist": load_fixture("bga_gamelist.html"),
-              "boiteajeux.net": load_fixture("boite_regles.html"),
-              "yucata.de/en": load_fixture("yucata.html"),
               "tabletopia.com/playground": load_fixture("tabletopia_search.html"),
               "store.steampowered.com/search": load_fixture("tts_dlc.html"),
               "steamcommunity.com/workshop": load_fixture("tts_workshop.html"),

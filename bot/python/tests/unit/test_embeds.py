@@ -23,7 +23,6 @@ SAMPLE_GAME = {
     "tts": False,
     "bga": "[Carcassonne](http://bga/carc)",
     "yucata": False,
-    "boite": False,
 }
 
 
@@ -62,7 +61,6 @@ def test_format_game_embed_includes_present_links():
     "site,expected_title",
     [
         (1, "Board Game Arena Games"),
-        (2, "Boîte à Jeux Games"),
         (3, "Yucata.de Games"),
         (4, "Tabletop Simulator DLC"),
     ],

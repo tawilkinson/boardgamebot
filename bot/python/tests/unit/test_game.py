@@ -42,7 +42,7 @@ def test_return_game_data_shape():
     data = g.return_game_data()
     assert set(data.keys()) == {
         "name", "description", "bgg", "image",
-        "tabletopia", "tts", "bga", "yucata", "boite", "app",
+        "tabletopia", "tts", "bga", "yucata", "app",
     }
     assert data["name"] == "Carcassonne"
 

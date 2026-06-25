@@ -20,7 +20,6 @@ SAMPLE_GAME = {
     "tts": False,
     "bga": "[Carcassonne](http://bga/carc)",
     "yucata": False,
-    "boite": False,
 }
 
 
@@ -70,7 +69,6 @@ async def test_search_not_found(games_cog, interaction, monkeypatch):
     "callback,site",
     [
         ("game_bga", 1),
-        ("game_boite", 2),
         ("game_yucata", 3),
         ("game_tts", 4),
     ],

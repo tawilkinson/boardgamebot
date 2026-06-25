@@ -7,7 +7,6 @@ A Discord bot to fetch board game data and a list of places you can play them on
 
 Supported websites/services:
 - [Board Game Arena](https://boardgamearena.com/)
-- [Boite a Jeux](http://www.boiteajeux.net/)
 - [Tabletopia](https://tabletopia.com/)
 - [Tabletop Simulator](https://store.steampowered.com/app/286160/Tabletop_Simulator/)
 - [Yucata.de](https://www.yucata.de/en)
@@ -27,7 +26,6 @@ All commands are called using `bg <command>` in a Discord channel. `bg help` wil
 - Games:
   - `game <game name>`: Prints detailed info about a board game. Uses BGG/local database to find the game and if that game exists gets information on places to play the game virtually.
   - `bga`: Lists all games currently avaialable on [Board Game Arena](https://boardgamearena.com/gamelist) (cache updates every 24 hours).
-  - `boite`: Lists all games currently avaialable on [Boîte a Jeux](http://www.boiteajeux.net/) (cache updates every 24 hours).
   - `tabletopia`: Gives a link to [Tabletopia](https://tabletopia.com/) as it has too many gmaes to list.
   - `tts`: Lists all official DLC currently avaialable for [Tabletop Simulator](https://store.steampowered.com/dlc/286160/Tabletop_Simulator/#browse) (cache updates every 24 hours).
   - `yucata`: Lists all games currently avaialable on [Yucata.de](https://www.yucata.de/en) (cache updates every 24 hours).
@@ -48,11 +46,14 @@ This guide assumes the following:
 - Docker is installed and working (try `docker run --rm hello-world`, you'll know if it works!)
   - If you aren't using Docker,  `Quick-Start Guide [No Docker]` after creating your `.env` file (steps 1 & 2)
 
-1. Create a file called `.env` in `bot/python` (so the full path will be eg. `/home/yourname/boardgamefest/bot/python/.env`) with the following contents:
+1. Create a file called `.env` in `bot/python` (so the full path will be e.g. `/home/yourname/boardgamefest/bot/python/.env`) with the following contents:
   ```
   DISCORD_TOKEN='REPLACEME'
+  BGG_TOKEN='REPLACEME'
+  YUCATA_USER='REPLACEME'
+  YUCATA_PASS='REPLACEME'
   ```
-2. Replace `REPLACEME` in the `.env` file with your Discord Bot's Token
+2. Replace `REPLACEME` in the `.env` file with your Discord Bot's Token. `BGG_TOKEN` is the token for a [registered BGG application](https://boardgamegeek.com/applications) — the BGG XML API now requires it for `game` searches. `YUCATA_USER`/`YUCATA_PASS` are optional [Yucata.de](https://www.yucata.de) account credentials; without them the Yucata listing is simply empty.
 3. Change directory to `bot`
 4. Run `./build.sh`
 5. Run `./run.sh` and check to see your bot comes online in Discord!

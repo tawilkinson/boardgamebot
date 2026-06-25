@@ -23,7 +23,6 @@ class Games(commands.GroupCog, name="games"):
         print("Game cache started")
         # Every 24 hours, refresh the cache
         get_all_games(site=1)
-        get_all_games(site=2)
         get_all_games(site=3)
         get_all_games(site=4)
         print("Game cache ended")
@@ -80,29 +79,6 @@ class Games(commands.GroupCog, name="games"):
         embedder = GameEmbed(site=1)
         embedder.set_start_time(start_time)
         all_links = get_all_games(site=1)
-        responses = embedder.format_all_games_embed(all_links)
-        await message.delete()
-        if len(responses) > 1:
-            formatter = GameEmbeds(responses, per_page=1)
-            paginator = DiscordPages(
-                formatter, timeout=60, auto_footer=True, message=message
-            )
-            await paginator.start(interaction)
-        else:
-            await interaction.followup.send(content="", embed=responses[0])
-
-    @app_commands.command(
-        name="boîte_à_jeux",
-        description="Prints the list of games currently available on Boîte à Jeux",
-    )
-    async def game_boite(self, interaction: discord.Interaction) -> None:
-        start_time = time.time()
-        response = "Getting the list of Boîte à Jeux games..."
-        await interaction.response.send_message(response)
-        message = await interaction.original_response()
-        embedder = GameEmbed(site=2)
-        embedder.set_start_time(start_time)
-        all_links = get_all_games(site=2)
         responses = embedder.format_all_games_embed(all_links)
         await message.delete()
         if len(responses) > 1:

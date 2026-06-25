@@ -23,10 +23,12 @@ def test_get_int(value, expected):
 
 def test_site_enum_values():
     assert Site.bga.value == 1
-    assert Site.boite.value == 2
     assert Site.yucata.value == 3
     assert Site.tts.value == 4
     assert Site(1) is Site.bga
+    # Value 2 (Boîte à Jeux) was retired -- it should no longer be a member.
+    with pytest.raises(ValueError):
+        Site(2)
 
 
 def test_word_set_loads():
